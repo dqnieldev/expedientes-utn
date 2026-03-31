@@ -13,6 +13,20 @@ model Usuario {
   password  String
   role      Role     @default(ALUMNO)
   createdAt DateTime @default(now())
+  
+  alumno    Alumno?
+}
+
+model Alumno {
+  id                    Int      @id @default(autoincrement())
+  nombre                String
+  matricula             String   @unique
+  carrera               String
+  cuatrimestre_actual   Int
+  estado                String   @default("ACTIVO")
+  usuarioId             Int      @unique
+  usuario               Usuario  @relation(fields: [usuarioId], references: [id])
+  createdAt             DateTime @default(now())
 }
 
 enum Role {
