@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import alumnoRoutes from "./routes/alumno.routes.js";
 import documentoRoutes from "./routes/documento.routes.js";
+import path from "path";
 
 const app = express();
 
@@ -18,5 +19,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/alumnos", alumnoRoutes);
 app.use("/api/documentos", documentoRoutes);
+
+app.use("/uploads", express.static("uploads"));  // Servir archivos estáticos desde la carpeta "uploads"
+  
 
 export default app;

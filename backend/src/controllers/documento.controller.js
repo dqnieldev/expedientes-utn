@@ -6,24 +6,26 @@ import {
 
 // Controladores para manejar las solicitudes relacionadas con los documentos de los alumnos
 
-// Crear un nuevo documento para un alumno
+//  Crear un nuevo documento para un alumno
 export const create = async (req, res) => {
   try {
-    const doc = await createDocumento(req.body);
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file); // 👈 IMPORTANTE
+
+    const { tipo, alumnoId } = req.body;
+
+    const filePath = req.file.filename;
+
+    const doc = await createDocumento({
+      tipo,
+      url: filePath,
+      alumnoId: Number(alumnoId)
+    });
+
     res.status(201).json(doc);
   } catch (error) {
+    console.log("ERROR:", error); // 👈 IMPORTANTE
     res.status(400).json({ message: error.message });
-  }
-};
-
-// Obtener todos los documentos de un alumno específico
-export const getByAlumno = async (req, res) => {
-  try {
-    const { alumnoId } = req.params;
-    const docs = await getDocumentosByAlumno(Number(alumnoId));
-    res.json(docs);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
 };
 
@@ -36,6 +38,19 @@ export const updateEstado = async (req, res) => {
     const doc = await updateDocumentoEstado(Number(id), estado);
 
     res.json(doc);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Obtener documentos de un alumno
+export const getByAlumno = async (req, res) => {
+  try {
+    const { alumnoId } = req.params;
+
+    const docs = await getDocumentosByAlumno(Number(alumnoId));
+
+    res.json(docs);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
