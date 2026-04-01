@@ -13,7 +13,7 @@ model Usuario {
   password  String
   role      Role     @default(ALUMNO)
   createdAt DateTime @default(now())
-  
+
   alumno    Alumno?
 }
 
@@ -24,9 +24,26 @@ model Alumno {
   carrera               String
   cuatrimestre_actual   Int
   estado                String   @default("ACTIVO")
+  documentos            Documento[]
   usuarioId             Int      @unique
   usuario               Usuario  @relation(fields: [usuarioId], references: [id])
   createdAt             DateTime @default(now())
+}
+
+model Documento {
+  id        Int      @id @default(autoincrement())
+  tipo      String
+  url       String
+  estado    EstadoDocumento @default(PENDIENTE)
+  alumnoId  Int
+  alumno    Alumno  @relation(fields: [alumnoId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum EstadoDocumento {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
 }
 
 enum Role {
