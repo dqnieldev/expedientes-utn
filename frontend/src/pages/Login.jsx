@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -9,6 +10,7 @@ export default function Login() {
 
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -100,28 +102,31 @@ export default function Login() {
             {/* PASSWORD */}
             <div className="relative">
 
-  <input
-    type={showPassword ? "text" : "password"}
-    name="password"
-    onChange={handleChange}
-    placeholder="••••••••"
-    className="w-full mt-1 p-3 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition"
-    required
-  />
+                <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full mt-1 p-3 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition"
+                    required
+                />
 
-  <button
-    type="button"
-    onClick={() => setShowPassword(!showPassword)}
-    className="absolute right-3 top-3 text-gray-500"
-  >
-    {showPassword ? "🙈" : "👁️"}
-  </button>
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-gray-500"
+                >
+                    {showPassword ? "🙈" : "👁️"}
+                </button>
 
-</div>
+                </div>
 
             {/* FORGOT */}
-            <div className="text-right text-sm text-yellow-700 cursor-pointer hover:underline">
-              ¿Olvidaste tu contraseña?
+            <div
+            onClick={() => navigate("/recuperar")}
+            className="text-right text-sm text-yellow-700 cursor-pointer hover:underline"
+            >
+            ¿Olvidaste tu contraseña?
             </div>
 
             {/* BUTTON */}
