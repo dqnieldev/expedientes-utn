@@ -8,6 +8,7 @@ export default function Login() {
   });
 
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -97,17 +98,26 @@ export default function Login() {
             </div>
 
             {/* PASSWORD */}
-            <div>
-              <label className="text-sm text-gray-600">Contraseña</label>
-              <input
-                type="password"
-                name="password"
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full mt-1 p-3 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition"
-                required
-              />
-            </div>
+            <div className="relative">
+
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    onChange={handleChange}
+    placeholder="••••••••"
+    className="w-full mt-1 p-3 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition"
+    required
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-3 text-gray-500"
+  >
+    {showPassword ? "🙈" : "👁️"}
+  </button>
+
+</div>
 
             {/* FORGOT */}
             <div className="text-right text-sm text-yellow-700 cursor-pointer hover:underline">
