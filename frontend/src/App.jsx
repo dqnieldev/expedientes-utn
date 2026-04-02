@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ChangePassword";
 import DashboardAlumno from "./pages/alumno/DashboardAlumno";
+import Documentos from "./pages/alumno/Documentos";
 
 // Componente principal de la aplicación que define las rutas
 function App() {
@@ -11,6 +12,8 @@ function App() {
         <Route path="/" element={<Login />} /> 
         <Route path="/change-password" element={<ChangePassword />} /> 
         <Route path="/dashboard" element={<DashboardAlumno />} />
+        <Route path="/documentos" element={<Documentos />} />
+        
       </Routes>
     </BrowserRouter>
     
