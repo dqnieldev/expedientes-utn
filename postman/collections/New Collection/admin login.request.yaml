@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:3000/api/auth/login
+method: POST
+headers:
+  Authorization: ""
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"admin@utn.com\",\r
+
+    \  \"password\": \"admin123\"\r
+
+    }"
+auth:
+  type: bearer
+order: 1775090923505

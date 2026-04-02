@@ -16,15 +16,29 @@ export default function Login() {
     });
   };
 
+  // Función para manejar el envío del formulario de login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const data = await login(form);
-      localStorage.setItem("token", data.token);
 
-      //  luego redireccionamos
-      window.location.href = "/dashboard";
+      // guardar token y user
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      //  flag importante para saber si el usuario debe cambiar su contraseña
+      localStorage.setItem(
+        "mustChangePassword",
+        data.mustChangePassword
+      );
+
+      // redirección según si el usuario debe cambiar su contraseña o no
+      if (data.mustChangePassword) {
+        window.location.href = "/change-password";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err) {
       setError("Credenciales incorrectas");
     }
@@ -65,6 +79,7 @@ export default function Login() {
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            
 
             {/* EMAIL */}
             <div>
@@ -77,6 +92,7 @@ export default function Login() {
                 className="w-full mt-1 p-3 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition"
                 required
               />
+              
             </div>
 
             {/* PASSWORD */}
