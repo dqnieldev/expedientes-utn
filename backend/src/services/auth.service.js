@@ -2,7 +2,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// Función para registrar un nuevo usuario
 export const registerUser = async (email, password) => {
+  email = email.toLowerCase().trim(); // Normalizar el email para evitar problemas de mayúsculas/minúsculas y espacios
   const existingUser = await prisma.usuario.findUnique({
     where: { email }
   });
@@ -23,11 +25,17 @@ export const registerUser = async (email, password) => {
   return user;
 };
 
-// Función para autenticar al usuario y generar un token JWT
+// Función para autenticar a un usuario y generar un token JWT
 export const loginUser = async (email, password) => {
-  const user = await prisma.usuario.findUnique({
-    where: { email }
-  });
+  email = email.toLowerCase().trim(); // Normalizar el email para evitar problemas de mayúsculas/minúsculas y espacios
+  const user = await prisma.usuario.findFirst({ // Usamos findFirst con case-insensitive para evitar problemas de mayúsculas/minúsculas
+  where: {
+    email: {
+      equals: email,
+      mode: "insensitive"
+    }
+  }
+});
 
   if (!user) throw new Error("Usuario no encontrado");
 

@@ -4,6 +4,7 @@ import ChangePassword from "./pages/ChangePassword";
 import DashboardAlumno from "./pages/alumno/DashboardAlumno";
 import Documentos from "./pages/alumno/Documentos";
 import Perfil from "./pages/alumno/Perfil";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Componente principal de la aplicación que define las rutas
 function App() {
@@ -12,9 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} /> 
         <Route path="/change-password" element={<ChangePassword />} /> 
-        <Route path="/dashboard" element={<DashboardAlumno />} />
-        <Route path="/documentos" element={<Documentos />} />
-        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/dashboard" element={ <ProtectedRoute><DashboardAlumno /></ProtectedRoute> } />
+        <Route path="/documentos" element={ <ProtectedRoute><Documentos /></ProtectedRoute> } />
+        <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
         
       </Routes>
     </BrowserRouter>
