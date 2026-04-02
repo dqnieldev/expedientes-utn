@@ -6,6 +6,7 @@ import alumnoRoutes from "./routes/alumno.routes.js";
 import documentoRoutes from "./routes/documento.routes.js";
 import path from "path";
 
+
 const app = express();
 
 app.use(cors());
