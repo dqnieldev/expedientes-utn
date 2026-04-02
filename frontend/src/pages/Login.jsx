@@ -23,6 +23,7 @@ export default function Login() {
     try {
       const data = await login(form);
 
+      localStorage.clear();
       // guardar token y user
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));

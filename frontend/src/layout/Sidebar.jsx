@@ -27,6 +27,10 @@ export default function Sidebar() {
 
       </nav>
 
+      <button onClick={() => {localStorage.clear();window.location.href = "/";}}>Cerrar sesión
+        
+      </button>
+
     </div>
   );
 }
