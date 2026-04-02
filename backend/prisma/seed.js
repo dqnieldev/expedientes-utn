@@ -2,8 +2,8 @@ import prisma from "../src/config/prisma.js";
 import bcrypt from "bcryptjs";
 
 async function main() {
-  const email = "admin@utn.com";
-  const password = "admin123";
+  const email = "jose@utn.com";
+  const password = "123456";
 
   // verificar si ya existe
   const existing = await prisma.usuario.findUnique({
@@ -11,7 +11,7 @@ async function main() {
   });
 
   if (existing) {
-    console.log("⚠️ El admin ya existe");
+    console.log("⚠️ El usuario   ya existe");
     return;
   }
 
@@ -21,12 +21,12 @@ async function main() {
     data: {
       email,
       password: hashedPassword,
-      role: "ADMIN",
+      role: "ALUMNO",
       mustChangePassword: false
     }
   });
 
-  console.log("✅ Admin creado:");
+  console.log("✅ Usuario creado:");
   console.log("📧 Email:", email);
   console.log("🔑 Password:", password);
 }

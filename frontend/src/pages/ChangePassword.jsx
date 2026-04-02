@@ -1,21 +1,39 @@
 import { useState } from "react";
 import axios from "axios";
 
-// Página para que el usuario cambie su contraseña en caso de que sea necesario
 export default function ChangePassword() {
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    password: "",
+    confirmPassword: ""
+  });
+
   const [message, setMessage] = useState("");
 
-  // Función para manejar el envío del formulario de cambio de contraseña
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    //  VALIDACIÓN
+    if (form.password !== form.confirmPassword) {
+      return setMessage("Las contraseñas no coinciden");
+    }
+
+    if (form.password.length < 6) {
+      return setMessage("Mínimo 6 caracteres");
+    }
 
     try {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        "http://localhost:3000/api/auth/change-password", // endpoint para cambiar contraseña
-        { newPassword: password },
+        "http://localhost:3000/api/auth/change-password",
+        { newPassword: form.password },
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -23,17 +41,16 @@ export default function ChangePassword() {
         }
       );
 
-      // limpiar flag
       localStorage.setItem("mustChangePassword", "false");
 
-      setMessage("Contraseña actualizada");
+      setMessage("Contraseña actualizada correctamente");
 
       setTimeout(() => {
         window.location.href = "/dashboard";
       }, 1500);
 
     } catch (error) {
-      setMessage("Error al cambiar contraseña");
+      setMessage("Error al actualizar contraseña");
     }
   };
 
@@ -43,15 +60,15 @@ export default function ChangePassword() {
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
 
         <h2 className="text-xl font-semibold text-primary text-center mb-4">
-          Cambiar Contraseña
+          Cambiar contraseña
         </h2>
 
         <p className="text-sm text-gray-500 text-center mb-4">
-          Debes actualizar tu contraseña para continuar
+          Por seguridad, debes actualizar tu contraseña inicial
         </p>
 
         {message && (
-          <div className="text-center text-sm mb-3 text-green-600">
+          <div className="text-center text-sm mb-3 text-red-600">
             {message}
           </div>
         )}
@@ -60,15 +77,22 @@ export default function ChangePassword() {
 
           <input
             type="password"
+            name="password"
             placeholder="Nueva contraseña"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             className="w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-primary"
           />
 
-          <button
-            className="w-full bg-primary text-white py-3 rounded-md"
-          >
-            Actualizar
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirmar contraseña"
+            onChange={handleChange}
+            className="w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-primary"
+          />
+
+          <button className="w-full bg-primary text-white py-3 rounded-md">
+            Guardar contraseña
           </button>
 
         </form>
