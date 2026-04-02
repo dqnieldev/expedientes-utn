@@ -87,3 +87,42 @@ export const updateAlumno = async (id, data) => {
     data
   });
 };
+
+// ACTUALIZAR PERFIL DEL ALUMNO (EL MISMO ALUMNO)
+export const updatePerfilAlumno = async (userId, data) => {
+  const {
+    curp,
+    lugar_nacimiento,
+    fecha_nacimiento,
+    sexo,
+    estado_civil,
+    calle,
+    numero,
+    colonia,
+    codigo_postal,
+    telefono,
+    ciudad,
+    estado_direccion
+  } = data;
+
+  const updateData = {
+    ...(curp !== undefined && { curp }),
+    ...(lugar_nacimiento !== undefined && { lugar_nacimiento }),
+    ...(fecha_nacimiento !== undefined && { fecha_nacimiento }),
+    ...(sexo !== undefined && { sexo }),
+    ...(estado_civil !== undefined && { estado_civil }),
+    ...(calle !== undefined && { calle }),
+    ...(numero !== undefined && { numero }),
+    ...(colonia !== undefined && { colonia }),
+    ...(codigo_postal !== undefined && { codigo_postal }),
+    ...(telefono !== undefined && { telefono }),
+    ...(ciudad !== undefined && { ciudad }),
+    ...(estado_direccion !== undefined && { estado_direccion })
+  };
+
+  return await prisma.alumno.update({
+    where: { usuarioId: userId },
+    data: updateData
+  });
+};
+    

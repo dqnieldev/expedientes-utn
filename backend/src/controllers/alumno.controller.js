@@ -1,6 +1,7 @@
 import { createAlumno } from "../services/alumno.service.js"; // Importar función para crear alumno
 import { getAlumnos,getMyAlumno } from "../services/alumno.service.js"; // Importar función para obtener el alumno asociado al usuario autenticado
 import { updateAlumno } from "../services/alumno.service.js"; // Importar función para actualizar alumno (solo para ADMIN)
+import { updatePerfilAlumno } from "../services/alumno.service.js"; // Importar función para que el alumno actualice su propio perfil
 
 
 // Controlador para crear un nuevo alumno (solo para ADMIN)
@@ -48,6 +49,25 @@ export const update = async (req, res) => {
 
     res.json(alumno);
   } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Agregar controlador para que el alumno actualice su propio perfil
+export const updatePerfil = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Si se envía fecha de nacimiento, convertirla a Date
+    if (req.body.fecha_nacimiento) {
+      req.body.fecha_nacimiento = new Date(req.body.fecha_nacimiento);
+    }
+
+    const alumno = await updatePerfilAlumno(userId, req.body); // Actualizar el alumno asociado al usuario autenticado
+
+    res.json(alumno);
+  } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };

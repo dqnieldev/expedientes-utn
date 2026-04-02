@@ -27,6 +27,23 @@ model Alumno {
   cuatrimestre_actual   Int
   estado                String   @default("ACTIVO")
   documentos            Documento[]
+
+  // DATOS PERSONALES
+curp                    String?
+fecha_nacimiento        DateTime?
+lugar_nacimiento        String?
+sexo                    String?
+estado_civil            String?
+
+//DIRECCION
+  calle                  String?
+  numero                 String?
+  colonia                String?
+  codigo_postal          String?
+  telefono               String?
+  ciudad                 String?
+  estado_direccion       String?
+  
   usuarioId             Int      @unique
   usuario               Usuario  @relation(fields: [usuarioId], references: [id])
   createdAt             DateTime @default(now())
