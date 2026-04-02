@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../layout/Sidebar";
+import MainLayout from "../../layout/MainLayout";
 
 export default function Perfil() {
   const [form, setForm] = useState({});
@@ -69,21 +69,11 @@ export default function Perfil() {
 };
 
   return (
-    <div className="flex bg-[#f8faf6] min-h-screen">
+    <MainLayout title="Perfil">
 
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
-
-      <div className="flex-1 p-4 md:p-8">
-
-        <h1 className="text-2xl font-bold mb-2">
-          Datos del alumno
-        </h1>
-
-        <p className="text-gray-600 mb-6">
-          Gestiona tu información académica y personal.
-        </p>
+      <p className="text-gray-600 mb-6">
+        Gestiona tu información académica y personal.
+      </p>
 
         {/* CARD */}
         <div className="bg-white p-6 rounded-xl shadow mb-6">
@@ -156,7 +146,6 @@ export default function Perfil() {
           Guardar cambios
         </button>
 
-      </div>
-    </div>
+    </MainLayout>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../layout/Sidebar";
+import MainLayout from "../../layout/MainLayout";
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
@@ -76,23 +76,11 @@ export default function Documentos() {
   const aprobados = docs.filter(d => d.estado === "APROBADO").length;
 
   return (
-    <div className="flex bg-[#f8faf6] min-h-screen">
+    <MainLayout title="Documentos">
 
-      {/* SIDEBAR DESKTOP */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
-
-      <div className="flex-1 p-4 md:p-8 pb-24">
-
-        {/* HEADER */}
-        <h1 className="text-2xl font-bold mb-2">
-          Mi Expediente Digital
-        </h1>
-
-        <p className="text-gray-600 mb-6">
-          Gestiona tus documentos oficiales.
-        </p>
+      <p className="text-gray-600 mb-6">
+        Gestiona tus documentos oficiales.
+      </p>
 
         {/* GRID */}
         <div className="grid md:grid-cols-3 gap-6">
@@ -168,25 +156,6 @@ export default function Documentos() {
 
         </div>
 
-      </div>
-
-      {/* NAV MOBILE */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-3 md:hidden">
-
-        <button className="text-gray-500 text-sm">
-          Dashboard
-        </button>
-
-        <button className="text-primary text-sm font-semibold">
-          Documentos
-        </button>
-
-        <button className="text-gray-500 text-sm">
-          Perfil
-        </button>
-
-      </div>
-
-    </div>
+    </MainLayout>
   );
 }
