@@ -41,7 +41,7 @@ export default function DashboardAlumno() {
   if (!alumno) return <p className="p-4">Cargando...</p>;
 
   return (
-    <div className="bg-[#f8faf6] min-h-screen flex">
+    <div className="h-screen flex overflow-hidden bg-[#f8faf6]">
 
       {/* SIDEBAR DESKTOP */}
       <div className="hidden md:block">
@@ -49,7 +49,7 @@ export default function DashboardAlumno() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
+      <div className="flex-1 overflow-y-auto p-4 md:p-8">
 
         {/* HEADER MOBILE */}
         <div className="flex items-center justify-between mb-4 md:hidden">

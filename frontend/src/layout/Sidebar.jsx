@@ -10,7 +10,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex w-64 flex-col bg-[#024E3F] border-r border-[#013d31] h-screen">
+    <aside className="hidden md:flex w-64 flex-col bg-[#024E3F] border-r border-[#013d31] h-full">
 
       {/* LOGO */}
       <div className="pt-10 px-8 pb-8">
