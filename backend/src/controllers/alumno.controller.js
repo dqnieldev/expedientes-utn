@@ -2,6 +2,7 @@ import { createAlumno } from "../services/alumno.service.js"; // Importar funci�
 import { getAlumnos,getMyAlumno } from "../services/alumno.service.js"; // Importar función para obtener el alumno asociado al usuario autenticado
 import { updateAlumno } from "../services/alumno.service.js"; // Importar función para actualizar alumno (solo para ADMIN)
 
+
 // Controlador para crear un nuevo alumno (solo para ADMIN)
 export const create = async (req, res) => {
   try {

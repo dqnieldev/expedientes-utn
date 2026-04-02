@@ -23,20 +23,17 @@ export const registerUser = async (email, password) => {
   return user;
 };
 
+// Función para autenticar al usuario y generar un token JWT
 export const loginUser = async (email, password) => {
   const user = await prisma.usuario.findUnique({
     where: { email }
   });
 
-  if (!user) {
-    throw new Error("Usuario no encontrado");
-  }
+  if (!user) throw new Error("Usuario no encontrado");
 
-  const isValid = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
-  if (!isValid) {
-    throw new Error("Contraseña incorrecta");
-  }
+  if (!isMatch) throw new Error("Contraseña incorrecta");
 
   const token = jwt.sign(
     { id: user.id, role: user.role },
@@ -46,8 +43,23 @@ export const loginUser = async (email, password) => {
 
   const { password: _, ...userWithoutPassword } = user;
 
-return {
-  user: userWithoutPassword,
-  token
+  return {
+    user: userWithoutPassword,
+    token,
+    mustChangePassword: user.mustChangePassword
+  };
 };
+
+// Función para cambiar la contraseña del usuario
+export const changePassword = async (userId, newPassword) => {
+  const hashed = await bcrypt.hash(newPassword, 10);
+
+  return await prisma.usuario.update({
+    where: { id: userId },
+    data: {
+      password: hashed,
+      mustChangePassword: false
+    }
+  });
 };
+

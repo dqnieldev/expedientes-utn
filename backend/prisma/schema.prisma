@@ -13,6 +13,8 @@ model Usuario {
   password  String
   role      Role     @default(ALUMNO)
   createdAt DateTime @default(now())
+  
+  mustChangePassword Boolean @default(true)
 
   alumno    Alumno?
 }
