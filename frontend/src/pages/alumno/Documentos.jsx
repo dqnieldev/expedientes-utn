@@ -97,7 +97,7 @@ export default function Documentos() {
                   <div>
                     <p className="font-medium">{item.label}</p>
 
-                    <span className={`text-xs px-2 py-1 rounded-full ${getEstadoColor(doc?.estado)}`}>
+                    <span className={`inline-flex items-center justify-center gap-1 text-[10px] px-2 py-0 h-5 leading-none rounded-full font-semibold min-w-max ${getEstadoColor(doc?.estado)}`}>
                       {doc ? doc.estado : "PENDIENTE"}
                     </span>
                   </div>

@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
 import { useNavigate } from "react-router-dom";
+import {
+  FileText,
+  Fingerprint,
+  GraduationCap,
+  FileBadge,
+  Pen
+} from "lucide-react";
 
 export default function DashboardAlumno() {
   const [alumno, setAlumno] = useState(null);
@@ -43,6 +50,13 @@ export default function DashboardAlumno() {
     { tipo: "CERTIFICADO", label: "Certificado de Bachillerato" },
     { tipo: "CONSTANCIA", label: "Constancia de Estudios" }
   ];
+
+  const iconMap = {
+    ACTA_NACIMIENTO: <FileText size={18} />,
+    CURP: <Fingerprint size={18} />,
+    CERTIFICADO: <GraduationCap size={18} />,
+    CONSTANCIA: <FileBadge size={18} />
+  };
 
   return (
     <MainLayout title="Dashboard">
@@ -95,9 +109,10 @@ export default function DashboardAlumno() {
 
           <button
             onClick={() => navigate("/perfil")}
-            className="w-full mt-6 bg-primary text-white py-2 rounded-lg"
+            className="w-full mt-6 bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2"
           >
-            Ver perfil
+            <Pen size={16} />
+            Modificar Perfil
           </button>
 
         </div>
@@ -128,24 +143,36 @@ export default function DashboardAlumno() {
                   ? "bg-yellow-100 text-yellow-700"
                   : "bg-gray-200 text-gray-600";
 
+              const iconColor =
+                doc?.estado === "APROBADO"
+                  ? "bg-green-100 text-green-600"
+                  : doc?.estado === "RECHAZADO"
+                  ? "bg-red-100 text-red-600"
+                  : "bg-gray-100 text-gray-500";
+
               return (
                 <div
                   key={item.tipo}
                   className="bg-white p-5 rounded-2xl shadow flex flex-col justify-between"
                 >
 
+                  {/* HEADER */}
                   <div className="flex justify-between mb-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg"></div>
 
-                    <span className={`text-xs px-2 py-1 rounded-full ${estadoColor}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconColor}`}>
+                      {iconMap[item.tipo]}
+                    </div>
+
+                    <span className={`inline-flex items-center justify-center text-xs px-2 py-1 rounded-full ${estadoColor}`}>
                       {doc ? doc.estado : "PENDIENTE"}
                     </span>
+
                   </div>
 
-                  <div>
-                    <p className="font-semibold">{item.label}</p>
-                  </div>
+                  {/* TITLE */}
+                  <p className="font-semibold">{item.label}</p>
 
+                  {/* ACTION */}
                   <div className="mt-4">
 
                     {!doc ? (
