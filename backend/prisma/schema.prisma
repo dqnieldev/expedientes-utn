@@ -53,7 +53,7 @@ model Documento {
   id        Int      @id @default(autoincrement())
   tipo      String
   url       String
-  estado    EstadoDocumento @default(PENDIENTE)
+  estado    EstadoDocumento @default(EN_REVISION)
   alumnoId  Int
   alumno    Alumno  @relation(fields: [alumnoId], references: [id])
   createdAt DateTime @default(now())
@@ -61,6 +61,7 @@ model Documento {
 
 enum EstadoDocumento {
   PENDIENTE
+  EN_REVISION
   APROBADO
   RECHAZADO
 }

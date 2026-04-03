@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
-import DocumentCard from "../../components/DocumentCard";
+import ExpedienteResumen from "../../components/ExpedienteResumen";
 import { useNavigate } from "react-router-dom";
 import { Pen } from "lucide-react";
 
@@ -38,13 +38,6 @@ export default function DashboardAlumno() {
   }, []);
 
   if (!alumno) return <p className="p-4">Cargando...</p>;
-
-  const documentosBase = [
-    { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento" },
-    { tipo: "CURP", label: "CURP" },
-    { tipo: "CERTIFICADO", label: "Certificado de Bachillerato" },
-    { tipo: "CONSTANCIA", label: "Constancia de Estudios" }
-  ];
 
   return (
     <MainLayout title="Dashboard">
@@ -105,40 +98,10 @@ export default function DashboardAlumno() {
 
         </div>
 
-        {/* 🟡 DOCUMENTOS */}
-        <div className="flex-1">
-
-          <div className="flex justify-between mb-4">
-            <h3 className="text-xl font-semibold">
-              Expediente Digital
-            </h3>
-            <span className="text-primary">
-              {docs.length} documentos
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-
-            {documentosBase.map((item) => {
-              const doc = docs.find(d => d.tipo === item.tipo);
-
-              return (
-                <DocumentCard
-                  key={item.tipo}
-                  item={item}
-                  doc={doc}
-                  onUpload={() => navigate("/documentos")}
-                  onView={() => {
-                    if (doc?.url) {
-                      window.open(`http://localhost:3000/${doc.url}`, "_blank");
-                    }
-                  }}
-                />
-              );
-            })}
-
-          </div>
-
+        {/* 🟡 EXPEDIENTE RESUMEN */}
+        <div className="flex-1 bg-white rounded-2xl p-6 shadow flex flex-col">
+          <h3 className="text-xl font-semibold mb-6">Expediente Digital</h3>
+          <ExpedienteResumen docs={docs} />
         </div>
 
       </div>

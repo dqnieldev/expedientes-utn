@@ -2,8 +2,17 @@ import prisma from "../config/prisma.js";
 
 // Servicio para manejar operaciones relacionadas con los documentos de los alumnos
 export const createDocumento = async (data) => {
+  const { tipo, alumnoId, url } = data; // ← lee url directo de data
+
+  const alumnoIdInt = parseInt(alumnoId);
+  if (!alumnoIdInt) throw new Error("alumnoId inválido");
+
   return await prisma.documento.create({
-    data
+    data: {
+      tipo,
+      url,           // ← usa la url que ya viene procesada
+      alumnoId: alumnoIdInt
+    }
   });
 };
 
@@ -21,3 +30,4 @@ export const updateDocumentoEstado = async (id, estado) => {
     data: { estado }
   });
 };
+

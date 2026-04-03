@@ -9,6 +9,7 @@ import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
 import upload from "../config/multer.js";
 
+
 const router = express.Router();
 
 // Crear documento (ADMIN o ALUMNO)
@@ -19,5 +20,6 @@ router.get("/:alumnoId", verifyToken, getByAlumno);
 
 // Validar documento (solo ADMIN)
 router.put("/:id", verifyToken, authorizeRoles("ADMIN"), updateEstado);
+
 
 export default router;

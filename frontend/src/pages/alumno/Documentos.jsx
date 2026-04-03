@@ -59,30 +59,32 @@ export default function Documentos() {
 
   // 📌 UPLOAD
   const handleUpload = async (e, tipo) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file || !alumno) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("tipo", tipo);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("tipo", tipo);
+  formData.append("alumnoId", alumno.id); // Asegúrate de enviar el ID del alumno para asociar el documento correctamente
 
-    try {
-      await axios.post(
-        "http://localhost:3000/api/documentos",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+  try {
+    console.log("ALUMNO ID:", alumno?.id);
+    await axios.post(
+      "http://localhost:3000/api/documentos",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      }
+    );
 
-      fetchData();
-    } catch (error) {
-      console.error(error);
-      alert("Error al subir archivo");
-    }
-  };
+    fetchData();
+  } catch (error) {
+    console.error(error.response?.data);
+    alert("Error al subir archivo");
+  }
+};
 
   // 📌 PROGRESO
   const aprobados = docs.filter(d => d.estado === "APROBADO").length;
@@ -107,6 +109,7 @@ export default function Documentos() {
 
           {documentosBase.map((item) => {
             const doc = docs.find(d => d.tipo === item.tipo);
+            
 
             return (
               <DocumentUploadCard

@@ -42,7 +42,7 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
           <Icon size={18} />
         </div>
 
-        <span className={`text-xs px-2 py-2 rounded-full items-center  ${statusStyles[estado]}`}>
+        <span className={`text-xs px-2 py-0.5 rounded-full inline-flex items-center ${statusStyles[estado]}`}>
           {estado}
         </span>
 
@@ -72,7 +72,7 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
             Ver Documento
           </button>
         ) : (
-          <button className="w-full bg-gray-100 py-2 rounded-lg text-gray-500">
+          <button className="w-full bg-orange-200 py-2 rounded-lg text-gray-500">
             En revisión
           </button>
         )}

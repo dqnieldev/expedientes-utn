@@ -1,5 +1,7 @@
 import { Upload } from "lucide-react";
 
+
+
 export default function DocumentUploadCard({
   item,
   doc,
@@ -38,9 +40,11 @@ export default function DocumentUploadCard({
           {icon}
         </div>
 
-        <span className={`text-xs px-2 py-1 rounded-full ${estadoColor[estado]}`}>
-          {estado}
-        </span>
+        <span
+  className={`text-[11px] px-3 py-1 rounded-full inline-flex items-center font-medium tracking-wide ${estadoColor[estado]}`}
+>
+  {estado.replace("_", " ")}
+</span>
 
       </div>
 
