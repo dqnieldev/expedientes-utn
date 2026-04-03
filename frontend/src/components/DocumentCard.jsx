@@ -2,7 +2,8 @@ import {
   FileText,
   Fingerprint,
   GraduationCap,
-  FileBadge
+  FileBadge,
+  Upload
 } from "lucide-react";
 
 export default function DocumentCard({ item, doc, onUpload, onView }) {
@@ -20,7 +21,7 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
     APROBADO: "bg-green-100 text-green-700",
     RECHAZADO: "bg-red-100 text-red-700",
     PENDIENTE: "bg-gray-300 text-gray-600",
-    REVISION: "bg-yellow-100 text-yellow-700"
+    EN_REVISION: "bg-yellow-100 text-yellow-700"
   };
 
   const estado = doc?.estado || "PENDIENTE";
@@ -41,7 +42,7 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
           <Icon size={18} />
         </div>
 
-        <span className={`text-xs px-2 py-1 rounded-full ${statusStyles[estado]}`}>
+        <span className={`text-xs px-2 py-2 rounded-full items-center  ${statusStyles[estado]}`}>
           {estado}
         </span>
 
@@ -58,8 +59,9 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
         {!doc ? (
           <button
             onClick={onUpload}
-            className="w-full bg-primary text-white py-2 rounded-lg"
+            className="w-full bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-[#007a46] transition-colors duration-200"
           >
+            <Upload size={16} />
             Cargar Documento
           </button>
         ) : estado === "APROBADO" ? (

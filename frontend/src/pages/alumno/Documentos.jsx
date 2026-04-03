@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
+import DocumentUploadCard from "../../components/DocumentUploadCard";
+
+import {
+  FileText,
+  Fingerprint,
+  GraduationCap,
+  FileBadge
+} from "lucide-react";
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
@@ -8,6 +16,23 @@ export default function Documentos() {
 
   const token = localStorage.getItem("token");
 
+  // 📌 DOCUMENTOS BASE
+  const documentosBase = [
+    { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento" },
+    { tipo: "CURP", label: "CURP" },
+    { tipo: "CERTIFICADO", label: "Certificado de Bachillerato" },
+    { tipo: "CONSTANCIA", label: "Constancia de Estudios" }
+  ];
+
+  // 📌 ICONOS
+  const iconMap = {
+    ACTA_NACIMIENTO: <FileText size={20} />,
+    CURP: <Fingerprint size={20} />,
+    CERTIFICADO: <GraduationCap size={20} />,
+    CONSTANCIA: <FileBadge size={20} />
+  };
+
+  // 📌 FETCH DATA
   const fetchData = async () => {
     try {
       const resAlumno = await axios.get(
@@ -32,6 +57,7 @@ export default function Documentos() {
     fetchData();
   }, []);
 
+  // 📌 UPLOAD
   const handleUpload = async (e, tipo) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -46,8 +72,7 @@ export default function Documentos() {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data"
+            Authorization: `Bearer ${token}`
           }
         }
       );
@@ -59,102 +84,82 @@ export default function Documentos() {
     }
   };
 
-  const getEstadoColor = (estado) => {
-    if (estado === "APROBADO") return "bg-green-100 text-green-700";
-    if (estado === "RECHAZADO") return "bg-red-100 text-red-700";
-    if (estado === "EN_REVISION") return "bg-yellow-100 text-yellow-700";
-    return "bg-gray-100 text-gray-600";
-  };
-
-  const documentosBase = [
-    { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento" },
-    { tipo: "CURP", label: "CURP" },
-    { tipo: "CERTIFICADO", label: "Certificado de Bachillerato" },
-    { tipo: "CONSTANCIA", label: "Constancia de Estudios" }
-  ];
-
+  // 📌 PROGRESO
   const aprobados = docs.filter(d => d.estado === "APROBADO").length;
 
   return (
-    <MainLayout title="Documentos">
+    <MainLayout title="Mis Documentos">
 
-      <p className="text-gray-600 mb-6">
-        Gestiona tus documentos oficiales.
-      </p>
+      {/* HEADER */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">
+          Gestión de Documentos
+        </h2>
+        <p className="text-gray-600">
+          Sube, consulta y administra tus documentos académicos.
+        </p>
+      </div>
 
-        {/* GRID */}
-        <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
 
-          {/* DOCUMENTOS */}
-          <div className="md:col-span-2 space-y-4">
+        {/* 🟡 DOCUMENTOS */}
+        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            {documentosBase.map((item) => {
-              const doc = docs.find(d => d.tipo === item.tipo);
+          {documentosBase.map((item) => {
+            const doc = docs.find(d => d.tipo === item.tipo);
 
-              return (
-                <div key={item.tipo} className="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+            return (
+              <DocumentUploadCard
+                key={item.tipo}
+                item={item}
+                doc={doc}
+                icon={iconMap[item.tipo]}
+                onUpload={handleUpload}
+              />
+            );
+          })}
 
-                  <div>
-                    <p className="font-medium">{item.label}</p>
+        </div>
 
-                    <span className={`inline-flex items-center justify-center gap-1 text-[10px] px-2 py-0 h-5 leading-none rounded-full font-semibold min-w-max ${getEstadoColor(doc?.estado)}`}>
-                      {doc ? doc.estado : "PENDIENTE"}
-                    </span>
-                  </div>
+        {/* 🟢 RESUMEN */}
+        <div className="bg-primary text-white p-6 rounded-2xl shadow">
 
-                  <div className="flex gap-2">
+          <h3 className="font-semibold mb-4 text-lg">
+            Resumen del Expediente
+          </h3>
 
-                    {doc && (
-                      <a
-                        href={`http://localhost:3000/${doc.url}`}
-                        target="_blank"
-                        className="text-sm border px-3 py-1 rounded"
-                      >
-                        Ver
-                      </a>
-                    )}
-
-                    {!doc && (
-                      <label className="bg-primary text-white px-3 py-1 rounded text-sm cursor-pointer">
-                        Subir
-                        <input
-                          type="file"
-                          hidden
-                          onChange={(e) => handleUpload(e, item.tipo)}
-                        />
-                      </label>
-                    )}
-
-                  </div>
-
-                </div>
-              );
-            })}
-
+          <div className="space-y-2 text-sm">
+            <p>Documentos requeridos: {documentosBase.length}</p>
+            <p>Aprobados: {aprobados}</p>
+            <p>Pendientes: {documentosBase.length - aprobados}</p>
           </div>
 
-          {/* RESUMEN */}
-          <div className="bg-primary text-white p-6 rounded-xl">
+          {/* PROGRESS BAR */}
+          <div className="w-full bg-white/30 h-2 rounded mt-4">
+            <div
+              className="bg-yellow-400 h-2 rounded"
+              style={{
+                width: `${(aprobados / documentosBase.length) * 100}%`
+              }}
+            ></div>
+          </div>
 
-            <h3 className="font-semibold mb-4">
-              Resumen del Expediente
-            </h3>
-
-            <p>Documentos totales: {documentosBase.length}</p>
-            <p>Aprobados: {aprobados}</p>
-
-            <div className="w-full bg-white/30 h-2 rounded mt-3">
-              <div
-                className="bg-yellow-400 h-2 rounded"
-                style={{
-                  width: `${(aprobados / documentosBase.length) * 100}%`
-                }}
-              ></div>
-            </div>
-
+          {/* STATUS */}
+          <div className="mt-6 text-sm">
+            {aprobados === documentosBase.length ? (
+              <p className="text-green-200">
+                ✔ Expediente completo
+              </p>
+            ) : (
+              <p className="text-yellow-200">
+                ⚠ Faltan documentos por subir
+              </p>
+            )}
           </div>
 
         </div>
+
+      </div>
 
     </MainLayout>
   );

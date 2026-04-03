@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
+import DocumentCard from "../../components/DocumentCard";
 import { useNavigate } from "react-router-dom";
-import {
-  FileText,
-  Fingerprint,
-  GraduationCap,
-  FileBadge,
-  Pen
-} from "lucide-react";
+import { Pen } from "lucide-react";
 
 export default function DashboardAlumno() {
   const [alumno, setAlumno] = useState(null);
@@ -50,13 +45,6 @@ export default function DashboardAlumno() {
     { tipo: "CERTIFICADO", label: "Certificado de Bachillerato" },
     { tipo: "CONSTANCIA", label: "Constancia de Estudios" }
   ];
-
-  const iconMap = {
-    ACTA_NACIMIENTO: <FileText size={18} />,
-    CURP: <Fingerprint size={18} />,
-    CERTIFICADO: <GraduationCap size={18} />,
-    CONSTANCIA: <FileBadge size={18} />
-  };
 
   return (
     <MainLayout title="Dashboard">
@@ -109,7 +97,7 @@ export default function DashboardAlumno() {
 
           <button
             onClick={() => navigate("/perfil")}
-            className="w-full mt-6 bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2"
+            className="w-full mt-6 bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-[#007a46] transition-colors duration-200"
           >
             <Pen size={16} />
             Modificar Perfil
@@ -134,67 +122,18 @@ export default function DashboardAlumno() {
             {documentosBase.map((item) => {
               const doc = docs.find(d => d.tipo === item.tipo);
 
-              const estadoColor =
-                doc?.estado === "APROBADO"
-                  ? "bg-green-100 text-green-700"
-                  : doc?.estado === "RECHAZADO"
-                  ? "bg-red-100 text-red-700"
-                  : doc
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-gray-200 text-gray-600";
-
-              const iconColor =
-                doc?.estado === "APROBADO"
-                  ? "bg-green-100 text-green-600"
-                  : doc?.estado === "RECHAZADO"
-                  ? "bg-red-100 text-red-600"
-                  : "bg-gray-100 text-gray-500";
-
               return (
-                <div
+                <DocumentCard
                   key={item.tipo}
-                  className="bg-white p-5 rounded-2xl shadow flex flex-col justify-between"
-                >
-
-                  {/* HEADER */}
-                  <div className="flex justify-between mb-3">
-
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconColor}`}>
-                      {iconMap[item.tipo]}
-                    </div>
-
-                    <span className={`inline-flex items-center justify-center text-xs px-2 py-1 rounded-full ${estadoColor}`}>
-                      {doc ? doc.estado : "PENDIENTE"}
-                    </span>
-
-                  </div>
-
-                  {/* TITLE */}
-                  <p className="font-semibold">{item.label}</p>
-
-                  {/* ACTION */}
-                  <div className="mt-4">
-
-                    {!doc ? (
-                      <button
-                        onClick={() => navigate("/documentos")}
-                        className="w-full bg-primary text-white py-2 rounded-lg"
-                      >
-                        Cargar Documento
-                      </button>
-                    ) : doc.estado === "APROBADO" ? (
-                      <button className="w-full border py-2 rounded-lg">
-                        Ver Documento
-                      </button>
-                    ) : (
-                      <button className="w-full bg-gray-100 py-2 rounded-lg text-gray-500">
-                        En revisión
-                      </button>
-                    )}
-
-                  </div>
-
-                </div>
+                  item={item}
+                  doc={doc}
+                  onUpload={() => navigate("/documentos")}
+                  onView={() => {
+                    if (doc?.url) {
+                      window.open(`http://localhost:3000/${doc.url}`, "_blank");
+                    }
+                  }}
+                />
               );
             })}
 
