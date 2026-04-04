@@ -69,7 +69,7 @@ export default function DocumentUploadCard({ item, doc, icon, onUpload }) {
           <div className="flex gap-2">
 
             <a
-              href={`http://localhost:3000/${doc.url}`}
+              href={`http://localhost:3000/uploads/${doc.url}`}
               target="_blank"
               className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 hover:border-gray-300 active:scale-95 transition-all duration-150"
             >

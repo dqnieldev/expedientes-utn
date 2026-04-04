@@ -6,9 +6,11 @@ import {
   HelpCircle,
   LogOut
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menu = [
     { name: "Dashboard",      path: "/dashboard",  icon: LayoutDashboard },
@@ -74,7 +76,7 @@ export default function Sidebar() {
       <div className="px-3 py-4 space-y-1">
 
         {/* SOPORTE */}
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FCDA59]/15 hover:bg-[#FCDA59]/25 transition-all duration-200 group">
+        <button onClick={() => navigate("/soporte")} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#FCDA59]/15 hover:bg-[#FCDA59]/25 transition-all duration-200 group">
           <span className="w-1 h-5 rounded-full bg-transparent" />
           <HelpCircle size={18} className="text-[#FCDA59]" />
           <span className="text-sm font-medium text-[#FCDA59]">
