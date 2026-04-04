@@ -125,4 +125,12 @@ export const updatePerfilAlumno = async (userId, data) => {
     data: updateData
   });
 };
+
+// ACTUALIZAR FOTO DE PERFIL DEL ALUMNO
+export const updateFotoAlumno = async (userId, filename) => {
+  return await prisma.alumno.update({
+    where: { usuarioId: userId },
+    data: { foto: filename }
+  });
+};
     

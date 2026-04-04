@@ -2,6 +2,8 @@ import { createAlumno } from "../services/alumno.service.js"; // Importar funci�
 import { getAlumnos,getMyAlumno } from "../services/alumno.service.js"; // Importar funci처n para obtener el alumno asociado al usuario autenticado
 import { updateAlumno } from "../services/alumno.service.js"; // Importar funci처n para actualizar alumno (solo para ADMIN)
 import { updatePerfilAlumno } from "../services/alumno.service.js"; // Importar funci처n para que el alumno actualice su propio perfil
+import { updateFotoAlumno } from "../services/alumno.service.js"; // Importar funci처n para actualizar foto de perfil del alumno
+import upload from "../config/multer.js";
 
 
 // Controlador para crear un nuevo alumno (solo para ADMIN)
@@ -68,6 +70,17 @@ export const updatePerfil = async (req, res) => {
     res.json(alumno);
   } catch (error) {
     console.error(error);
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Agregar controlador para actualizar la foto de perfil del alumno
+export const updateFoto = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No se recibi처 imagen" });
+    const alumno = await updateFotoAlumno(req.user.id, req.file.filename);
+    res.json(alumno);
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };

@@ -22,18 +22,19 @@ export default function AlumnoProfileCard({ alumno }) {
       <div className="h-16 rounded-t-2xl bg-gradient-to-r from-[#024E3F] to-[#037a62]" />
 
       {/* AVATAR */}
-      <div className="px-5 pb-6">
-        <div className="flex items-end justify-between -mt-8 mb-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#024E3F] border-4 border-white flex items-center justify-center shadow-sm">
-            <span className="text-white text-lg font-semibold">{initials}</span>
-          </div>
-          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${estadoColor}`}>
-            <span className="flex items-center gap-1">
-              <CheckCircle size={11} />
-              {alumno.estado}
-            </span>
-          </span>
-        </div>
+      <div className="w-16 h-16 rounded-2xl border-4 border-white shadow-sm overflow-hidden">
+  {alumno.foto ? (
+    <img
+      src={`http://localhost:3000/uploads/${alumno.foto}`}
+      alt="Foto de perfil"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-[#024E3F] flex items-center justify-center">
+      <span className="text-white text-lg font-semibold">{initials}</span>
+    </div>
+  )}
+</div>
 
         {/* NOMBRE Y CARRERA */}
         <h3 className="font-semibold text-gray-900 text-base leading-tight">
@@ -92,6 +93,6 @@ export default function AlumnoProfileCard({ alumno }) {
         </button>
 
       </div>
-    </div>
+      
   );
 }

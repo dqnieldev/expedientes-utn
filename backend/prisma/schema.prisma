@@ -27,6 +27,7 @@ model Alumno {
   cuatrimestre_actual   Int
   estado                String   @default("ACTIVO")
   documentos            Documento[]
+  foto                  String?
 
   // DATOS PERSONALES
 curp                    String?

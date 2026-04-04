@@ -41,4 +41,21 @@ const upload = multer({
   fileFilter
 });
 
+// Configuración para imágenes de perfil (opcional)
+const storageImg = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `foto_${Date.now()}${ext}`);
+  }
+});
+
+// Filtro para imágenes de perfil
+const fileFilterImg = (req, file, cb) => {
+  const allowed = ["image/jpeg", "image/png", "image/webp"];
+  allowed.includes(file.mimetype) ? cb(null, true) : cb(new Error("Solo imágenes JPG, PNG o WEBP"), false);
+};
+
+export const uploadImg = multer({ storage: storageImg, fileFilter: fileFilterImg });
+
 export default upload;
