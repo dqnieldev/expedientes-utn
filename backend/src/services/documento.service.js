@@ -1,16 +1,27 @@
 import prisma from "../config/prisma.js";
 
-// Servicio para manejar operaciones relacionadas con los documentos de los alumnos
+// CREAR O ACTUALIZAR DOCUMENTO
 export const createDocumento = async (data) => {
-  const { tipo, alumnoId, url } = data; // ← lee url directo de data
-
+  const { tipo, alumnoId, url } = data;
   const alumnoIdInt = parseInt(alumnoId);
   if (!alumnoIdInt) throw new Error("alumnoId inválido");
 
-  return await prisma.documento.create({
-    data: {
+  // Si ya existe un documento del mismo tipo para ese alumno, actualiza la url
+  // Si no existe, lo crea
+  return await prisma.documento.upsert({
+    where: {
+      alumnoId_tipo: {
+        alumnoId: alumnoIdInt,
+        tipo
+      }
+    },
+    update: {
+      url,
+      estado: "EN_REVISION" // al reemplazar vuelve a revisión
+    },
+    create: {
       tipo,
-      url,           // ← usa la url que ya viene procesada
+      url,
       alumnoId: alumnoIdInt
     }
   });

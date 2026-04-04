@@ -58,6 +58,8 @@ model Documento {
   alumnoId  Int
   alumno    Alumno  @relation(fields: [alumnoId], references: [id])
   createdAt DateTime @default(now())
+
+  @@unique([alumnoId, tipo])
 }
 
 enum EstadoDocumento {
