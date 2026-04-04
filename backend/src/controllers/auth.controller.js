@@ -28,17 +28,16 @@ export const login = async (req, res) => {
   }
 };
 
-// Controlador para cambiar la contraseña del usuario
+// Controlador para manejar el cambio de contraseña del usuario
 export const changePasswordController = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { newPassword } = req.body;
+    const { currentPassword, newPassword } = req.body;
+    
+    
 
-    const user = await changePassword(userId, newPassword);
-
-    res.json({
-      message: "Contraseña actualizada"
-    });
+    await changePassword(userId, currentPassword, newPassword);
+    res.json({ message: "Contraseña actualizada" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

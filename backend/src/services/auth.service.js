@@ -59,7 +59,12 @@ export const loginUser = async (email, password) => {
 };
 
 // Función para cambiar la contraseña del usuario
-export const changePassword = async (userId, newPassword) => {
+export const changePassword = async (userId, currentPassword, newPassword) => {
+  const user = await prisma.usuario.findUnique({ where: { id: userId } });
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) throw new Error("La contraseña actual es incorrecta");
+
   const hashed = await bcrypt.hash(newPassword, 10);
 
   return await prisma.usuario.update({
@@ -70,4 +75,5 @@ export const changePassword = async (userId, newPassword) => {
     }
   });
 };
+
 

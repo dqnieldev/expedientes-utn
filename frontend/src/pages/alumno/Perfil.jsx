@@ -76,9 +76,12 @@ export default function Perfil() {
         estado_direccion: form.estado_direccion || null,
       };
 
-      await axios.put("http://localhost:3000/api/alumnos/perfil", cleanData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Enviar solo los campos que han cambiado
+      await axios.put( 
+  "http://localhost:3000/api/auth/change-password",
+  { currentPassword: passwords.actual, newPassword: passwords.nueva }, // 👈
+  { headers: { Authorization: `Bearer ${token}` } }
+);
 
       setSavedProfile(true);
       setTimeout(() => setSavedProfile(false), 3000);
@@ -102,18 +105,22 @@ export default function Perfil() {
     }
 
     try {
+      
       await axios.put(
-        "http://localhost:3000/api/auth/change-password",
-        { newPassword: passwords.nueva },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  "http://localhost:3000/api/auth/change-password",
+  { 
+    currentPassword: passwords.actual,  // 👈 verifica que passwords.actual tenga valor
+    newPassword: passwords.nueva 
+  },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
 
       setPasswords({ actual: "", nueva: "", confirmar: "" });
       setSavedPassword(true);
       setTimeout(() => setSavedPassword(false), 3000);
     } catch (error) {
-      setErrorPassword("Error al cambiar la contraseña.");
-    }
+  setErrorPassword(error.response?.data?.message || "Error al cambiar la contraseña.");
+}
   };
 
   return (
