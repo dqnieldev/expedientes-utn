@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react";
 const TOTAL = 4;
 const C = 289; // 2π * 46
 
-export default function ExpedienteResumen({ docs = [] }) {
+export default function ExpedienteResumen({ docs = [], showButton = true }) {
   const navigate = useNavigate();
 
   const aprobados  = docs.filter(d => d.estado === "APROBADO").length;
@@ -100,15 +100,15 @@ export default function ExpedienteResumen({ docs = [] }) {
       </div>
 
       {/* Botón */}
+          {showButton && (
       <button
         onClick={() => navigate("/documentos")}
         className="w-full py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-[#007a46] transition-colors flex items-center justify-center gap-2"
       >
-        <ExternalLink size={20} />
-
         Gestionar documentos
-        
+        <ExternalLink size={14} />
       </button>
+    )}
 
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
 import DocumentUploadCard from "../../components/DocumentUploadCard";
+import ExpedienteResumen from "../../components/ExpedienteResumen";
 
 import {
   FileText,
@@ -125,44 +126,14 @@ export default function Documentos() {
         </div>
 
         {/* 🟢 RESUMEN */}
-        <div className="bg-primary text-white p-6 rounded-2xl shadow">
-
-          <h3 className="font-semibold mb-4 text-lg">
-            Resumen del Expediente
-          </h3>
-
-          <div className="space-y-2 text-sm">
-            <p>Documentos requeridos: {documentosBase.length}</p>
-            <p>Aprobados: {aprobados}</p>
-            <p>Pendientes: {documentosBase.length - aprobados}</p>
-          </div>
-
-          {/* PROGRESS BAR */}
-          <div className="w-full bg-white/30 h-2 rounded mt-4">
-            <div
-              className="bg-yellow-400 h-2 rounded"
-              style={{
-                width: `${(aprobados / documentosBase.length) * 100}%`
-              }}
-            ></div>
-          </div>
-
-          {/* STATUS */}
-          <div className="mt-6 text-sm">
-            {aprobados === documentosBase.length ? (
-              <p className="text-green-200">
-                ✔ Expediente completo
-              </p>
-            ) : (
-              <p className="text-yellow-200">
-                ⚠ Faltan documentos por subir
-              </p>
-            )}
-          </div>
+<div className="bg-white rounded-2xl p-5 shadow flex flex-col gap-4">
+  <h3 className="text-base font-semibold">Resumen del Expediente</h3>
+  <ExpedienteResumen docs={docs} showButton={false} />
+</div>
 
         </div>
 
-      </div>
+      
 
     </MainLayout>
   );
