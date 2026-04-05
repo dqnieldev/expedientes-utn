@@ -3,11 +3,13 @@ import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
 import DocumentUploadCard from "../../components/DocumentUploadCard";
 import ExpedienteResumen from "../../components/ExpedienteResumen";
+import { SkeletonDocumentos } from "../../components/Skeleton";
 import { FileText, Fingerprint, GraduationCap, FileBadge } from "lucide-react";
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
   const [alumno, setAlumno] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
 
@@ -40,6 +42,8 @@ export default function Documentos() {
       setDocs(resDocs.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,44 +73,51 @@ export default function Documentos() {
   return (
     <MainLayout title="Mis Documentos">
 
-      {/* HEADER */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Gestión de Documentos
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400">
-          Sube, consulta y administra tus documentos académicos.
-        </p>
+        {loading ? (
+          <div className="animate-pulse space-y-2">
+            <div className="h-7 w-56 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            <div className="h-4 w-72 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Gestión de Documentos
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400">
+              Sube, consulta y administra tus documentos académicos.
+            </p>
+          </>
+        )}
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      {loading ? <SkeletonDocumentos /> : (
+        <div className="grid md:grid-cols-3 gap-6">
 
-        {/* 🟡 DOCUMENTOS */}
-        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
-          {documentosBase.map((item) => {
-            const doc = docs.find(d => d.tipo === item.tipo);
-            return (
-              <DocumentUploadCard
-                key={item.tipo}
-                item={item}
-                doc={doc}
-                icon={iconMap[item.tipo]}
-                onUpload={handleUpload}
-              />
-            );
-          })}
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+            {documentosBase.map((item) => {
+              const doc = docs.find(d => d.tipo === item.tipo);
+              return (
+                <DocumentUploadCard
+                  key={item.tipo}
+                  item={item}
+                  doc={doc}
+                  icon={iconMap[item.tipo]}
+                  onUpload={handleUpload}
+                />
+              );
+            })}
+          </div>
+
+          <div className="order-first md:order-last bg-white dark:bg-gray-800 rounded-2xl p-5 shadow flex flex-col gap-4 transition-colors duration-200">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              Resumen del Expediente
+            </h3>
+            <ExpedienteResumen docs={docs} showButton={false} />
+          </div>
+
         </div>
-
-        {/* 🟢 RESUMEN */}
-        {/* 🟢 RESUMEN */}
-<div className="order-first md:order-last bg-white dark:bg-gray-800 rounded-2xl p-5 shadow flex flex-col gap-4 transition-colors duration-200">
-  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-    Resumen del Expediente
-  </h3>
-  <ExpedienteResumen docs={docs} showButton={false} />
-</div>
-
-      </div>
+      )}
 
     </MainLayout>
   );

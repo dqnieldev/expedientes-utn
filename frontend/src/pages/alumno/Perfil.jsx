@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
+import { SkeletonPerfil } from "../../components/Skeleton";
 import {
   User, MapPin, GraduationCap, Lock,
   Eye, EyeOff, Save, CheckCircle, AlertCircle
@@ -124,6 +125,7 @@ const SectionCard = ({ icon: Icon, title, children }) => (
 export default function Perfil() {
   const [form, setForm]               = useState({});
   const [errors, setErrors]           = useState({});
+  const [loading, setLoading]         = useState(true);
   const [passwords, setPasswords]     = useState({ actual: "", nueva: "", confirmar: "" });
   const [passErrors, setPassErrors]   = useState({});
   const [showActual, setShowActual]   = useState(false);
@@ -138,7 +140,9 @@ export default function Perfil() {
   useEffect(() => {
     axios.get("http://localhost:3000/api/alumnos/me", {
       headers: { Authorization: `Bearer ${token}` }
-    }).then(res => setForm(res.data));
+    })
+      .then(res => setForm(res.data))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleBlur = (name, value) => {
@@ -222,135 +226,145 @@ export default function Perfil() {
   return (
     <MainLayout title="Perfil">
 
+      {/* HEADER */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Mi Perfil</h2>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-          Gestiona tu información personal y de acceso.
-        </p>
+        {loading ? (
+          <div className="animate-pulse space-y-2">
+            <div className="h-7 w-36 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Mi Perfil</h2>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+              Gestiona tu información personal y de acceso.
+            </p>
+          </>
+        )}
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 items-start pb-10">
+      {loading ? <SkeletonPerfil /> : (
+        <div className="grid md:grid-cols-3 gap-6 items-start pb-10">
 
-        {/* COLUMNA IZQUIERDA */}
-        <div className="flex flex-col gap-6">
+          {/* COLUMNA IZQUIERDA */}
+          <div className="flex flex-col gap-6">
 
-          {/* DATOS ACADÉMICOS */}
-          <SectionCard icon={GraduationCap} title="Datos Académicos">
-            <div className="flex flex-col gap-3">
-              <InputField label="Nombre completo"  name="nombre"              value={form.nombre}              readOnly />
-              <InputField label="Matrícula"         name="matricula"           value={form.matricula}           readOnly />
-              <InputField label="Carrera"           name="carrera"             value={form.carrera}             readOnly />
-              <InputField label="Cuatrimestre"      name="cuatrimestre_actual" value={form.cuatrimestre_actual} readOnly />
-              <div>
-                <label className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide block mb-1">
-                  Estado
-                </label>
-                <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
-                  <CheckCircle size={11} />{form.estado}
-                </span>
-              </div>
-            </div>
-          </SectionCard>
-
-          {/* CAMBIAR CONTRASEÑA */}
-          <SectionCard icon={Lock} title="Cambiar Contraseña">
-            <div className="flex flex-col gap-3">
-
-              {errorPassword && (
-                <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 text-xs px-3 py-2 rounded-lg">
-                  <AlertCircle size={12} />{errorPassword}
-                </div>
-              )}
-
-              {savedPassword && (
-                <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 text-xs px-3 py-2 rounded-lg">
-                  <CheckCircle size={12} />Contraseña actualizada correctamente
-                </div>
-              )}
-
-              {[
-                { label: "Contraseña actual",   key: "actual",    show: showActual,    toggle: setShowActual    },
-                { label: "Nueva contraseña",     key: "nueva",     show: showNueva,     toggle: setShowNueva     },
-                { label: "Confirmar contraseña", key: "confirmar", show: showConfirmar, toggle: setShowConfirmar },
-              ].map(({ label, key, show, toggle }) => (
-                <div key={key}>
+            {/* DATOS ACADÉMICOS */}
+            <SectionCard icon={GraduationCap} title="Datos Académicos">
+              <div className="flex flex-col gap-3">
+                <InputField label="Nombre completo"  name="nombre"              value={form.nombre}              readOnly />
+                <InputField label="Matrícula"         name="matricula"           value={form.matricula}           readOnly />
+                <InputField label="Carrera"           name="carrera"             value={form.carrera}             readOnly />
+                <InputField label="Cuatrimestre"      name="cuatrimestre_actual" value={form.cuatrimestre_actual} readOnly />
+                <div>
                   <label className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide block mb-1">
-                    {label}<span className="text-red-400 ml-0.5">*</span>
+                    Estado
                   </label>
-                  <div className="relative">
-                    <input
-                      type={show ? "text" : "password"}
-                      value={passwords[key]}
-                      onChange={(e) => {
-                        setPasswords(prev => ({ ...prev, [key]: e.target.value }));
-                        if (passErrors[key]) handlePassBlur(key, e.target.value);
-                      }}
-                      onBlur={(e) => handlePassBlur(key, e.target.value)}
-                      placeholder="••••••••"
-                      className={`w-full px-3 py-2.5 pr-10 rounded-xl border text-sm transition
-                        ${passErrors[key]
-                          ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-200"
-                          : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => toggle(!show)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-                    >
-                      {show ? <EyeOff size={14} /> : <Eye size={14} />}
-                    </button>
-                  </div>
-                  {passErrors[key] && (
-                    <p className="flex items-center gap-1 text-[10px] text-red-500 mt-1">
-                      <AlertCircle size={10} />{passErrors[key]}
-                    </p>
-                  )}
+                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
+                    <CheckCircle size={11} />{form.estado}
+                  </span>
                 </div>
-              ))}
+              </div>
+            </SectionCard>
 
-              <button
-                onClick={handleChangePassword}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-[#013d31] active:scale-95 transition-all duration-150 mt-1"
-              >
-                <Lock size={13} />
-                Actualizar Contraseña
-              </button>
+            {/* CAMBIAR CONTRASEÑA */}
+            <SectionCard icon={Lock} title="Cambiar Contraseña">
+              <div className="flex flex-col gap-3">
 
-            </div>
-          </SectionCard>
+                {errorPassword && (
+                  <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 text-xs px-3 py-2 rounded-lg">
+                    <AlertCircle size={12} />{errorPassword}
+                  </div>
+                )}
 
-        </div>
+                {savedPassword && (
+                  <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 text-xs px-3 py-2 rounded-lg">
+                    <CheckCircle size={12} />Contraseña actualizada correctamente
+                  </div>
+                )}
 
-        {/* COLUMNA DERECHA */}
-        <div className="md:col-span-2 flex flex-col gap-6">
+                {[
+                  { label: "Contraseña actual",   key: "actual",    show: showActual,    toggle: setShowActual    },
+                  { label: "Nueva contraseña",     key: "nueva",     show: showNueva,     toggle: setShowNueva     },
+                  { label: "Confirmar contraseña", key: "confirmar", show: showConfirmar, toggle: setShowConfirmar },
+                ].map(({ label, key, show, toggle }) => (
+                  <div key={key}>
+                    <label className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide block mb-1">
+                      {label}<span className="text-red-400 ml-0.5">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={show ? "text" : "password"}
+                        value={passwords[key]}
+                        onChange={(e) => {
+                          setPasswords(prev => ({ ...prev, [key]: e.target.value }));
+                          if (passErrors[key]) handlePassBlur(key, e.target.value);
+                        }}
+                        onBlur={(e) => handlePassBlur(key, e.target.value)}
+                        placeholder="••••••••"
+                        className={`w-full px-3 py-2.5 pr-10 rounded-xl border text-sm transition
+                          ${passErrors[key]
+                            ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-200"
+                            : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggle(!show)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        {show ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                    {passErrors[key] && (
+                      <p className="flex items-center gap-1 text-[10px] text-red-500 mt-1">
+                        <AlertCircle size={10} />{passErrors[key]}
+                      </p>
+                    )}
+                  </div>
+                ))}
 
-          {/* DATOS PERSONALES */}
-          <SectionCard icon={User} title="Datos Personales">
-            <div className="grid md:grid-cols-2 gap-4">
-              <InputField label="CURP"                name="curp"             value={form.curp}             onChange={handleChange} onBlur={(e) => handleBlur("curp", e.target.value)}             placeholder="CURP (18 caracteres)" error={errors.curp} />
-              <InputField label="Lugar de nacimiento" name="lugar_nacimiento" value={form.lugar_nacimiento} onChange={handleChange} onBlur={(e) => handleBlur("lugar_nacimiento", e.target.value)} placeholder="Ciudad, Estado"        error={errors.lugar_nacimiento} />
-              <InputField label="Fecha de nacimiento" name="fecha_nacimiento" value={form.fecha_nacimiento?.split("T")[0]} onChange={handleChange} onBlur={(e) => handleBlur("fecha_nacimiento", e.target.value)} type="date" error={errors.fecha_nacimiento} />
-              <SelectField label="Sexo"         name="sexo"         value={form.sexo}         onChange={handleChange} onBlur={(e) => handleBlur("sexo", e.target.value)}         options={["Masculino", "Femenino"]}                            error={errors.sexo} />
-              <SelectField label="Estado Civil" name="estado_civil" value={form.estado_civil} onChange={handleChange} onBlur={(e) => handleBlur("estado_civil", e.target.value)} options={["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"]} error={errors.estado_civil} />
-            </div>
-          </SectionCard>
+                <button
+                  onClick={handleChangePassword}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-[#013d31] active:scale-95 transition-all duration-150 mt-1"
+                >
+                  <Lock size={13} />
+                  Actualizar Contraseña
+                </button>
 
-          {/* DOMICILIO */}
-          <SectionCard icon={MapPin} title="Domicilio">
-            <div className="grid md:grid-cols-2 gap-4">
-              <InputField label="Calle"         name="calle"            value={form.calle}            onChange={handleChange} onBlur={(e) => handleBlur("calle", e.target.value)}            placeholder="Calle"      error={errors.calle} />
-              <InputField label="Número"        name="numero"           value={form.numero}           onChange={handleChange} onBlur={(e) => handleBlur("numero", e.target.value)}           placeholder="Ext/Int"    error={errors.numero} />
-              <InputField label="Colonia"       name="colonia"          value={form.colonia}          onChange={handleChange} onBlur={(e) => handleBlur("colonia", e.target.value)}          placeholder="Colonia"    error={errors.colonia} />
-              <InputField label="Código Postal" name="codigo_postal"    value={form.codigo_postal}    onChange={handleChange} onBlur={(e) => handleBlur("codigo_postal", e.target.value)}    placeholder="00000"      error={errors.codigo_postal} />
-              <InputField label="Ciudad"        name="ciudad"           value={form.ciudad}           onChange={handleChange} onBlur={(e) => handleBlur("ciudad", e.target.value)}           placeholder="Ciudad"     error={errors.ciudad} />
-              <InputField label="Estado"        name="estado_direccion" value={form.estado_direccion} onChange={handleChange} onBlur={(e) => handleBlur("estado_direccion", e.target.value)} placeholder="Estado"     error={errors.estado_direccion} />
-              <InputField label="Teléfono"      name="telefono"         value={form.telefono}         onChange={handleChange} onBlur={(e) => handleBlur("telefono", e.target.value)}         placeholder="10 dígitos" type="tel" error={errors.telefono} />
-            </div>
-          </SectionCard>
+              </div>
+            </SectionCard>
 
-          {/* BOTÓN GUARDAR */}
-          <div className="flex flex-col gap-3">
+          </div>
+
+          {/* COLUMNA DERECHA */}
+          <div className="md:col-span-2 flex flex-col gap-6">
+
+            {/* DATOS PERSONALES */}
+            <SectionCard icon={User} title="Datos Personales">
+              <div className="grid md:grid-cols-2 gap-4">
+                <InputField label="CURP"                name="curp"             value={form.curp}             onChange={handleChange} onBlur={(e) => handleBlur("curp", e.target.value)}             placeholder="CURP (18 caracteres)" error={errors.curp} />
+                <InputField label="Lugar de nacimiento" name="lugar_nacimiento" value={form.lugar_nacimiento} onChange={handleChange} onBlur={(e) => handleBlur("lugar_nacimiento", e.target.value)} placeholder="Ciudad, Estado"        error={errors.lugar_nacimiento} />
+                <InputField label="Fecha de nacimiento" name="fecha_nacimiento" value={form.fecha_nacimiento?.split("T")[0]} onChange={handleChange} onBlur={(e) => handleBlur("fecha_nacimiento", e.target.value)} type="date" error={errors.fecha_nacimiento} />
+                <SelectField label="Sexo"         name="sexo"         value={form.sexo}         onChange={handleChange} onBlur={(e) => handleBlur("sexo", e.target.value)}         options={["Masculino", "Femenino"]}                            error={errors.sexo} />
+                <SelectField label="Estado Civil" name="estado_civil" value={form.estado_civil} onChange={handleChange} onBlur={(e) => handleBlur("estado_civil", e.target.value)} options={["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"]} error={errors.estado_civil} />
+              </div>
+            </SectionCard>
+
+            {/* DOMICILIO */}
+            <SectionCard icon={MapPin} title="Domicilio">
+              <div className="grid md:grid-cols-2 gap-4">
+                <InputField label="Calle"         name="calle"            value={form.calle}            onChange={handleChange} onBlur={(e) => handleBlur("calle", e.target.value)}            placeholder="Calle"      error={errors.calle} />
+                <InputField label="Número"        name="numero"           value={form.numero}           onChange={handleChange} onBlur={(e) => handleBlur("numero", e.target.value)}           placeholder="Ext/Int"    error={errors.numero} />
+                <InputField label="Colonia"       name="colonia"          value={form.colonia}          onChange={handleChange} onBlur={(e) => handleBlur("colonia", e.target.value)}          placeholder="Colonia"    error={errors.colonia} />
+                <InputField label="Código Postal" name="codigo_postal"    value={form.codigo_postal}    onChange={handleChange} onBlur={(e) => handleBlur("codigo_postal", e.target.value)}    placeholder="00000"      error={errors.codigo_postal} />
+                <InputField label="Ciudad"        name="ciudad"           value={form.ciudad}           onChange={handleChange} onBlur={(e) => handleBlur("ciudad", e.target.value)}           placeholder="Ciudad"     error={errors.ciudad} />
+                <InputField label="Estado"        name="estado_direccion" value={form.estado_direccion} onChange={handleChange} onBlur={(e) => handleBlur("estado_direccion", e.target.value)} placeholder="Estado"     error={errors.estado_direccion} />
+                <InputField label="Teléfono"      name="telefono"         value={form.telefono}         onChange={handleChange} onBlur={(e) => handleBlur("telefono", e.target.value)}         placeholder="10 dígitos" type="tel" error={errors.telefono} />
+              </div>
+            </SectionCard>
+
+            {/* BOTÓN GUARDAR */}
             <div className="flex items-center justify-end gap-3">
               {savedProfile && (
                 <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
@@ -365,10 +379,10 @@ export default function Perfil() {
                 Guardar Cambios
               </button>
             </div>
-          </div>
 
+          </div>
         </div>
-      </div>
+      )}
 
     </MainLayout>
   );
