@@ -19,8 +19,8 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
     .toUpperCase();
 
   const estadoColor = alumno.estado === "ACTIVO"
-    ? "bg-emerald-100 text-emerald-700"
-    : "bg-red-100 text-red-700";
+    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
 
   const handleFotoChange = async (e) => {
     const file = e.target.files[0];
@@ -38,12 +38,11 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
       setFoto(res.data.foto);
     } catch (error) {
       console.error(error);
-      alert("Error al actualizar foto");
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm transition-colors duration-200">
 
       {/* BANNER */}
       <div className="h-16 rounded-t-2xl bg-gradient-to-r from-[#024E3F] to-[#037a62]" />
@@ -53,7 +52,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
 
           {/* AVATAR CON BOTÓN CÁMARA */}
           <div className="relative group">
-            <div className="w-16 h-16 rounded-2xl border-4 border-white shadow-sm overflow-hidden">
+            <div className="w-16 h-16 rounded-2xl border-4 border-white dark:border-gray-800 shadow-sm overflow-hidden transition-colors duration-200">
               {foto ? (
                 <img
                   src={`http://localhost:3000/uploads/${foto}`}
@@ -70,10 +69,10 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
             {/* BOTÓN CÁMARA */}
             <button
               onClick={() => inputRef.current.click()}
-              className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 active:scale-95 transition-all duration-150"
+              className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 active:scale-95 transition-all duration-150"
               title="Cambiar foto de perfil"
             >
-              <Camera size={11} className="text-gray-500" />
+              <Camera size={11} className="text-gray-500 dark:text-gray-300" />
             </button>
 
             <input
@@ -94,53 +93,41 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
         </div>
 
         {/* NOMBRE Y CARRERA */}
-        <h3 className="font-semibold text-gray-900 text-base leading-tight">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">
           {alumno.nombre}
         </h3>
-        <p className="text-xs text-gray-400 mt-0.5 mb-4">{alumno.carrera}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 mb-4">
+          {alumno.carrera}
+        </p>
 
-        <div className="border-t border-gray-100 mb-4" />
+        <div className="border-t border-gray-100 dark:border-gray-700 mb-4" />
 
         {/* DATOS */}
         <div className="space-y-3">
 
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-              <Hash size={13} className="text-gray-400" />
+          {[
+            { icon: Hash,          label: "Matrícula",    value: alumno.matricula          },
+            { icon: GraduationCap, label: "Carrera",      value: alumno.carrera            },
+            { icon: BookOpen,      label: "Cuatrimestre", value: alumno.cuatrimestre_actual },
+          ].map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                <Icon size={13} className="text-gray-400 dark:text-gray-400" />
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{label}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{value}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Matrícula</p>
-              <p className="text-sm font-medium text-gray-800">{alumno.matricula}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-              <GraduationCap size={13} className="text-gray-400" />
-            </div>
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Carrera</p>
-              <p className="text-sm font-medium text-gray-800">{alumno.carrera}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-              <BookOpen size={13} className="text-gray-400" />
-            </div>
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Cuatrimestre</p>
-              <p className="text-sm font-medium text-gray-800">{alumno.cuatrimestre_actual}</p>
-            </div>
-          </div>
+          ))}
 
         </div>
 
-        <div className="border-t border-gray-100 mt-4 mb-4" />
+        <div className="border-t border-gray-100 dark:border-gray-700 mt-4 mb-4" />
 
         <button
           onClick={() => navigate("/perfil")}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 hover:border-gray-300 active:scale-95 transition-all duration-150"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 active:scale-95 transition-all duration-150"
         >
           <Pen size={13} />
           Modificar Perfil

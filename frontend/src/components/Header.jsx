@@ -3,7 +3,20 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 export default function Header({ title }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+  return localStorage.getItem("theme") === "dark";
+});
+
+useEffect(() => {
+  if (dark) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+  localStorage.setItem("theme", dark ? "dark" : "light");
+}, [dark]);
+
+const toggleDark = () => setDark(prev => !prev);
   const [foto, setFoto] = useState(null);
   const [hover, setHover] = useState(false);
   const inputRef = useRef();
@@ -37,31 +50,28 @@ export default function Header({ title }) {
     }
   };
 
-  const toggleDark = () => {
-    setDark(!dark);
-    document.documentElement.classList.toggle("dark");
-  };
+  //const toggleDark = () => {
+    //setDark(!dark);
+    //document.documentElement.classList.toggle("dark");
+  //};
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-white border-b">
+    <header className="flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+  <h1 className="text-xl font-semibold text-primary">{title}</h1>
+  <div className="flex items-center gap-4">
+    <button className="relative text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
+      <Bell size={20} />
+      <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full"></span>
+    </button>
 
-      <h1 className="text-xl font-semibold text-primary">{title}</h1>
+    <button onClick={toggleDark} className="bg-gray-200 dark:bg-gray-700 rounded-full p-1 flex transition-colors">
+      <Sun size={16} className={!dark ? "text-yellow-500" : "text-gray-400"} />
+      <Moon size={16} className={dark ? "text-blue-400" : "text-gray-400"} />
+    </button>
 
-      <div className="flex items-center gap-4">
-
-        <button className="relative text-gray-500 hover:text-black">
-          <Bell size={20} />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full"></span>
-        </button>
-
-        <button onClick={toggleDark} className="bg-gray-200 rounded-full p-1 flex">
-          <Sun size={16} className={!dark ? "text-black" : "text-gray-400"} />
-          <Moon size={16} className={dark ? "text-black" : "text-gray-400"} />
-        </button>
-
-        <button className="text-gray-500 hover:text-black">
-          <Settings size={20} />
-        </button>
+    <button className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
+      <Settings size={20} />
+    </button>
 
         {/* AVATAR CON HOVER */}
         <div

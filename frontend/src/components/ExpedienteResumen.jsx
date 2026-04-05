@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { ExternalLink, HelpCircle } from "lucide-react";
 
-
 const TOTAL = 4;
 const C = 289;
 
 export default function ExpedienteResumen({ docs = [], showButton = true }) {
   const navigate = useNavigate();
+  const isDark = document.documentElement.classList.contains("dark");
 
   const aprobados  = docs.filter(d => d.estado === "APROBADO").length;
   const enRevision = docs.filter(d => d.estado === "EN_REVISION").length;
@@ -29,7 +29,7 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
     strokeDashoffset: -offset,
   });
 
-  const porcentaje = Math.round((aprobados/ TOTAL) * 100);
+  const porcentaje = Math.round((aprobados / TOTAL) * 100);
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,7 +40,9 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
         {/* Donut */}
         <div className="relative shrink-0" style={{ width: 90, height: 90 }}>
           <svg width="90" height="90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="46" fill="none" stroke="#F3F4F6" strokeWidth="10" />
+            <circle cx="60" cy="60" r="46" fill="none"
+              stroke={isDark ? "#374151" : "#F3F4F6"}
+              strokeWidth="10" />
             {aprobados > 0 && (
               <circle cx="60" cy="60" r="46" fill="none"
                 stroke="#1D9E75" strokeWidth="10" strokeLinecap="butt"
@@ -61,8 +63,10 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
             )}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-base font-semibold text-gray-800 leading-none">{subidos}/{TOTAL}</span>
-            <span className="text-[10px] text-gray-400 mt-0.5">docs</span>
+            <span className="text-base font-semibold text-gray-800 dark:text-white leading-none">
+              {subidos}/{TOTAL}
+            </span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">docs</span>
           </div>
         </div>
 
@@ -70,10 +74,10 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
         <div className="flex-1 space-y-2">
           <div>
             <div className="flex justify-between items-center mb-1">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wide font-medium">Progreso</span>
-              <span className="text-[10px] font-semibold text-gray-600">{porcentaje}%</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium">Progreso</span>
+              <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">{porcentaje}%</span>
             </div>
-            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                 style={{ width: `${porcentaje}%` }}
@@ -82,21 +86,21 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
           </div>
 
           <div className="grid grid-cols-2 gap-1.5 pt-1">
-            <div className="bg-emerald-50 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-emerald-600 font-medium">Aprobados</p>
-              <p className="text-sm font-semibold text-emerald-700">{aprobados}</p>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg px-2 py-1.5">
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Aprobados</p>
+              <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{aprobados}</p>
             </div>
-            <div className="bg-amber-50 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-amber-600 font-medium">En revisión</p>
-              <p className="text-sm font-semibold text-amber-700">{enRevision}</p>
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg px-2 py-1.5">
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">En revisión</p>
+              <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">{enRevision}</p>
             </div>
-            <div className="bg-red-50 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-red-500 font-medium">Rechazados</p>
-              <p className="text-sm font-semibold text-red-600">{rechazados}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg px-2 py-1.5">
+              <p className="text-[10px] text-red-500 dark:text-red-400 font-medium">Rechazados</p>
+              <p className="text-sm font-semibold text-red-600 dark:text-red-300">{rechazados}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-gray-400 font-medium">Pendientes</p>
-              <p className="text-sm font-semibold text-gray-500">{pendientes}</p>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-2 py-1.5">
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Pendientes</p>
+              <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{pendientes}</p>
             </div>
           </div>
         </div>
@@ -104,13 +108,13 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
       </div>
 
       {/* DIVIDER */}
-      <div className="border-t border-gray-100" />
+      <div className="border-t border-gray-100 dark:border-gray-700" />
 
       {/* BOTÓN */}
       {showButton && (
         <button
           onClick={() => navigate("/documentos")}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 hover:border-gray-300 active:scale-95 transition-all duration-150"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 active:scale-95 transition-all duration-150"
         >
           Gestionar documentos
           <ExternalLink size={13} />
@@ -118,20 +122,21 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
       )}
 
       {/* SOPORTE */}
-<div className="mt-auto pt-2">
-  <div className="border border-dashed border-gray-200 rounded-xl p-3 flex flex-col gap-2">
-    <p className="text-[11px] text-gray-400 leading-relaxed">
-      ¿Tienes dudas sobre el estado de tus documentos o necesitas aclarar un rechazo?
-    </p>
-    <button
-      onClick={() => navigate("/soporte")}
-      className="w-full flex items-center justify-center gap-2 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-medium hover:bg-amber-100 active:scale-95 transition-all duration-150"
-    >
-      <HelpCircle size={12} />
-      Contactar a Servicios Escolares
-    </button>
-  </div>
-</div>
+      <div className="mt-auto pt-2">
+        <div className="border border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col gap-2">
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
+            ¿Tienes dudas sobre el estado de tus documentos o necesitas aclarar un rechazo?
+          </p>
+          <button
+            onClick={() => navigate("/soporte")}
+            className="w-full flex items-center justify-center gap-2 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 text-[11px] font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 active:scale-95 transition-all duration-150"
+          >
+            <HelpCircle size={12} />
+            Contactar a Servicios Escolares
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

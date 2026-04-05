@@ -19,7 +19,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex w-64 flex-col bg-[#024E3F] h-full">
+    <aside className="hidden md:flex w-64 flex-col bg-[#024E3F] dark:bg-gray-900 h-full transition-colors duration-200">
 
       {/* LOGO */}
       <div className="px-6 pt-8 pb-6 border-b border-white/10">
