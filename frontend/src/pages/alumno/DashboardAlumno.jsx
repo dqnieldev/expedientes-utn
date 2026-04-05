@@ -33,39 +33,41 @@ export default function DashboardAlumno() {
     fetchData();
   }, []);
 
-  if (!alumno) return null; // o un spinner de carga
+  if (!alumno) return null;
 
   return (
     <MainLayout title="Dashboard">
 
       {/* BIENVENIDA */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Bienvenido, {alumno.nombre}
         </h2>
-        <p className="text-gray-600 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           Gestiona tus documentos académicos y consulta tu estatus escolar.
         </p>
       </div>
 
-           {/* CONTENIDO */}
-<div className="flex flex-col md:flex-row gap-6 md:items-stretch">
+      {/* CONTENIDO */}
+      <div className="flex flex-col md:flex-row gap-6 md:items-stretch">
 
-  {/* COLUMNA IZQUIERDA */}
-  <div className="flex flex-col gap-4 w-full md:w-72 shrink-0">
-    <AlumnoProfileCard alumno={alumno} />
-    <div className="bg-white rounded-2xl p-5 shadow flex flex-col">
-      <h3 className="text-base font-semibold mb-4">Expediente Digital</h3>
-      <ExpedienteResumen docs={docs} />
-    </div>
-  </div>
+        {/* COLUMNA IZQUIERDA */}
+        <div className="flex flex-col gap-4 w-full md:w-72 shrink-0">
+          <AlumnoProfileCard alumno={alumno} />
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow flex flex-col transition-colors duration-200">
+            <h3 className="text-base font-semibold mb-4 text-gray-900 dark:text-white">
+              Expediente Digital
+            </h3>
+            <ExpedienteResumen docs={docs} />
+          </div>
+        </div>
 
-  {/* COLUMNA DERECHA */}
-  <div className="flex-1 bg-white rounded-2xl p-5 shadow">
-    {/* aquí va el calendario */}
-  </div>
+        {/* COLUMNA DERECHA */}
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow transition-colors duration-200">
+          {/* aquí va el calendario */}
+        </div>
 
-</div>
+      </div>
 
     </MainLayout>
   );
