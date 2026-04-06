@@ -13,27 +13,29 @@ export default function Login() {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const data = await login(form);
-      localStorage.clear();
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("mustChangePassword", data.mustChangePassword);
+  try {
+    const data = await login(form);
+    localStorage.clear();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("mustChangePassword", data.mustChangePassword);
 
-      if (data.mustChangePassword) {
-        window.location.href = "/change-password";
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setError("Correo o contraseña incorrectos");
-      setLoading(false);
+    if (data.mustChangePassword) {
+      window.location.href = "/change-password";
+    } else if (data.user.role === "ADMIN") {
+      window.location.href = "/admin/dashboard";
+    } else {
+      window.location.href = "/dashboard";
     }
-  };
+  } catch (err) {
+    setError("Correo o contraseña incorrectos");
+    setLoading(false);
+  }
+};
 
   return (
     <div className="h-screen flex bg-[#024E3F] p-4">
