@@ -12,6 +12,7 @@ import RecuperarPassword from "./pages/RecuperarPassword";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import Alumnos from "./pages/admin/Alumnos";
 import DetalleAlumno from "./pages/admin/DetalleAlumno";
+import DocumentosAdmin from "./pages/admin/Documentos";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/admin/dashboard" element={<ProtectedAdminRoute><DashboardAdmin /></ProtectedAdminRoute>} />
         <Route path="/admin/alumnos" element={<ProtectedAdminRoute><Alumnos /></ProtectedAdminRoute>} />
         <Route path="/admin/alumnos/:id" element={<ProtectedAdminRoute><DetalleAlumno /></ProtectedAdminRoute>} />
+        <Route path="/admin/documentos" element={<ProtectedAdminRoute><DocumentosAdmin /></ProtectedAdminRoute>} />
 
       </Routes>
     </BrowserRouter>
