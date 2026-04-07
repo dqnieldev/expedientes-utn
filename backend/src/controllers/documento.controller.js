@@ -1,19 +1,14 @@
 import {
   createDocumento,
   getDocumentosByAlumno,
-  updateDocumentoEstado
-} from "../services/documento.service.js"; // Importamos las funciones del servicio de documentos
+  updateDocumentoEstado,
+  getAllDocumentos
+} from "../services/documento.service.js";
 
-// Controladores para manejar las solicitudes relacionadas con los documentos de los alumnos
-
-//  Crear un nuevo documento para un alumno
+// Crear un nuevo documento para un alumno
 export const create = async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file); // 👈 IMPORTANTE
-
     const { tipo, alumnoId } = req.body;
-
     const filePath = req.file.filename;
 
     const doc = await createDocumento({
@@ -24,7 +19,6 @@ export const create = async (req, res) => {
 
     res.status(201).json(doc);
   } catch (error) {
-    console.log("ERROR:", error); // 👈 IMPORTANTE
     res.status(400).json({ message: error.message });
   }
 };
@@ -32,8 +26,8 @@ export const create = async (req, res) => {
 // Actualizar el estado de un documento
 export const updateEstado = async (req, res) => {
   try {
-    const { id } = req.params; // ID del documento a actualizar
-    const { estado } = req.body; // Nuevo estado para el documento (por ejemplo, aprobado, rechazado, pendiente)
+    const { id } = req.params;
+    const { estado } = req.body;
 
     const doc = await updateDocumentoEstado(Number(id), estado);
 
@@ -47,18 +41,14 @@ export const updateEstado = async (req, res) => {
 export const getByAlumno = async (req, res) => {
   try {
     const { alumnoId } = req.params;
-
     const docs = await getDocumentosByAlumno(Number(alumnoId));
-
     res.json(docs);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// OBTENER TODOS LOS DOCUMENTOS (SOLO ADMIN)
-import { getAllDocumentos } from "../services/documento.service.js";
-
+// Obtener todos los documentos (solo ADMIN)
 export const getAll = async (req, res) => {
   try {
     const docs = await getAllDocumentos();
