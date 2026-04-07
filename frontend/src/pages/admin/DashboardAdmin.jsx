@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
-import { Users, FileCheck, FileClock, FileX, ArrowRight } from "lucide-react";
+import { Users, FileCheck, FileClock, FileX, ArrowRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function DashboardAdmin() {
@@ -57,19 +57,45 @@ export default function DashboardAdmin() {
       iconColor: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
     },
   ];
+//Función para descargar el reporte general de expedientes en PDF
+  const handleReporteGeneral = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/reportes/general", {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: "blob"
+    });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reporte-general-expedientes.pdf";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <AdminLayout title="Dashboard">
 
       {/* BIENVENIDA */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Panel de Administración
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Resumen general del sistema de expedientes.
-        </p>
-      </div>
+      <div className="flex items-center justify-between mb-6">
+  <div>
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      Panel de Administración
+    </h2>
+    <p className="text-gray-500 dark:text-gray-400 mt-1">
+      Resumen general del sistema de expedientes.
+    </p>
+  </div>
+  <button
+    onClick={handleReporteGeneral}
+    className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
+  >
+    <Download size={15} />
+    Reporte General PDF
+  </button>
+</div>
 
       {/* MÉTRICAS */}
       <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">

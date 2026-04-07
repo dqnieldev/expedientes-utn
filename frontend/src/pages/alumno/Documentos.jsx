@@ -4,7 +4,8 @@ import MainLayout from "../../layout/MainLayout";
 import DocumentUploadCard from "../../components/DocumentUploadCard";
 import ExpedienteResumen from "../../components/ExpedienteResumen";
 import { SkeletonDocumentos } from "../../components/Skeleton";
-import { FileText, Fingerprint, GraduationCap, FileBadge } from "lucide-react";
+import { FileText, Fingerprint, GraduationCap, FileBadge, Download } from "lucide-react";
+
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
@@ -69,26 +70,43 @@ export default function Documentos() {
       console.error(error.response?.data);
     }
   };
+// Función para descargar el reporte PDF del expediente del alumno
+  const handleDescargarReporte = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/reportes/mio", {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: "blob"
+    });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mi-expediente.pdf";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <MainLayout title="Mis Documentos">
 
-      <div className="mb-6">
-        {loading ? (
-          <div className="animate-pulse space-y-2">
-            <div className="h-7 w-56 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-            <div className="h-4 w-72 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-          </div>
-        ) : (
-          <>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Gestión de Documentos
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Sube, consulta y administra tus documentos académicos.
-            </p>
-          </>
-        )}
+            <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Gestión de Documentos
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400">
+            Sube, consulta y administra tus documentos académicos.
+          </p>
+        </div>
+        <button
+          onClick={handleDescargarReporte}
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-[#013d31] active:scale-95 transition-all duration-150"
+        >
+          <Download size={15} />
+          Descargar PDF
+        </button>
       </div>
 
       {loading ? <SkeletonDocumentos /> : (

@@ -1,7 +1,6 @@
 import PDFDocument from "pdfkit";
 import path from "path";
 import { fileURLToPath } from "url";
-import prisma from "../config/prisma.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -15,10 +14,10 @@ const TIPO_LABEL = {
 };
 
 const ESTADO_LABEL = {
-  APROBADO:   "Aprobado",
-  RECHAZADO:  "Rechazado",
-  EN_REVISION:"En Revisión",
-  PENDIENTE:  "Pendiente",
+  APROBADO:    "Aprobado",
+  RECHAZADO:   "Rechazado",
+  EN_REVISION: "En Revisión",
+  PENDIENTE:   "Pendiente",
 };
 
 const ESTADO_COLOR = {
@@ -31,17 +30,13 @@ const ESTADO_COLOR = {
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function drawHeader(doc) {
-  // Membrete
   try {
-    doc.image(LOGO_PATH, 40, 30, { width: 520 });
+    doc.image(LOGO_PATH, 40, 25, { width: 515, height: 70 });
   } catch {
     doc.fontSize(10).fillColor("#666").text("Universidad Tecnológica de Nayarit", 40, 40);
   }
-  doc.moveDown(5);
-
-  // Línea divisora
-  doc.moveTo(40, doc.y).lineTo(555, doc.y).strokeColor("#024E3F").lineWidth(2).stroke();
-  doc.moveDown(0.5);
+  doc.moveTo(40, 100).lineTo(555, 100).strokeColor("#024E3F").lineWidth(2).stroke();
+  doc.y = 110;
 }
 
 function drawFooter(doc) {
@@ -55,32 +50,37 @@ function drawFooter(doc) {
 }
 
 function sectionTitle(doc, text) {
-  doc.moveDown(0.5)
+  doc.moveDown(0.8)
     .fontSize(11)
     .fillColor("#024E3F")
     .font("Helvetica-Bold")
     .text(text.toUpperCase(), { characterSpacing: 0.5 });
-  doc.moveTo(40, doc.y + 2).lineTo(555, doc.y + 2).strokeColor("#E5E7EB").lineWidth(1).stroke();
-  doc.moveDown(0.5);
+  doc.moveTo(40, doc.y + 3).lineTo(555, doc.y + 3).strokeColor("#E5E7EB").lineWidth(1).stroke();
+  doc.moveDown(0.6);
 }
 
 function infoRow(doc, label, value) {
-  doc.font("Helvetica-Bold").fontSize(9).fillColor("#6B7280").text(label, 40, doc.y, { continued: true, width: 160 });
-  doc.font("Helvetica").fontSize(9).fillColor("#111827").text(value || "—", { width: 350 });
+  const y = doc.y;
+  doc.font("Helvetica-Bold").fontSize(9).fillColor("#6B7280")
+    .text(label, 40, y, { width: 160, continued: false });
+  doc.font("Helvetica").fontSize(9).fillColor("#111827")
+    .text(value || "—", 210, y, { width: 340 });
+  doc.y = y + 18;
 }
 
-function estadoBadge(doc, estado) {
-  const color = ESTADO_COLOR[estado] || "#9CA3AF";
-  const label = ESTADO_LABEL[estado] || estado;
-  const x = doc.x;
-  const y = doc.y;
-  const w = 80;
-  const h = 14;
+function estadoBadge(doc, label, estado) {
+  const color  = ESTADO_COLOR[estado] || "#9CA3AF";
+  const eLabel = ESTADO_LABEL[estado] || estado;
+  const y      = doc.y;
 
-  doc.roundedRect(x, y, w, h, 4).fillColor(color).fill();
+  doc.font("Helvetica").fontSize(9).fillColor("#111827")
+    .text(label, 40, y + 3, { width: 270 });
+
+  doc.roundedRect(320, y, 100, 18, 4).fillColor(color).fill();
   doc.fontSize(8).fillColor("#FFFFFF").font("Helvetica-Bold")
-    .text(label, x, y + 3, { width: w, align: "center" });
-  doc.moveDown(0.3);
+    .text(eLabel, 320, y + 5, { width: 100, align: "center" });
+
+  doc.y = y + 26;
 }
 
 // ── 1. REPORTE DE EXPEDIENTE DE UN ALUMNO ─────────────────────────────────
@@ -91,18 +91,19 @@ export const generarReporteAlumno = (alumno, docs) => {
     const buffers = [];
 
     doc.on("data", chunk => buffers.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(buffers)));
+    doc.on("end",  () => resolve(Buffer.concat(buffers)));
     doc.on("error", reject);
 
     drawHeader(doc);
 
     // Título
+    doc.moveDown(0.5);
     doc.fontSize(16).fillColor("#111827").font("Helvetica-Bold")
       .text("Reporte de Expediente Digital", { align: "center" });
     doc.moveDown(0.3);
     doc.fontSize(10).fillColor("#6B7280").font("Helvetica")
       .text(`Matrícula: ${alumno.matricula}`, { align: "center" });
-    doc.moveDown(1);
+    doc.moveDown(0.8);
 
     // Datos académicos
     sectionTitle(doc, "Datos Académicos");
@@ -111,9 +112,8 @@ export const generarReporteAlumno = (alumno, docs) => {
     infoRow(doc, "Carrera",          alumno.carrera);
     infoRow(doc, "Cuatrimestre",     String(alumno.cuatrimestre_actual));
     infoRow(doc, "Estado",           alumno.estado);
-    doc.moveDown(0.5);
 
-    // Datos personales si existen
+    // Datos personales
     if (alumno.curp || alumno.telefono || alumno.ciudad) {
       sectionTitle(doc, "Datos Personales");
       if (alumno.curp)             infoRow(doc, "CURP",             alumno.curp);
@@ -123,33 +123,25 @@ export const generarReporteAlumno = (alumno, docs) => {
       if (alumno.telefono)         infoRow(doc, "Teléfono",         alumno.telefono);
       if (alumno.ciudad)           infoRow(doc, "Ciudad",           alumno.ciudad);
       if (alumno.estado_direccion) infoRow(doc, "Estado",           alumno.estado_direccion);
-      doc.moveDown(0.5);
     }
 
     // Documentos
     sectionTitle(doc, "Estado del Expediente");
-
     const TIPOS = ["ACTA_NACIMIENTO", "CURP", "CERTIFICADO", "CONSTANCIA"];
     TIPOS.forEach(tipo => {
-      const d = docs.find(x => x.tipo === tipo);
+      const d      = docs.find(x => x.tipo === tipo);
       const estado = d?.estado || "PENDIENTE";
-
-      doc.font("Helvetica-Bold").fontSize(9).fillColor("#111827")
-        .text(TIPO_LABEL[tipo], 40, doc.y, { continued: true, width: 300 });
-
-      estadoBadge(doc, estado);
+      estadoBadge(doc, TIPO_LABEL[tipo], estado);
     });
-
-    doc.moveDown(1);
 
     // Resumen
     const aprobados  = docs.filter(d => d.estado === "APROBADO").length;
-    const pendientes = 4 - docs.length;
+    const pendientes = Math.max(0, 4 - docs.length);
     sectionTitle(doc, "Resumen");
     infoRow(doc, "Documentos requeridos", "4");
     infoRow(doc, "Documentos subidos",    String(docs.length));
     infoRow(doc, "Aprobados",             String(aprobados));
-    infoRow(doc, "Pendientes",            String(pendientes < 0 ? 0 : pendientes));
+    infoRow(doc, "Pendientes",            String(pendientes));
 
     drawFooter(doc);
     doc.end();
@@ -164,55 +156,55 @@ export const generarReporteGeneral = (alumnos) => {
     const buffers = [];
 
     doc.on("data", chunk => buffers.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(buffers)));
+    doc.on("end",  () => resolve(Buffer.concat(buffers)));
     doc.on("error", reject);
 
     drawHeader(doc);
 
+    doc.moveDown(0.5);
     doc.fontSize(16).fillColor("#111827").font("Helvetica-Bold")
       .text("Reporte General de Expedientes", { align: "center" });
     doc.moveDown(0.3);
     doc.fontSize(10).fillColor("#6B7280").font("Helvetica")
       .text(`Total de alumnos: ${alumnos.length}`, { align: "center" });
-    doc.moveDown(1);
+    doc.moveDown(0.8);
 
     // Tabla
-    const colX    = [40, 160, 320, 420, 500];
+    const colX    = [40, 155, 310, 430, 490];
     const headers = ["Matrícula", "Nombre", "Carrera", "Docs", "Estado"];
 
-    // Header de tabla
-    doc.rect(40, doc.y, 515, 18).fillColor("#024E3F").fill();
+    const tableY = doc.y;
+    doc.rect(40, tableY, 515, 20).fillColor("#024E3F").fill();
     headers.forEach((h, i) => {
       doc.fontSize(8).fillColor("#FFFFFF").font("Helvetica-Bold")
-        .text(h, colX[i], doc.y - 14, { width: (colX[i+1] || 555) - colX[i] - 4 });
+        .text(h, colX[i] + 3, tableY + 6, { width: (colX[i+1] || 555) - colX[i] - 6 });
     });
-    doc.moveDown(0.2);
+    doc.y = tableY + 22;
 
-    // Filas
     alumnos.forEach((alumno, idx) => {
       const docsCount = alumno.documentos?.length || 0;
-      const y = doc.y;
+      const y  = doc.y;
       const bg = idx % 2 === 0 ? "#F9FAFB" : "#FFFFFF";
 
-      doc.rect(40, y, 515, 16).fillColor(bg).fill();
+      doc.rect(40, y, 515, 18).fillColor(bg).fill();
 
       doc.fontSize(8).fillColor("#111827").font("Helvetica");
-      doc.text(alumno.matricula,           colX[0], y + 4, { width: colX[1] - colX[0] - 4 });
-      doc.text(alumno.nombre,              colX[1], y + 4, { width: colX[2] - colX[1] - 4 });
-      doc.text(alumno.carrera.substring(0, 25) + (alumno.carrera.length > 25 ? "..." : ""),
-                                           colX[2], y + 4, { width: colX[3] - colX[2] - 4 });
-      doc.text(`${docsCount}/4`,           colX[3], y + 4, { width: colX[4] - colX[3] - 4 });
+      doc.text(alumno.matricula,                                                          colX[0] + 3, y + 5, { width: colX[1] - colX[0] - 6 });
+      doc.text(alumno.nombre,                                                             colX[1] + 3, y + 5, { width: colX[2] - colX[1] - 6 });
+      doc.text(alumno.carrera.length > 22 ? alumno.carrera.substring(0, 22) + "..." : alumno.carrera,
+                                                                                          colX[2] + 3, y + 5, { width: colX[3] - colX[2] - 6 });
+      doc.text(`${docsCount}/4`,                                                          colX[3] + 3, y + 5, { width: colX[4] - colX[3] - 6 });
 
       const estadoColor = alumno.estado === "ACTIVO" ? "#1D9E75" : "#E24B4A";
       doc.fontSize(8).fillColor(estadoColor).font("Helvetica-Bold")
-        .text(alumno.estado,               colX[4], y + 4, { width: 55 - 4 });
+        .text(alumno.estado,                                                              colX[4] + 3, y + 5, { width: 65 - 6 });
 
-      doc.moveDown(0.15);
+      doc.y = y + 20;
 
-      // Nueva página si se necesita
       if (doc.y > doc.page.height - 80) {
         doc.addPage();
         drawHeader(doc);
+        doc.moveDown(0.5);
       }
     });
 

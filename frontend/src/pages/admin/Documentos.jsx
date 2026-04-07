@@ -4,7 +4,7 @@ import AdminLayout from "../../layout/AdminLayout";
 import { useNavigate } from "react-router-dom";
 import {
   Search, FileCheck, FileX, Clock, Eye,
-  Filter, CheckCircle, XCircle
+  Filter, CheckCircle, XCircle, Download
 } from "lucide-react";
 
 const estadoConfig = {
@@ -112,16 +112,45 @@ export default function DocumentosAdmin() {
     { key: "RECHAZADO",   label: "Rechazados",   color: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"                 },
   ];
 
+  // FUNCIONES DE REPORTE PDF
+  const handleReporteGeneral = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/reportes/general", {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: "blob"
+    });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reporte-general-expedientes.pdf";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
   return (
     <AdminLayout title="Documentos">
 
       {/* HEADER */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Validación de Documentos</h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Revisa y aprueba los expedientes de los alumnos.
-        </p>
-      </div>
+      <div className="flex items-center justify-between mb-6">
+  <div>
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      Validación de Documentos
+    </h2>
+    <p className="text-gray-500 dark:text-gray-400 mt-1">
+      Revisa y aprueba los expedientes de los alumnos.
+    </p>
+  </div>
+  <button
+    onClick={handleReporteGeneral}
+    className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
+  >
+    <Download size={15} />
+    Reporte General PDF
+  </button>
+</div>
 
       {/* FEEDBACK */}
       {feedback && (

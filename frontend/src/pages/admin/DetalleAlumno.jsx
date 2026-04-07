@@ -5,14 +5,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, FileText, Fingerprint, GraduationCap, FileBadge,
   CheckCircle, XCircle, Clock, Eye, Hash, BookOpen, User,
-  MapPin, Phone, Calendar
+  MapPin, Phone, Calendar, Download
 } from "lucide-react";
 
 const DOCUMENTOS_BASE = [
-  { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento",        icon: FileText      },
-  { tipo: "CURP",            label: "CURP",                      icon: Fingerprint   },
-  { tipo: "CERTIFICADO",     label: "Certificado de Bachillerato",icon: GraduationCap },
-  { tipo: "CONSTANCIA",      label: "Constancia de Estudios",    icon: FileBadge     },
+  { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento",         icon: FileText      },
+  { tipo: "CURP",            label: "CURP",                       icon: Fingerprint   },
+  { tipo: "CERTIFICADO",     label: "Certificado de Bachillerato", icon: GraduationCap },
+  { tipo: "CONSTANCIA",      label: "Constancia de Estudios",     icon: FileBadge     },
 ];
 
 const estadoConfig = {
@@ -39,17 +39,17 @@ export default function DetalleAlumno() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const [alumno, setAlumno]   = useState(null);
-  const [docs, setDocs]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(null); // id del doc que se está actualizando
-  const [feedback, setFeedback] = useState(null); // { tipo: "success"|"error", msg }
+  const [alumno, setAlumno]     = useState(null);
+  const [docs, setDocs]         = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [updating, setUpdating] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   const fetchData = async () => {
     try {
       const [resAlumno, resDocs] = await Promise.all([
-        axios.get(`http://localhost:3000/api/alumnos/${id}`,        { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`http://localhost:3000/api/documentos/${id}`,     { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`http://localhost:3000/api/alumnos/${id}`,    { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`http://localhost:3000/api/documentos/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setAlumno(resAlumno.data);
       setDocs(resDocs.data);
@@ -81,20 +81,52 @@ export default function DetalleAlumno() {
     }
   };
 
+  const handleDescargarReporte = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/reportes/alumno/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob"
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `expediente-${alumno?.matricula || id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const initials = (nombre) =>
     nombre?.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase() || "";
 
   return (
     <AdminLayout title="Detalle de Alumno">
 
-      {/* BACK */}
-      <button
-        onClick={() => navigate("/admin/alumnos")}
-        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white mb-6 transition-colors group"
-      >
-        <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-        Volver a Alumnos
-      </button>
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => navigate("/admin/alumnos")}
+          className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+          Volver a Alumnos
+        </button>
+
+        {!loading && alumno && (
+          <button
+            onClick={handleDescargarReporte}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
+          >
+            <Download size={15} />
+            Descargar Expediente PDF
+          </button>
+        )}
+      </div>
 
       {/* FEEDBACK */}
       {feedback && (
@@ -122,10 +154,9 @@ export default function DetalleAlumno() {
       ) : (
         <div className="grid md:grid-cols-3 gap-6 items-start">
 
-          {/* COLUMNA IZQUIERDA — perfil */}
+          {/* COLUMNA IZQUIERDA */}
           <div className="flex flex-col gap-4">
 
-            {/* CARD PERFIL */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
               <div className="h-16 rounded-t-2xl bg-gradient-to-r from-[#1a2744] to-[#243660]" />
               <div className="px-5 pb-5">
@@ -148,10 +179,10 @@ export default function DetalleAlumno() {
 
                 <div className="space-y-3">
                   {[
-                    { icon: Hash,          label: "Matrícula",    value: alumno?.matricula          },
-                    { icon: BookOpen,      label: "Cuatrimestre", value: alumno?.cuatrimestre_actual },
-                    { icon: User,          label: "Estado",       value: alumno?.estado             },
-                    { icon: Calendar,      label: "Registrado",   value: alumno?.createdAt ? new Date(alumno.createdAt).toLocaleDateString("es-MX") : "—" },
+                    { icon: Hash,     label: "Matrícula",    value: alumno?.matricula          },
+                    { icon: BookOpen, label: "Cuatrimestre", value: alumno?.cuatrimestre_actual },
+                    { icon: User,     label: "Estado",       value: alumno?.estado             },
+                    { icon: Calendar, label: "Registrado",   value: alumno?.createdAt ? new Date(alumno.createdAt).toLocaleDateString("es-MX") : "—" },
                   ].map(({ icon: Icon, label, value }) => (
                     <div key={label} className="flex items-center gap-3">
                       <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
@@ -165,7 +196,6 @@ export default function DetalleAlumno() {
                   ))}
                 </div>
 
-                {/* DATOS PERSONALES SI EXISTEN */}
                 {(alumno?.telefono || alumno?.ciudad) && (
                   <>
                     <div className="border-t border-gray-100 dark:border-gray-700 my-4" />
@@ -198,7 +228,6 @@ export default function DetalleAlumno() {
               </div>
             </div>
 
-            {/* RESUMEN EXPEDIENTE */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
               <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 Resumen Expediente
@@ -220,7 +249,7 @@ export default function DetalleAlumno() {
 
           </div>
 
-          {/* COLUMNA DERECHA — documentos */}
+          {/* COLUMNA DERECHA */}
           <div className="md:col-span-2 flex flex-col gap-4">
 
             <div className="flex items-center justify-between">
@@ -233,13 +262,14 @@ export default function DetalleAlumno() {
             </div>
 
             {DOCUMENTOS_BASE.map(({ tipo, label, icon: Icon }) => {
-              const doc   = docs.find(d => d.tipo === tipo);
+              const doc    = docs.find(d => d.tipo === tipo);
               const estado = doc?.estado || "PENDIENTE";
-              const cfg   = estadoConfig[estado];
+              const cfg    = estadoConfig[estado];
 
               return (
-                <div key={tipo} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden border-l-4 border-l-gray-200 dark:border-l-gray-600"
-                  style={{ borderLeftColor: estado === "APROBADO" ? "#1D9E75" : estado === "RECHAZADO" ? "#E24B4A" : estado === "EN_REVISION" ? "#EF9F27" : undefined }}
+                <div key={tipo}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden border-l-4"
+                  style={{ borderLeftColor: estado === "APROBADO" ? "#1D9E75" : estado === "RECHAZADO" ? "#E24B4A" : estado === "EN_REVISION" ? "#EF9F27" : "#D1D5DB" }}
                 >
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-3">
@@ -261,51 +291,37 @@ export default function DetalleAlumno() {
 
                     {doc ? (
                       <div className="flex gap-2 mt-3">
-
-                        {/* VER PDF */}
                         
-                          <a
-                            href={`http://localhost:3000/uploads/${doc.url}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                          >
-                            <Eye size={13} /> Ver documento
+                          <a href={`http://localhost:3000/uploads/${doc.url}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                        >
+                          <Eye size={13} /> Ver documento
                         </a>
 
-                        {/* APROBAR */}
                         {estado !== "APROBADO" && (
                           <button
                             onClick={() => handleEstado(doc.id, "APROBADO")}
                             disabled={updating === doc.id}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/30 active:scale-95 transition-all disabled:opacity-60"
                           >
-                            {updating === doc.id ? (
-                              <span className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-500 rounded-full animate-spin" />
-                            ) : (
-                              <CheckCircle size={13} />
-                            )}
+                            {updating === doc.id ? <span className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-500 rounded-full animate-spin" /> : <CheckCircle size={13} />}
                             Aprobar
                           </button>
                         )}
 
-                        {/* RECHAZAR */}
                         {estado !== "RECHAZADO" && (
                           <button
                             onClick={() => handleEstado(doc.id, "RECHAZADO")}
                             disabled={updating === doc.id}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all disabled:opacity-60"
                           >
-                            {updating === doc.id ? (
-                              <span className="w-3 h-3 border-2 border-red-400/30 border-t-red-500 rounded-full animate-spin" />
-                            ) : (
-                              <XCircle size={13} />
-                            )}
+                            {updating === doc.id ? <span className="w-3 h-3 border-2 border-red-400/30 border-t-red-500 rounded-full animate-spin" /> : <XCircle size={13} />}
                             Rechazar
                           </button>
                         )}
 
-                        {/* EN REVISIÓN */}
                         {estado !== "EN_REVISION" && (
                           <button
                             onClick={() => handleEstado(doc.id, "EN_REVISION")}
@@ -316,7 +332,6 @@ export default function DetalleAlumno() {
                             En Revisión
                           </button>
                         )}
-
                       </div>
                     ) : (
                       <div className="mt-3 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -329,7 +344,6 @@ export default function DetalleAlumno() {
                 </div>
               );
             })}
-
           </div>
         </div>
       )}
