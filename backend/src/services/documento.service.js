@@ -42,3 +42,20 @@ export const updateDocumentoEstado = async (id, estado) => {
   });
 };
 
+// Obtener todos los documentos con información básica del alumno (para ADMIN)
+export const getAllDocumentos = async () => {
+  return await prisma.documento.findMany({
+    include: {
+      alumno: {
+        select: {
+          id: true,
+          nombre: true,
+          matricula: true,
+          carrera: true,
+          foto: true
+        }
+      }
+    },
+    orderBy: { createdAt: "desc" }
+  });
+};

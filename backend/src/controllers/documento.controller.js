@@ -55,3 +55,15 @@ export const getByAlumno = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// OBTENER TODOS LOS DOCUMENTOS (SOLO ADMIN)
+import { getAllDocumentos } from "../services/documento.service.js";
+
+export const getAll = async (req, res) => {
+  try {
+    const docs = await getAllDocumentos();
+    res.json(docs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
