@@ -133,4 +133,10 @@ export const updateFotoAlumno = async (userId, filename) => {
     data: { foto: filename }
   });
 };
-    
+  
+// OBTENER UN ALUMNO POR ID (SOLO PARA ADMIN)
+export const getAlumnoById = async (id) => {
+  return await prisma.alumno.findUnique({
+    where: { id }
+  });
+};
