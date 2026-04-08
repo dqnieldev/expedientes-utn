@@ -23,6 +23,7 @@ export default function Login() {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("mustChangePassword", data.mustChangePassword);
+    localStorage.setItem("tempPass", form.password); // Guardamos la contraseña actual para el cambio de contraseña
 
     if (data.mustChangePassword) {
       window.location.href = "/change-password";

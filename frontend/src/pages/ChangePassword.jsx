@@ -17,42 +17,36 @@ export default function ChangePassword() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    //  VALIDACIÓN
-    if (form.password !== form.confirmPassword) {
-      return setMessage("Las contraseñas no coinciden");
-    }
+  if (form.password !== form.confirmPassword)
+    return setMessage("Las contraseñas no coinciden");
 
-    if (form.password.length < 6) {
-      return setMessage("Mínimo 6 caracteres");
-    }
+  if (form.password.length < 6)
+    return setMessage("Mínimo 6 caracteres");
 
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    const matricula = localStorage.getItem("tempPass"); // ← su contraseña actual
 
-      await axios.put(
-        "http://localhost:3000/api/auth/change-password",
-        { newPassword: form.password },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+    await axios.put(
+      "http://localhost:3000/api/auth/change-password",
+      {
+        currentPassword: matricula,  // ← esto faltaba
+        newPassword: form.password,
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      localStorage.setItem("mustChangePassword", "false");
+    localStorage.removeItem("tempPass"); // Limpiamos la contraseña temporal
+    localStorage.setItem("mustChangePassword", "false");
+    setMessage("Contraseña actualizada correctamente");
+    setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
 
-      setMessage("Contraseña actualizada correctamente");
-
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 1500);
-
-    } catch (error) {
-      setMessage("Error al actualizar contraseña");
-    }
-  };
+  } catch (error) {
+    setMessage(error.response?.data?.message || "Error al actualizar contraseña");
+  }
+};
 
   return (
     <div className="h-screen flex items-center justify-center bg-[#f8faf6]">
