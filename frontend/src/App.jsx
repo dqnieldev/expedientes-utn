@@ -6,7 +6,6 @@ import Documentos from "./pages/alumno/Documentos";
 import Perfil from "./pages/alumno/Perfil";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
-import RecuperarPassword from "./pages/RecuperarPassword";
 
 // Admin pages
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
@@ -14,6 +13,10 @@ import Alumnos from "./pages/admin/Alumnos";
 import DetalleAlumno from "./pages/admin/DetalleAlumno";
 import DocumentosAdmin from "./pages/admin/Documentos";
 import RespaldosAdmin from "./pages/admin/RespaldosAdmin";
+
+// Páginas públicas: Login, Cambio de contraseña, Recuperar contraseña
+import ResetPassword from "./pages/ResetPassword";
+import RecuperarPassword from "./pages/RecuperarPassword";
 
 function App() {
   return (
@@ -24,6 +27,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/recuperar" element={<RecuperarPassword />} />
+        <Route path="/recuperar-password" element={<RecuperarPassword />} />
+        <Route path="/reset-password"     element={<ResetPassword />} />    
 
         {/* ALUMNO */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardAlumno /></ProtectedRoute>} />

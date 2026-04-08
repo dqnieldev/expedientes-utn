@@ -1,5 +1,6 @@
  import { registerUser, loginUser } from "../services/auth.service.js";
  import { changePassword } from "../services/auth.service.js";
+ import { solicitarReset, resetPassword } from "../services/auth.service.js";
 
 // Controladores para manejar las solicitudes relacionadas con la autenticación de usuarios
 
@@ -38,6 +39,27 @@ export const changePasswordController = async (req, res) => {
 
     await changePassword(userId, currentPassword, newPassword);
     res.json({ message: "Contraseña actualizada" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Controladores para manejar la solicitud de restablecimiento de contraseña y el restablecimiento de contraseña
+export const solicitarResetController = async (req, res) => {
+  try {
+    const { matricula } = req.body;
+    const result = await solicitarReset(matricula);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    const result = await resetPassword(token, newPassword);
+    res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
