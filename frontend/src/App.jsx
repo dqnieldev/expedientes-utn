@@ -13,6 +13,7 @@ import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import Alumnos from "./pages/admin/Alumnos";
 import DetalleAlumno from "./pages/admin/DetalleAlumno";
 import DocumentosAdmin from "./pages/admin/Documentos";
+import RespaldosAdmin from "./pages/admin/RespaldosAdmin";
 
 function App() {
   return (
@@ -34,7 +35,7 @@ function App() {
         <Route path="/admin/alumnos" element={<ProtectedAdminRoute><Alumnos /></ProtectedAdminRoute>} />
         <Route path="/admin/alumnos/:id" element={<ProtectedAdminRoute><DetalleAlumno /></ProtectedAdminRoute>} />
         <Route path="/admin/documentos" element={<ProtectedAdminRoute><DocumentosAdmin /></ProtectedAdminRoute>} />
-
+        <Route path="/admin/respaldos" element={<ProtectedAdminRoute><RespaldosAdmin /></ProtectedAdminRoute>} />
       </Routes>
     </BrowserRouter>
   );

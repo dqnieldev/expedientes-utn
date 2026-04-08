@@ -4,7 +4,8 @@ import {
   Users,
   FileCheck,
   LogOut,
-  ShieldCheck
+  ShieldCheck,
+  DatabaseBackup
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -14,6 +15,7 @@ export default function AdminSidebar() {
     { name: "Dashboard",  path: "/admin/dashboard", icon: LayoutDashboard, desc: "Resumen general" },
     { name: "Alumnos",    path: "/admin/alumnos",   icon: Users,            desc: "Gestionar alumnos" },
     { name: "Documentos", path: "/admin/documentos",icon: FileCheck,        desc: "Validar expedientes" },
+    { name: "Respaldos",  path: "/admin/respaldos",   icon: DatabaseBackup,  desc: "Gestionar respaldos DB"},
   ];
 
   return (
