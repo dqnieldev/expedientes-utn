@@ -32,4 +32,14 @@ export const backupService = {
     a.click();
     window.URL.revokeObjectURL(url);
   },
+
+  // Restaurar respaldo
+  getScheduler: () =>
+  axios.get(`${API_URL}/backups/scheduler`, { headers: getHeaders() })
+    .then(r => r.data),
+
+    // Configurar scheduler
+setScheduler: (config) =>
+  axios.post(`${API_URL}/backups/scheduler`, config, { headers: getHeaders() })
+    .then(r => r.data),
 };
