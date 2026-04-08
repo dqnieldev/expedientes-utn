@@ -33,9 +33,15 @@ export default function Login() {
       window.location.href = "/dashboard";
     }
   } catch (err) {
-    setError("Correo o contraseña incorrectos");
-    setLoading(false);
+  if (err.response?.status === 429) {
+    setError("Demasiados intentos fallidos. Espera 15 minutos e intenta de nuevo.");
+  } else if (err.response?.status === 401 || err.response?.status === 400) {
+    setError("Correo o contraseña incorrectos.");
+  } else {
+    setError("Error al iniciar sesión. Intenta más tarde.");
   }
+  setLoading(false);
+}
 };
 
   return (

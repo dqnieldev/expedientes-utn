@@ -6,6 +6,7 @@ import alumnoRoutes from "./routes/alumno.routes.js";
 import documentoRoutes from "./routes/documento.routes.js";
 import reporteRoutes from "./routes/reporte.routes.js";
 import backupRoutes from "./routes/backup.routes.js";
+import { loginRateLimit } from "./middlewares/loginRateLimit.js";
 import path from "path";
 
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 // Rutas de la API de usuarios, autenticación, alumnos y documentos
 app.use("/api/user", userRoutes);
+app.use("/api/auth/login", loginRateLimit);
 app.use("/api/auth", authRoutes);
 app.use("/api/alumnos", alumnoRoutes);
 app.use("/api/documentos", documentoRoutes);
