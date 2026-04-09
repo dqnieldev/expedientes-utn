@@ -26,7 +26,7 @@ export default function AdminLayout({ children, title }) {
         <AdminHeader title={title} />
 
         {/* PAGE CONTENT */}
-        <main className="flex-1 overflow-y-auto p-6 pb-10 bg-slate-100 dark:bg-gray-950 transition-colors duration-200">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-10 bg-slate-100 dark:bg-gray-950 transition-colors duration-200">
           {children}
         </main>
 
