@@ -8,6 +8,7 @@ import {
   getAlumnoById
 } from "../services/alumno.service.js";
 import { cambiarEstadoAlumno } from "../services/alumno.service.js";
+import { eliminarAlumno } from "../services/alumno.service.js";
 
 // Controlador para crear un nuevo alumno (solo para ADMIN)
 export const create = async (req, res) => {
@@ -101,6 +102,17 @@ export const cambiarEstado = async (req, res) => {
 
     const alumno = await cambiarEstadoAlumno(Number(id), estado);
     res.json({ message: "Estado actualizado correctamente", alumno });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// ELIMINAR ALUMNO (SOLO PARA ADMIN)
+export const eliminar = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await eliminarAlumno(Number(id));
+    res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

@@ -6,7 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, FileText, Fingerprint, GraduationCap, FileBadge,
   CheckCircle, XCircle, Clock, Eye, Hash, BookOpen, User,
-  MapPin, Phone, Calendar, Download, ChevronDown,
+  MapPin, Phone, Calendar, Download, ChevronDown,Trash2
 } from "lucide-react";
 
 const DOCUMENTOS_BASE = [
@@ -49,6 +49,7 @@ export default function DetalleAlumno() {
   const [modalRechazo, setModalRechazo] = useState(null); // { docId } | null
   const [razonRechazo, setRazonRechazo] = useState("");
   const [enviandoRechazo, setEnviandoRechazo] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
 
   const showFeedback = (tipo, msg) => {
     setFeedback({ tipo, msg });
@@ -152,6 +153,28 @@ const handleConfirmarRechazo = async () => {
     BAJA:          "text-red-600 dark:text-red-400",
     BAJA_TEMPORAL: "text-amber-600 dark:text-amber-400",
   };
+
+  const handleEliminarAlumno = async () => {
+  if (!window.confirm(
+    `⚠️ ¿Eliminar PERMANENTEMENTE a ${alumno.nombre}?\n\nSe borrarán todos sus documentos y datos.\nEsta acción NO se puede deshacer.`
+  )) return;
+
+  // Segunda confirmación
+  if (!window.confirm(`Segunda confirmación: ¿Estás completamente seguro?`)) return;
+
+  setEliminando(true);
+  try {
+    await axios.delete(
+      `http://localhost:3000/api/alumnos/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    navigate("/admin/alumnos");
+  } catch (err) {
+    showFeedback("error", err.response?.data?.message ?? "Error al eliminar el alumno.");
+    setEliminando(false);
+  }
+};
+  
 
   return (
     <AdminLayout title="Detalle de Alumno">
@@ -409,6 +432,22 @@ const handleConfirmarRechazo = async () => {
           Dar de Baja Definitiva
         </button>
       )}
+
+      {/* Separador */}
+<div className="border-t border-red-200 dark:border-red-800/50 my-2" />
+
+{/* Eliminar permanentemente */}
+<button
+  onClick={handleEliminarAlumno}
+  disabled={eliminando || cambiandoEstado}
+  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+>
+  {eliminando
+    ? <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+    : <Trash2 size={13} />
+  }
+  Eliminar alumno permanentemente
+</button>
     </div>
   </div>
 </div>

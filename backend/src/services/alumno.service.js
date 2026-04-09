@@ -192,3 +192,24 @@ export const cambiarEstadoAlumno = async (id, nuevoEstado) => {
 
   return updated;
 };
+
+// ELIMINAR ALUMNO (SOLO PARA ADMIN)
+export const eliminarAlumno = async (id) => {
+  const alumno = await prisma.alumno.findUnique({
+    where: { id },
+    include: { usuario: true },
+  });
+
+  if (!alumno) throw new Error("Alumno no encontrado");
+
+  // Eliminar documentos primero (relación)
+  await prisma.documento.deleteMany({ where: { alumnoId: id } });
+
+  // Eliminar alumno
+  await prisma.alumno.delete({ where: { id } });
+
+  // Eliminar usuario asociado
+  await prisma.usuario.delete({ where: { id: alumno.usuarioId } });
+
+  return { message: "Alumno eliminado correctamente" };
+};
