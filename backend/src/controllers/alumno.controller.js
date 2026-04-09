@@ -7,6 +7,7 @@ import {
   updateFotoAlumno,
   getAlumnoById
 } from "../services/alumno.service.js";
+import { cambiarEstadoAlumno } from "../services/alumno.service.js";
 
 // Controlador para crear un nuevo alumno (solo para ADMIN)
 export const create = async (req, res) => {
@@ -83,6 +84,23 @@ export const updateFoto = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No se recibió imagen" });
     const alumno = await updateFotoAlumno(req.user.id, req.file.filename);
     res.json(alumno);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// ── Cambiar estado del alumno ─────────────────────────────────────────────────
+export const cambiarEstado = async (req, res) => {
+  try {
+    const { id }     = req.params;
+    const { estado } = req.body;
+
+    const estadosValidos = ["ACTIVO", "BAJA", "BAJA_TEMPORAL"];
+    if (!estadosValidos.includes(estado))
+      return res.status(400).json({ message: "Estado inválido" });
+
+    const alumno = await cambiarEstadoAlumno(Number(id), estado);
+    res.json({ message: "Estado actualizado correctamente", alumno });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

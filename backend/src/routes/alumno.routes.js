@@ -9,6 +9,7 @@ import { updatePerfil } from "../controllers/alumno.controller.js"; // Importar 
 import { updateFoto } from "../controllers/alumno.controller.js";
 import { uploadImg } from "../config/multer.js"; // Importar configuración de multer para imágenes de perfil
 import { getById } from "../controllers/alumno.controller.js"; // Importar controlador para obtener un alumno por ID (solo para ADMIN)
+import { cambiarEstado } from "../controllers/alumno.controller.js";
 
 const router = express.Router();
 
@@ -22,10 +23,11 @@ router.put("/perfil", verifyToken, updatePerfil); // Ruta para que el alumno act
 router.put("/foto", verifyToken, uploadImg.single("foto"), updateFoto); // Ruta para actualizar foto de perfil del alumno
 
 router.get("/:id", verifyToken, authorizeRoles("ADMIN"), getById); // Ruta para que el ADMIN vea el perfil de un alumno específico
+router.patch("/:id/estado", verifyToken, authorizeRoles("ADMIN"), cambiarEstado); // Ruta para que el ADMIN cambie el estado de un alumno específico
 
 
 router.put("/:id", verifyToken, authorizeRoles("ADMIN"), update); // Ruta para que el ADMIN actualice el perfil de un alumno específico
 
-
+ 
 
 export default router;
