@@ -253,32 +253,21 @@ const handleConfirmarRechazo = async () => {
                     </div>
                   </div>
 
-                  {/* ── ESTADO (selector) ── */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
-                      <User size={13} className="text-gray-400" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Estado</p>
-                      <div className="relative flex items-center gap-1.5">
-                        <select
-                          value={alumno?.estado ?? "ACTIVO"}
-                          onChange={e => handleCambiarEstado(e.target.value)}
-                          disabled={cambiandoEstado}
-                          className={`appearance-none text-sm font-medium pr-5 bg-transparent border-none focus:outline-none cursor-pointer disabled:opacity-60 transition-colors
-                            ${estadoAlumnoColor[alumno?.estado] ?? "text-gray-800 dark:text-gray-200"}`}
-                        >
-                          <option value="ACTIVO">ACTIVO</option>
-                          <option value="BAJA">BAJA</option>
-                          <option value="BAJA_TEMPORAL">BAJA TEMPORAL</option>
-                        </select>
-                        <ChevronDown size={11} className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        {cambiandoEstado && (
-                          <span className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin ml-1" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  {/* Estado */}
+                    <div className="flex items-center gap-3">
+  <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
+    <User size={13} className="text-gray-400" />
+  </div>
+  <div>
+    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Estado</p>
+    <p className={`text-sm font-medium
+      ${alumno?.estado === "ACTIVO"        ? "text-emerald-600 dark:text-emerald-400"
+      : alumno?.estado === "BAJA"          ? "text-red-600 dark:text-red-400"
+      : "text-amber-600 dark:text-amber-400"}`}>
+      {alumno?.estado === "BAJA_TEMPORAL" ? "BAJA TEMPORAL" : alumno?.estado}
+    </p>
+  </div>
+</div>
 
                   {/* Registrado */}
                   <div className="flex items-center gap-3">
@@ -348,7 +337,85 @@ const handleConfirmarRechazo = async () => {
               </div>
             </div>
 
+                            {/* ── ZONA DE PELIGRO — SIEMPRE VISIBLE ── */}
+<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+  <div className="rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50/50 dark:bg-red-900/10 p-4">
+
+    <div className="flex items-center gap-2 mb-3">
+      <div className="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
+        <span className="text-red-500 text-[10px] font-bold">!</span>
+      </div>
+      <p className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
+        Zona de peligro
+      </p>
+    </div>
+
+    <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
+      Cambiar el estado del alumno enviará una notificación por correo y puede afectar su acceso al sistema.
+    </p>
+
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Estado actual</span>
+      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full
+        ${alumno?.estado === "ACTIVO"
+          ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+          : alumno?.estado === "BAJA"
+          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+          : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+        }`}>
+        {alumno?.estado === "BAJA_TEMPORAL" ? "BAJA TEMPORAL" : alumno?.estado}
+      </span>
+    </div>
+
+    <div className="flex flex-col gap-2">
+      {alumno?.estado !== "ACTIVO" && (
+        <button
+          onClick={() => handleCambiarEstado("ACTIVO")}
+          disabled={cambiandoEstado}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {cambiandoEstado
+            ? <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            : <CheckCircle size={13} />
+          }
+          Marcar como Activo
+        </button>
+      )}
+
+      {alumno?.estado !== "BAJA_TEMPORAL" && (
+        <button
+          onClick={() => handleCambiarEstado("BAJA_TEMPORAL")}
+          disabled={cambiandoEstado}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {cambiandoEstado
+            ? <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            : <Clock size={13} />
+          }
+          Dar Baja Temporal
+        </button>
+      )}
+
+      {alumno?.estado !== "BAJA" && (
+        <button
+          onClick={() => handleCambiarEstado("BAJA")}
+          disabled={cambiandoEstado}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400 text-xs font-semibold active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {cambiandoEstado
+            ? <span className="w-3 h-3 border-2 border-red-400/30 border-t-red-500 rounded-full animate-spin" />
+            : <XCircle size={13} />
+          }
+          Dar de Baja Definitiva
+        </button>
+      )}
+    </div>
+  </div>
+</div>
+
           </div>
+
+          
 
           {/* ── COLUMNA DERECHA ───────────────────────────────────────────── */}
           <div className="md:col-span-2 flex flex-col gap-4">
