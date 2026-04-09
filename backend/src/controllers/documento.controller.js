@@ -26,11 +26,10 @@ export const create = async (req, res) => {
 // Actualizar el estado de un documento
 export const updateEstado = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { estado } = req.body;
+    const { id }                       = req.params;
+    const { estado, razonRechazo = null } = req.body;
 
-    const doc = await updateDocumentoEstado(Number(id), estado);
-
+    const doc = await updateDocumentoEstado(Number(id), estado, razonRechazo);
     res.json(doc);
   } catch (error) {
     res.status(400).json({ message: error.message });

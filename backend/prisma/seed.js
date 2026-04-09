@@ -2,8 +2,8 @@ import prisma from "../src/config/prisma.js";
 import bcrypt from "bcryptjs";
 
 async function main() {
-  const email = "jose@utn.com";
-  const password = "123456";
+  const email = "tic-3103134@utnay.edu.mx";
+  const password = "admin123"; // Cambia esta contraseña por una más segura en producción
 
   // verificar si ya existe
   const existing = await prisma.usuario.findUnique({
@@ -21,7 +21,7 @@ async function main() {
     data: {
       email,
       password: hashedPassword,
-      role: "ALUMNO",
+      role: "ADMIN",
       mustChangePassword: false
     }
   });
