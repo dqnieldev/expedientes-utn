@@ -4,7 +4,7 @@ import AdminLayout from "../../layout/AdminLayout";
 import { useNavigate } from "react-router-dom";
 import {
   Search, FileCheck, FileX, Clock, Eye,
-  Filter, CheckCircle, XCircle, Download
+  Filter, CheckCircle, XCircle, Download,
 } from "lucide-react";
 
 const estadoConfig = {
@@ -34,21 +34,31 @@ const tipoLabel = {
 };
 
 export default function DocumentosAdmin() {
-  const [docs, setDocs]         = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState("");
+  const [docs,         setDocs]         = useState([]);
+  const [filtered,     setFiltered]     = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [search,       setSearch]       = useState("");
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
-  const [updating, setUpdating] = useState(null);
-  const [feedback, setFeedback] = useState(null);
+  const [updating,     setUpdating]     = useState(null);
+  const [feedback,     setFeedback]     = useState(null);
 
-  const token = localStorage.getItem("token");
+  // ── Modal rechazo ──────────────────────────────────────────────────────────
+  const [modalRechazo,    setModalRechazo]    = useState(null); // { docId } | null
+  const [razonRechazo,    setRazonRechazo]    = useState("");
+  const [enviandoRechazo, setEnviandoRechazo] = useState(false);
+
+  const token    = localStorage.getItem("token");
   const navigate = useNavigate();
+
+  const showFeedback = (tipo, msg) => {
+    setFeedback({ tipo, msg });
+    setTimeout(() => setFeedback(null), 3000);
+  };
 
   const fetchDocs = async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/documentos", {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setDocs(res.data);
       setFiltered(res.data);
@@ -61,7 +71,6 @@ export default function DocumentosAdmin() {
 
   useEffect(() => { fetchDocs(); }, []);
 
-  // Filtro combinado: búsqueda + estado
   useEffect(() => {
     const q = search.toLowerCase();
     setFiltered(
@@ -76,22 +85,41 @@ export default function DocumentosAdmin() {
     );
   }, [search, filtroEstado, docs]);
 
-  const handleEstado = async (docId, estado) => {
+  // ── Aprobar ────────────────────────────────────────────────────────────────
+  const handleAprobar = async (docId) => {
     setUpdating(docId);
     try {
       await axios.put(
         `http://localhost:3000/api/documentos/${docId}`,
-        { estado },
+        { estado: "APROBADO" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setFeedback({ tipo: "success", msg: `Documento ${estado === "APROBADO" ? "aprobado" : "rechazado"} correctamente.` });
-      setTimeout(() => setFeedback(null), 3000);
+      showFeedback("success", "Documento aprobado. Se notificó al alumno.");
       fetchDocs();
-    } catch (err) {
-      setFeedback({ tipo: "error", msg: "Error al actualizar el documento." });
-      setTimeout(() => setFeedback(null), 3000);
+    } catch {
+      showFeedback("error", "Error al aprobar el documento.");
     } finally {
       setUpdating(null);
+    }
+  };
+
+  // ── Confirmar rechazo con razón ────────────────────────────────────────────
+  const handleConfirmarRechazo = async () => {
+    setEnviandoRechazo(true);
+    try {
+      await axios.put(
+        `http://localhost:3000/api/documentos/${modalRechazo.docId}`,
+        { estado: "RECHAZADO", razonRechazo },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      showFeedback("success", "Documento rechazado. Se notificó al alumno.");
+      fetchDocs();
+    } catch {
+      showFeedback("error", "Error al rechazar el documento.");
+    } finally {
+      setEnviandoRechazo(false);
+      setModalRechazo(null);
+      setRazonRechazo("");
     }
   };
 
@@ -106,51 +134,50 @@ export default function DocumentosAdmin() {
   };
 
   const filtros = [
-    { key: "TODOS",       label: "Todos",        color: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"                },
-    { key: "EN_REVISION", label: "En Revisión",  color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"         },
-    { key: "APROBADO",    label: "Aprobados",    color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"  },
-    { key: "RECHAZADO",   label: "Rechazados",   color: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"                 },
+    { key: "TODOS",       label: "Todos",       color: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"               },
+    { key: "EN_REVISION", label: "En Revisión", color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"        },
+    { key: "APROBADO",    label: "Aprobados",   color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400" },
+    { key: "RECHAZADO",   label: "Rechazados",  color: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"                },
   ];
 
-  // FUNCIONES DE REPORTE PDF
   const handleReporteGeneral = async () => {
-  try {
-    const res = await axios.get("http://localhost:3000/api/reportes/general", {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: "blob"
-    });
-    const url = window.URL.createObjectURL(new Blob([res.data]));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "reporte-general-expedientes.pdf";
-    a.click();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error(error);
-  }
-};
+    try {
+      const res = await axios.get("http://localhost:3000/api/reportes/general", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a   = document.createElement("a");
+      a.href     = url;
+      a.download = "reporte-general-expedientes.pdf";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <AdminLayout title="Documentos">
 
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
-  <div>
-    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-      Validación de Documentos
-    </h2>
-    <p className="text-gray-500 dark:text-gray-400 mt-1">
-      Revisa y aprueba los expedientes de los alumnos.
-    </p>
-  </div>
-  <button
-    onClick={handleReporteGeneral}
-    className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
-  >
-    <Download size={15} />
-    Reporte General PDF
-  </button>
-</div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Validación de Documentos
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Revisa y aprueba los expedientes de los alumnos.
+          </p>
+        </div>
+        <button
+          onClick={handleReporteGeneral}
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
+        >
+          <Download size={15} />
+          Reporte General PDF
+        </button>
+      </div>
 
       {/* FEEDBACK */}
       {feedback && (
@@ -164,7 +191,7 @@ export default function DocumentosAdmin() {
         </div>
       )}
 
-      {/* FILTROS RÁPIDOS */}
+      {/* FILTROS */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <Filter size={14} className="text-gray-400 shrink-0" />
         {filtros.map(({ key, label, color }) => (
@@ -199,7 +226,6 @@ export default function DocumentosAdmin() {
 
       {/* LISTA */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
-
         {loading ? (
           <div className="p-5 space-y-4">
             {[1,2,3,4].map(i => (
@@ -221,9 +247,7 @@ export default function DocumentosAdmin() {
             <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
               <FileCheck size={24} className="text-gray-400" />
             </div>
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              No hay documentos
-            </p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">No hay documentos</p>
             <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
               {search || filtroEstado !== "TODOS" ? "Intenta con otros filtros" : "No se han subido documentos aún"}
             </p>
@@ -231,87 +255,196 @@ export default function DocumentosAdmin() {
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {filtered.map(doc => {
-              const cfg = estadoConfig[doc.estado] || estadoConfig.PENDIENTE;
-              return (
-                <div key={doc.id} className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+  const cfg = estadoConfig[doc.estado] || estadoConfig.PENDIENTE;
+  return (
+    <div key={doc.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
 
-                  {/* AVATAR ALUMNO */}
-                  <div
-                    className="w-10 h-10 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
-                    onClick={() => navigate(`/admin/alumnos/${doc.alumno?.id}`)}
-                    title="Ver expediente completo"
-                  >
-                    {doc.alumno?.foto ? (
-                      <img src={`http://localhost:3000/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
-                    ) : (
-                      <span className="text-white text-xs font-semibold">{initials(doc.alumno?.nombre)}</span>
-                    )}
-                  </div>
+      {/* ── DESKTOP (igual que antes) ── */}
+      <div className="hidden sm:flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+        <div
+          className="w-10 h-10 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+          onClick={() => navigate(`/admin/alumnos/${doc.alumno?.id}`)}
+          title="Ver expediente completo"
+        >
+          {doc.alumno?.foto
+            ? <img src={`http://localhost:3000/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
+            : <span className="text-white text-xs font-semibold">{initials(doc.alumno?.nombre)}</span>
+          }
+        </div>
 
-                  {/* INFO */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
-                      {doc.alumno?.nombre}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-gray-400">{doc.alumno?.matricula}</span>
-                      <span className="text-gray-300 dark:text-gray-600">·</span>
-                      <span className="text-[11px] text-gray-400">{tipoLabel[doc.tipo] || doc.tipo}</span>
-                    </div>
-                  </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+            {doc.alumno?.nombre}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[11px] text-gray-400">{doc.alumno?.matricula}</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span className="text-[11px] text-gray-400">{tipoLabel[doc.tipo] || doc.tipo}</span>
+          </div>
+        </div>
 
-                  {/* ESTADO */}
-                  <span className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-medium shrink-0 ${cfg.badge}`}>
-                    {cfg.icon}{doc.estado.replace("_", " ")}
-                  </span>
+        <span className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-medium shrink-0 ${cfg.badge}`}>
+          {cfg.icon}{doc.estado.replace("_", " ")}
+        </span>
 
-                  {/* ACCIONES */}
-                  <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={`http://localhost:3000/uploads/${doc.url}`}
+            target="_blank" rel="noreferrer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          >
+            <Eye size={12} /> Ver
+          </a>
+          {doc.estado !== "APROBADO" && (
+            <button
+              onClick={() => handleAprobar(doc.id)}
+              disabled={updating === doc.id}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 text-xs hover:bg-emerald-100 active:scale-95 transition-all disabled:opacity-60"
+            >
+              {updating === doc.id
+                ? <span className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-500 rounded-full animate-spin" />
+                : <CheckCircle size={12} />}
+              Aprobar
+            </button>
+          )}
+          {doc.estado !== "RECHAZADO" && (
+            <button
+              onClick={() => setModalRechazo({ docId: doc.id })}
+              disabled={updating === doc.id}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400 text-xs hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60"
+            >
+              <XCircle size={12} /> Rechazar
+            </button>
+          )}
+        </div>
+      </div>
 
-                    <a
-                      href={`http://localhost:3000/uploads/${doc.url}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                    >
-                      <Eye size={12} /> Ver
-                    </a>
+      {/* ── MOBILE ── */}
+      <div className="sm:hidden">
+        <div className="flex items-center gap-3 px-4 pt-4 pb-2">
+          <div
+            className="w-10 h-10 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer"
+            onClick={() => navigate(`/admin/alumnos/${doc.alumno?.id}`)}
+          >
+            {doc.alumno?.foto
+              ? <img src={`http://localhost:3000/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
+              : <span className="text-white text-xs font-semibold">{initials(doc.alumno?.nombre)}</span>
+            }
+          </div>
 
-                    {doc.estado !== "APROBADO" && (
-                      <button
-                        onClick={() => handleEstado(doc.id, "APROBADO")}
-                        disabled={updating === doc.id}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 text-xs hover:bg-emerald-100 active:scale-95 transition-all disabled:opacity-60"
-                      >
-                        {updating === doc.id
-                          ? <span className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-500 rounded-full animate-spin" />
-                          : <CheckCircle size={12} />
-                        }
-                        Aprobar
-                      </button>
-                    )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+              {doc.alumno?.nombre}
+            </p>
+            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+              {doc.alumno?.matricula} · {tipoLabel[doc.tipo] || doc.tipo}
+            </p>
+          </div>
 
-                    {doc.estado !== "RECHAZADO" && (
-                      <button
-                        onClick={() => handleEstado(doc.id, "RECHAZADO")}
-                        disabled={updating === doc.id}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400 text-xs hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60"
-                      >
-                        {updating === doc.id
-                          ? <span className="w-3 h-3 border-2 border-red-400/30 border-t-red-500 rounded-full animate-spin" />
-                          : <XCircle size={12} />
-                        }
-                        Rechazar
-                      </button>
-                    )}
+          <span className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-medium shrink-0 ${cfg.badge}`}>
+            {cfg.icon}{doc.estado.replace("_", " ")}
+          </span>
+        </div>
 
-                  </div>
-                </div>
-              );
-            })}
+        <div className="flex gap-2 px-4 pb-4">
+          <a
+            href={`http://localhost:3000/uploads/${doc.url}`}
+            target="_blank" rel="noreferrer"
+            className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          >
+            <Eye size={12} /> Ver
+          </a>
+          {doc.estado !== "APROBADO" && (
+            <button
+              onClick={() => handleAprobar(doc.id)}
+              disabled={updating === doc.id}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-100 active:scale-95 transition-all disabled:opacity-60"
+            >
+              {updating === doc.id
+                ? <span className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-500 rounded-full animate-spin" />
+                : <CheckCircle size={12} />}
+              Aprobar
+            </button>
+          )}
+          {doc.estado !== "RECHAZADO" && (
+            <button
+              onClick={() => setModalRechazo({ docId: doc.id })}
+              disabled={updating === doc.id}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60"
+            >
+              <XCircle size={12} /> Rechazar
+            </button>
+          )}
+        </div>
+      </div>
+
+    </div>
+  );
+})}
           </div>
         )}
       </div>
+
+      {/* ── MODAL RECHAZO ─────────────────────────────────────────────────── */}
+      {modalRechazo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                  <XCircle size={18} className="text-red-500 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+                    Rechazar documento
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    El alumno recibirá un correo con el motivo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2 block">
+                Motivo del rechazo <span className="text-gray-400 normal-case font-normal">(opcional)</span>
+              </label>
+              <textarea
+                value={razonRechazo}
+                onChange={e => setRazonRechazo(e.target.value)}
+                placeholder="Ej: El documento está ilegible, falta la firma oficial..."
+                rows={4}
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400/30 resize-none"
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 pb-6 flex gap-2">
+              <button
+                onClick={() => { setModalRechazo(null); setRazonRechazo(""); }}
+                disabled={enviandoRechazo}
+                className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmarRechazo}
+                disabled={enviandoRechazo}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold active:scale-95 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {enviandoRechazo
+                  ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Enviando...</>
+                  : <><XCircle size={14} />Confirmar rechazo</>
+                }
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </AdminLayout>
   );

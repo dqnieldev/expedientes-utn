@@ -31,11 +31,6 @@ export default function AdminHeader({ title }) {
 
       <div className="flex items-center gap-4">
 
-        {/* NOTIFICACIONES */}
-        <button className="relative text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full" />
-        </button>
 
         {/* DARK MODE */}
         <button
