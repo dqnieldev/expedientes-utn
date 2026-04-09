@@ -62,7 +62,7 @@ export default function DocumentCard({ item, doc, onUpload, onView }) {
             className="w-full bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-[#007a46] transition-colors duration-200"
           >
             <Upload size={16} />
-            Cargar Documento
+            Cargar 
           </button>
         ) : estado === "APROBADO" ? (
           <button
