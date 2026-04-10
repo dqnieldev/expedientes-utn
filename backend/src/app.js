@@ -7,13 +7,18 @@ import documentoRoutes from "./routes/documento.routes.js";
 import reporteRoutes from "./routes/reporte.routes.js";
 import backupRoutes from "./routes/backup.routes.js";
 import { loginRateLimit } from "./middlewares/loginRateLimit.js";
-import path from "path";
+import morgan from "morgan";
+import helmet from "helmet";
 
 
 const app = express();
 
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
 app.use(express.json());
+app.use(morgan("dev")); // Agrega el middleware de morgan para registrar las solicitudes HTTP
 
 app.get("/", (req, res) => {
   res.send("API Expedientes UTN funcionando ");
