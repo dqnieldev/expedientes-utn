@@ -2,6 +2,8 @@ import cron from "node-cron";
 import { crearBackup } from "./backup.service.js";
 import transporter from "../config/mailer.js";
 import prisma from "../config/prisma.js";
+import { EventEmitter } from "events";
+EventEmitter.defaultMaxListeners = 20;
 
 let tareaActiva = null;
 let configActual = null;
