@@ -17,6 +17,7 @@ import RespaldosAdmin from "./pages/admin/RespaldosAdmin";
 // Páginas públicas: Login, Cambio de contraseña, Recuperar contraseña
 import ResetPassword from "./pages/ResetPassword";
 import RecuperarPassword from "./pages/RecuperarPassword";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -41,6 +42,9 @@ function App() {
         <Route path="/admin/alumnos/:id" element={<ProtectedAdminRoute><DetalleAlumno /></ProtectedAdminRoute>} />
         <Route path="/admin/documentos" element={<ProtectedAdminRoute><DocumentosAdmin /></ProtectedAdminRoute>} />
         <Route path="/admin/respaldos" element={<ProtectedAdminRoute><RespaldosAdmin /></ProtectedAdminRoute>} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict S2A0PoSLJkYtMCS7rtpJEdORtYzXORU3bgB84igcQoGmobeYyyMfq9aIPKKaEvQ
+\restrict xFQO82hXtPKx25SboEVraQLQexOImm6Gc1TuT6fqZg0bKJM1nfiekOCVZrjZs2N
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
@@ -18,6 +18,22 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS '';
+
 
 --
 -- Name: EstadoDocumento; Type: TYPE; Schema: public; Owner: postgres
@@ -112,7 +128,8 @@ CREATE TABLE public."Documento" (
     url text NOT NULL,
     estado public."EstadoDocumento" DEFAULT 'EN_REVISION'::public."EstadoDocumento" NOT NULL,
     "alumnoId" integer NOT NULL,
-    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "razonRechazo" text
 );
 
 
@@ -150,7 +167,9 @@ CREATE TABLE public."Usuario" (
     password text NOT NULL,
     role public."Role" DEFAULT 'ALUMNO'::public."Role" NOT NULL,
     "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "mustChangePassword" boolean DEFAULT true NOT NULL
+    "mustChangePassword" boolean DEFAULT true NOT NULL,
+    "resetToken" text,
+    "resetTokenExpiry" timestamp(3) without time zone
 );
 
 
@@ -222,11 +241,8 @@ ALTER TABLE ONLY public."Usuario" ALTER COLUMN id SET DEFAULT nextval('public."U
 --
 
 COPY public."Alumno" (id, nombre, matricula, carrera, cuatrimestre_actual, estado, "usuarioId", "createdAt", curp, estado_civil, fecha_nacimiento, lugar_nacimiento, sexo, calle, ciudad, codigo_postal, colonia, estado_direccion, numero, telefono, foto) FROM stdin;
-1	Juan Perez	UTN001	Ingeniería en Software	5	BAJA	1	2026-03-31 22:56:48.681	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-3	Alumno Prueba	UTN999	Ingeniería	1	ACTIVO	6	2026-04-02 01:23:03.544	\N	\N	\N	Tepic	\N	\N	\N	\N	\N	\N	\N	\N	\N
-4	Grecia Villalobos Paredes	UTN777	Administración de Empresas	9	ACTIVO	7	2026-04-07 00:24:41.114	VIPG031217MNTLRRA8	Casado/a	2003-12-17 00:00:00	Tepic	Femenino	Persimo	Tepic	63037	Tulipanes	Nayarit	67	3111389666	foto_1775525779624.jpg
-2	Daniel Lopez	UTN002	Ingeniería en Software	5	ACTIVO	4	2026-04-02 00:49:45.529	LOCL040625HNTPBSA9	Soltero/a	2000-03-30 00:00:00	Tepic	Masculino	1ro de Mayo	Jamaica	63050	Mololoa	CDMX	60	3112903814	foto_1775280687535.png
-5	Samantha Beltrán Peña	UTN067	Contaduría	1	ACTIVO	8	2026-04-07 04:51:57.951	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+3	Grecia Villalobos Paredes	UTN666	Turismo Alternativo	5	ACTIVO	5	2026-04-10 01:26:42.263	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+1	Daniel Lopez	TIC-310134	Ingeniería en Desarrollo y Gestión de Software	8	BAJA	3	2026-04-08 16:17:15.334	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	foto_1775782890539.png
 \.
 
 
@@ -234,13 +250,7 @@ COPY public."Alumno" (id, nombre, matricula, carrera, cuatrimestre_actual, estad
 -- Data for Name: Documento; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."Documento" (id, tipo, url, estado, "alumnoId", "createdAt") FROM stdin;
-1	ACTA_NACIMIENTO	archivo.pdf	APROBADO	1	2026-04-01 19:03:58.76
-7	CERTIFICADO	1775197869575.pdf	APROBADO	2	2026-04-03 06:31:09.58
-8	CURP	1775281511943.pdf	RECHAZADO	2	2026-04-04 05:45:11.947
-10	ACTA_NACIMIENTO	1775521583053.pdf	EN_REVISION	4	2026-04-07 00:26:23.057
-11	CONSTANCIA	1775537239132.pdf	APROBADO	2	2026-04-07 04:47:19.136
-4	ACTA_NACIMIENTO	1775285294652.pdf	RECHAZADO	2	2026-04-03 05:38:40.066
+COPY public."Documento" (id, tipo, url, estado, "alumnoId", "createdAt", "razonRechazo") FROM stdin;
 \.
 
 
@@ -248,14 +258,10 @@ COPY public."Documento" (id, tipo, url, estado, "alumnoId", "createdAt") FROM st
 -- Data for Name: Usuario; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."Usuario" (id, email, password, role, "createdAt", "mustChangePassword") FROM stdin;
-1	test@test.com	$2b$10$.qb.YnTQyslTNYKS86nu3e0O/eMhGEpkfmLjmwEUzrwJzYHVwjBK.	ADMIN	2026-03-31 22:13:13.267	t
-3	admin@utn.com	$2b$10$JAfKrJgk4VBl9fylv/K0NOzeFQf3TY.j3VxkhDKIYd1/sZoiN2dbu	ADMIN	2026-04-02 00:46:45.119	f
-5	jose@utn.com	$2b$10$YWP7D/GLhsxtamwG.VcDveiV0/8WPpFQ1cgL8s01eqfitXCOVy6dm	ALUMNO	2026-04-02 01:08:49.07	f
-6	alumno@test.com	$2b$10$/W8ioez9qxGLbmG1QzXBq.sfImCPjatyyfqtCeKAME5dIumqv3Ihq	ALUMNO	2026-04-02 01:23:03.542	f
-4	Danieln@test.com	$2b$10$My2k/cN./SiS2Yq9ROxx0u5Z1a0PX2R8XcohisAJvTvKS0w8kFCre	ALUMNO	2026-04-02 00:49:45.527	f
-7	grecia@utn.com	$2b$10$hBAA3RNMak4X76NOqos0XeVtVuMYW09OFNPMS5FXDc56IcmKYpG3G	ALUMNO	2026-04-07 00:24:41.108	t
-8	sam@utn.com	$2b$10$qgdVtT5wNhEYlmbEi.5lVu.2LPmoiE7HMiwANNKaAc.e0MJP0m.n6	ALUMNO	2026-04-07 04:51:57.949	t
+COPY public."Usuario" (id, email, password, role, "createdAt", "mustChangePassword", "resetToken", "resetTokenExpiry") FROM stdin;
+2	tic-310134@utnay.edu.mx	$2b$10$eIJdbNDLMsVYh/xTUhxZSO15z.28bi3pw5NHXKVZOLh.faK3nn9EC	ADMIN	2026-04-08 16:14:44.473	f	\N	\N
+3	darkcabrera@gmail.com	$2b$10$c5sbdyhEHFp/a9fMVsmdqu2AiqdSU91gUi9yPYTnSfQ1eqtX/GgtW	ALUMNO	2026-04-08 16:17:15.332	f	8de1cc5aa081fc1e35b606f3be3047a81d7475cc43c360940ab25a40e017fbf2	2026-04-08 23:25:00.427
+5	grvillalobospa@ittepic.edu.mx	$2b$10$bzJJpvKqv0t5qwKMZzocze4PYUoa/eJ0oMTR0FggDrhu/8/Jyo346	ALUMNO	2026-04-10 01:26:42.261	t	\N	\N
 \.
 
 
@@ -264,13 +270,14 @@ COPY public."Usuario" (id, email, password, role, "createdAt", "mustChangePasswo
 --
 
 COPY public._prisma_migrations (id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count) FROM stdin;
-5ebafa04-2be1-40ad-abba-9bfcb7c68909	fd677e88db6eefded0cf1232a9c06ee0dcd21b769bfd37678c8f259a75b057d5	2026-03-31 15:38:09.901624-06	20260331213809_init_usuario	\N	\N	2026-03-31 15:38:09.856139-06	1
-3594d63b-f0cc-4ebb-9499-eae50c4a02c0	6f0a34e0df4ebb8c2155ecbe98fb4462ca2838e8952999e83f3a426ae70d6854	2026-03-31 16:48:28.305216-06	20260331224828_add_alumno_model	\N	\N	2026-03-31 16:48:28.266736-06	1
-d99a1fca-cea3-470a-97b6-7f7a02bc8adc	fabcea60d8952de5683ad56a2fae255f8d3f627caae6da31593c9ff140e0c4ba	2026-03-31 17:19:28.389721-06	20260331231928_add_documento_model	\N	\N	2026-03-31 17:19:28.342215-06	1
-b3fd6dfa-dee5-4eb7-95ae-1edc90300a2e	9ef9a5e0bb5ccdca47a0ba5ef11d2664af0ebd4a64ae63f01f0ccc07b629946a	2026-04-01 18:17:21.286237-06	20260402001721_add_must_change_password	\N	\N	2026-04-01 18:17:21.258762-06	1
-d0561c88-31bc-4985-bdbe-3ce203e6dee2	7955901b72c23942c44f97961f06dddbd29043f708955fdc0d3a9a619e531bb2	2026-04-02 01:14:09.530272-06	20260402071409_add_profile_fields	\N	\N	2026-04-02 01:14:09.516724-06	1
-992cfb0c-0d72-4941-b09b-03b2e7e97c78	85b35ec3c820515af32e0d513dc2daf623b199a8256231d6fd3d63b58be9dc6d	2026-04-02 11:26:51.575994-06	20260402172651_fix_profile_fields	\N	\N	2026-04-02 11:26:51.56386-06	1
-5cfad72e-59ac-4f79-a2e9-acfe20f0bed0	e0d483c01e0cff8d824ece2c13a158ff1e648368d05d70f9087bdc4ede722730	2026-04-03 00:23:10.655977-06	20260403062310_add_en_revison	\N	\N	2026-04-03 00:23:10.652614-06	1
+6d27ddbd-eb49-4f71-9fef-8c3c26054b74	fd677e88db6eefded0cf1232a9c06ee0dcd21b769bfd37678c8f259a75b057d5	2026-04-08 10:05:06.619534-06	20260331213809_init_usuario	\N	\N	2026-04-08 10:05:06.611496-06	1
+2d5768bf-50a8-4604-b442-613db5270cc8	6f0a34e0df4ebb8c2155ecbe98fb4462ca2838e8952999e83f3a426ae70d6854	2026-04-08 10:05:06.63032-06	20260331224828_add_alumno_model	\N	\N	2026-04-08 10:05:06.62011-06	1
+2fd40d1a-8bc1-4e85-9fab-8a32f9f27b75	fabcea60d8952de5683ad56a2fae255f8d3f627caae6da31593c9ff140e0c4ba	2026-04-08 10:05:06.637876-06	20260331231928_add_documento_model	\N	\N	2026-04-08 10:05:06.630828-06	1
+4119b12f-dc00-4cd9-b335-0c598a6aa6da	9ef9a5e0bb5ccdca47a0ba5ef11d2664af0ebd4a64ae63f01f0ccc07b629946a	2026-04-08 10:05:06.640207-06	20260402001721_add_must_change_password	\N	\N	2026-04-08 10:05:06.638482-06	1
+906a0a71-9e45-4a48-82c1-cfd067b4ac9f	7955901b72c23942c44f97961f06dddbd29043f708955fdc0d3a9a619e531bb2	2026-04-08 10:05:06.642253-06	20260402071409_add_profile_fields	\N	\N	2026-04-08 10:05:06.640675-06	1
+ed69aeb5-37be-4d70-bf0c-23e7010952d3	85b35ec3c820515af32e0d513dc2daf623b199a8256231d6fd3d63b58be9dc6d	2026-04-08 10:05:06.644207-06	20260402172651_fix_profile_fields	\N	\N	2026-04-08 10:05:06.642719-06	1
+771ef2a0-54ef-4d3a-a1ec-3051f0da2ac2	e0d483c01e0cff8d824ece2c13a158ff1e648368d05d70f9087bdc4ede722730	2026-04-08 10:05:06.646175-06	20260403062310_add_en_revison	\N	\N	2026-04-08 10:05:06.644649-06	1
+2be2196f-a490-4b98-8850-8afe79039f0e	83e0e2b8078eadbed21c7eacff1ac3c07484dfbfa3ca6c49596ecb2666cb120f	2026-04-08 10:05:49.532467-06	20260408160549_add_reset_token	\N	\N	2026-04-08 10:05:49.521111-06	1
 \.
 
 
@@ -278,21 +285,21 @@ d0561c88-31bc-4985-bdbe-3ce203e6dee2	7955901b72c23942c44f97961f06dddbd29043f7089
 -- Name: Alumno_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Alumno_id_seq"', 5, true);
+SELECT pg_catalog.setval('public."Alumno_id_seq"', 4, true);
 
 
 --
 -- Name: Documento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Documento_id_seq"', 11, true);
+SELECT pg_catalog.setval('public."Documento_id_seq"', 2, true);
 
 
 --
 -- Name: Usuario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Usuario_id_seq"', 8, true);
+SELECT pg_catalog.setval('public."Usuario_id_seq"', 6, true);
 
 
 --
@@ -372,8 +379,15 @@ ALTER TABLE ONLY public."Documento"
 
 
 --
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict S2A0PoSLJkYtMCS7rtpJEdORtYzXORU3bgB84igcQoGmobeYyyMfq9aIPKKaEvQ
+\unrestrict xFQO82hXtPKx25SboEVraQLQexOImm6Gc1TuT6fqZg0bKJM1nfiekOCVZrjZs2N
 
