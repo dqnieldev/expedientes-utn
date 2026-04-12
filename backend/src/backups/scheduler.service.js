@@ -1,28 +1,59 @@
+// src/backups/scheduler.service.js
 import cron from "node-cron";
 import { crearBackup } from "./backup.service.js";
 import transporter from "../config/mailer.js";
 import prisma from "../config/prisma.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { EventEmitter } from "events";
+
 EventEmitter.defaultMaxListeners = 20;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+// Archivo donde se persiste la config
+const CONFIG_PATH = path.join(__dirname, "../../scheduler.config.json");
 
 let tareaActiva = null;
 let configActual = null;
 
-// Convierte la config del admin a expresión cron
+// ── Leer config desde archivo ─────────────────────────────────────────────────
+const leerConfig = () => {
+  try {
+    if (fs.existsSync(CONFIG_PATH)) {
+      const raw = fs.readFileSync(CONFIG_PATH, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error("Error leyendo scheduler.config.json:", err.message);
+  }
+  return null;
+};
+
+// ── Guardar config en archivo ─────────────────────────────────────────────────
+const guardarConfig = (config) => {
+  try {
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Error guardando scheduler.config.json:", err.message);
+  }
+};
+
+// ── Construir expresión cron ──────────────────────────────────────────────────
 const buildCronExpression = ({ frecuencia, hora, diaSemana }) => {
   const [h, m] = hora.split(":").map(Number);
   if (frecuencia === "diario")  return `${m} ${h} * * *`;
-  if (frecuencia === "semanal") return `${m} ${h} * * ${diaSemana}`; // 0=dom, 1=lun...
+  if (frecuencia === "semanal") return `${m} ${h} * * ${diaSemana}`;
   if (frecuencia === "cada6h")  return `0 */6 * * *`;
   throw new Error("Frecuencia inválida");
 };
 
+// ── Notificar al admin por email ──────────────────────────────────────────────
 const notificarAdmin = async (filename, size) => {
   try {
-    // Obtener email del admin
-    const admin = await prisma.usuario.findFirst({
-      where: { role: "ADMIN" },
-    });
+    const admin = await prisma.usuario.findFirst({ where: { role: "ADMIN" } });
     if (!admin?.email) return;
 
     await transporter.sendMail({
@@ -56,9 +87,10 @@ const notificarAdmin = async (filename, size) => {
   }
 };
 
-// Inicia o reinicia la tarea programada
+// ── Iniciar o reiniciar scheduler ─────────────────────────────────────────────
 export const iniciarScheduler = (config) => {
-  // Detener tarea anterior si existe
+  process.setMaxListeners(20);
+
   if (tareaActiva) {
     tareaActiva.stop();
     tareaActiva = null;
@@ -66,6 +98,7 @@ export const iniciarScheduler = (config) => {
 
   if (!config.activo) {
     configActual = null;
+    guardarConfig({ activo: false });
     console.log("🔴 Respaldos automáticos desactivados");
     return;
   }
@@ -84,6 +117,7 @@ export const iniciarScheduler = (config) => {
   }, { timezone: "America/Mazatlan" });
 
   configActual = config;
+  guardarConfig(config); // ← persiste en archivo
   console.log(`✅ Respaldo automático programado: ${expresion}`);
 };
 
@@ -96,3 +130,12 @@ export const detenerScheduler = () => {
 };
 
 export const getConfigActual = () => configActual;
+
+// ── Restaurar scheduler al arrancar el servidor ───────────────────────────────
+export const restaurarScheduler = () => {
+  const config = leerConfig();
+  if (config?.activo) {
+    console.log("🔄 Restaurando scheduler desde archivo...");
+    iniciarScheduler(config);
+  }
+};
