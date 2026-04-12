@@ -7,25 +7,96 @@ export const createDocumento = async (data) => {
   const alumnoIdInt = parseInt(alumnoId);
   if (!alumnoIdInt) throw new Error("alumnoId inválido");
 
-  // Si ya existe un documento del mismo tipo para ese alumno, actualiza la url
-  // Si no existe, lo crea
-  return await prisma.documento.upsert({
+  const tipoLabel = {
+    ACTA_NACIMIENTO: "Acta de Nacimiento",
+    CURP:            "CURP",
+    CERTIFICADO:     "Certificado de Bachillerato",
+    CONSTANCIA:      "Constancia de Estudios",
+  }[tipo] ?? tipo;
+
+  // Verificar si ya existía (reemplazo) o es nuevo
+  const existente = await prisma.documento.findUnique({
+    where: { alumnoId_tipo: { alumnoId: alumnoIdInt, tipo } },
+  });
+  const esReemplazo = !!existente;
+
+  // Upsert del documento
+  const doc = await prisma.documento.upsert({
     where: {
-      alumnoId_tipo: {
-        alumnoId: alumnoIdInt,
-        tipo
-      }
+      alumnoId_tipo: { alumnoId: alumnoIdInt, tipo },
     },
     update: {
       url,
-      estado: "EN_REVISION" // al reemplazar vuelve a revisión
+      estado: "EN_REVISION",
     },
     create: {
       tipo,
       url,
-      alumnoId: alumnoIdInt
-    }
+      alumnoId: alumnoIdInt,
+    },
+    include: {
+      alumno: {
+        include: { usuario: true },
+      },
+    },
   });
+
+  // Notificar al admin
+  try {
+    const admin = await prisma.usuario.findFirst({
+      where: { role: "ADMIN" },
+    });
+
+    if (admin?.email) {
+      await transporter.sendMail({
+        from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
+        to:      admin.email,
+        subject: `📄 ${esReemplazo ? "Documento reemplazado" : "Nuevo documento"} — ${doc.alumno.nombre}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
+            <h2 style="color:#1a2744;margin-bottom:8px">
+              ${esReemplazo ? "Documento reemplazado" : "Nuevo documento subido"}
+            </h2>
+            <p style="color:#6b7280;font-size:14px">
+              El alumno <strong>${doc.alumno.nombre}</strong> ha 
+              ${esReemplazo ? "reemplazado" : "subido"} un documento que requiere revisión.
+            </p>
+            <table style="margin-top:16px;width:100%;font-size:13px;border-collapse:collapse">
+              <tr>
+                <td style="padding:8px 0;color:#9ca3af;width:120px">Alumno</td>
+                <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.nombre}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;color:#9ca3af">Matrícula</td>
+                <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.matricula}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;color:#9ca3af">Documento</td>
+                <td style="padding:8px 0;color:#111827;font-weight:600">${tipoLabel}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;color:#9ca3af">Acción</td>
+                <td style="padding:8px 0;font-weight:600;color:#EF9F27">
+                  ${esReemplazo ? "Reemplazo — en revisión" : "Nuevo — en revisión"}
+                </td>
+              </tr>
+            </table>
+            <p style="color:#9ca3af;font-size:12px;margin-top:24px">
+              Ingresa al panel de administración para revisar y validar el documento.
+            </p>
+            <p style="color:#9ca3af;font-size:12px;margin-top:4px">
+              Sistema Paperless — Universidad Tecnológica de Nayarit
+            </p>
+          </div>
+        `,
+      });
+    }
+  } catch (emailErr) {
+    // No fallar si el email falla — el documento ya se guardó
+    console.error("Error enviando notificación al admin:", emailErr.message);
+  }
+
+  return doc;
 };
 
 // Obtener todos los documentos de un alumno específico
