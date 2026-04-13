@@ -5,6 +5,7 @@ import {
   cambiarEstadoAlumno, eliminarAlumno,
 } from "../services/alumno.service.js";
 import { body, param, validationResult } from "express-validator";
+import { registrarLog } from "../services/audit.service.js";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 const validate = (req, res) => {
@@ -74,6 +75,16 @@ export const create = async (req, res) => {
 
   try {
     const alumno = await createAlumno(req.body);
+
+    await registrarLog({
+      accion:    "CREAR_ALUMNO",
+      entidad:   "ALUMNO",
+      entidadId: alumno.id,
+      detalle:   `Alumno creado: ${alumno.nombre} (${alumno.matricula})`,
+      usuarioId: req.user?.id,
+      ip:        req.ip,
+    });
+
     res.status(201).json(alumno);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -153,10 +164,22 @@ export const cambiarEstado = async (req, res) => {
   try {
     const { id }     = req.params;
     const { estado } = req.body;
+
     const estadosValidos = ["ACTIVO", "BAJA", "BAJA_TEMPORAL"];
     if (!estadosValidos.includes(estado))
       return res.status(400).json({ message: "Estado inválido" });
+
     const alumno = await cambiarEstadoAlumno(Number(id), estado);
+
+    await registrarLog({
+      accion:    "CAMBIAR_ESTADO_ALUMNO",
+      entidad:   "ALUMNO",
+      entidadId: Number(id),
+      detalle:   `Estado cambiado a ${estado} — Alumno: ${alumno.nombre}`,
+      usuarioId: req.user?.id,
+      ip:        req.ip,
+    });
+
     res.json({ message: "Estado actualizado correctamente", alumno });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -166,7 +189,21 @@ export const cambiarEstado = async (req, res) => {
 export const eliminar = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Obtener nombre antes de eliminar
+    const alumno = await getAlumnoById(Number(id));
+
     const result = await eliminarAlumno(Number(id));
+
+    await registrarLog({
+      accion:    "ELIMINAR_ALUMNO",
+      entidad:   "ALUMNO",
+      entidadId: Number(id),
+      detalle:   `Alumno eliminado: ${alumno?.nombre} (${alumno?.matricula})`,
+      usuarioId: req.user?.id,
+      ip:        req.ip,
+    });
+
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });

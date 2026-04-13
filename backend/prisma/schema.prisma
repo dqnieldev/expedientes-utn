@@ -66,6 +66,21 @@ model Documento {
   @@unique([alumnoId, tipo])
 }
 
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  accion    String   // APROBAR_DOCUMENTO, RECHAZAR_DOCUMENTO, CAMBIAR_ESTADO, etc.
+  entidad   String   // DOCUMENTO, ALUMNO, BACKUP, AUTH
+  entidadId Int?     // ID del recurso afectado
+  detalle   String?  // descripción legible
+  usuarioId Int?     // quien ejecutó la acción
+  ip        String?  // IP del request
+  createdAt DateTime @default(now())
+
+  @@index([accion])
+  @@index([usuarioId])
+  @@index([createdAt])
+}
+
 enum EstadoDocumento {
   PENDIENTE
   EN_REVISION

@@ -9,6 +9,7 @@ const menu = [
   { name: "Alumnos",    path: "/admin/alumnos",     icon: Users,           desc: "Gestionar alumnos"      },
   { name: "Documentos", path: "/admin/documentos",  icon: FileCheck,       desc: "Validar expedientes"    },
   { name: "Respaldos",  path: "/admin/respaldos",   icon: DatabaseBackup,  desc: "Gestionar respaldos DB" },
+  { name: "Auditoría", path: "/admin/auditoria", icon: ShieldCheck, desc: "Logs del sistema" },
 ];
 
 export default function AdminSidebar() {

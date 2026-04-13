@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 
 import { iniciarScheduler, detenerScheduler, getConfigActual } from "../backups/scheduler.service.js";
+import { registrarLog } from "../services/audit.service.js";
 
 const __filename  = fileURLToPath(import.meta.url);
 const __dirname   = path.dirname(__filename);
@@ -17,6 +18,15 @@ const BACKUPS_DIR = path.join(__dirname, "../../backups");
 export const crear = async (req, res) => {
   try {
     const result = await crearBackup();
+
+    await registrarLog({
+      accion:    "CREAR_BACKUP",
+      entidad:   "BACKUP",
+      detalle:   `Backup creado: ${result.filename} (${result.size})`,
+      usuarioId: req.user?.id,
+      ip:        req.ip,
+    });
+
     res.json({ message: "Respaldo creado exitosamente", backup: result });
   } catch (error) {
     console.error(error);

@@ -9,6 +9,7 @@ import backupRoutes from "./routes/backup.routes.js";
 import { loginRateLimit } from "./middlewares/loginRateLimit.js";
 import morgan from "morgan";
 import helmet from "helmet";
+import auditRoutes from "./routes/audit.routes.js";
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(helmet({
 app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
 app.use(express.json());
 app.use(morgan("dev")); // Agrega el middleware de morgan para registrar las solicitudes HTTP
+app.use("/api/audit", auditRoutes); // Rutas para auditoría (logs de acciones)
 
 app.get("/", (req, res) => {
   res.send("API Expedientes UTN funcionando ");

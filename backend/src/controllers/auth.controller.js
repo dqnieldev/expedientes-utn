@@ -1,7 +1,8 @@
-import { registerUser, loginUser }       from "../services/auth.service.js";
-import { changePassword }                from "../services/auth.service.js";
+import { registerUser, loginUser } from "../services/auth.service.js";
+import { changePassword } from "../services/auth.service.js";
 import { solicitarReset, resetPassword } from "../services/auth.service.js";
-import { body, validationResult }        from "express-validator";
+import { body, validationResult } from "express-validator";
+import { registrarLog } from "../services/audit.service.js";
 
 // ── Helper para responder errores de validación ───────────────────────────────
 const validate = (req, res) => {
@@ -65,8 +66,26 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await loginUser(email, password);
+
+    await registrarLog({
+      accion:    "LOGIN",
+      entidad:   "AUTH",
+      entidadId: result.user.id,
+      detalle:   `Login exitoso — ${email} (${result.user.role})`,
+      usuarioId: result.user.id,
+      ip:        req.ip,
+    });
+
     res.json(result);
   } catch (error) {
+    // Log de intento fallido
+    await registrarLog({
+      accion:  "LOGIN_FALLIDO",
+      entidad: "AUTH",
+      detalle: `Intento fallido — ${req.body.email}`,
+      ip:      req.ip,
+    }).catch(() => {});
+
     res.status(400).json({ message: error.message });
   }
 };

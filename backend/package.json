@@ -33,6 +33,6 @@
     "seed": "node prisma/seed.js"
   },
   "nodemonConfig": {
-  "ignore": ["scheduler.config.json", "backups/", "uploads/"]
+  "ignore": ["scheduler.config.json", "backups/", "uploads/", "logs/"]
 }
 }

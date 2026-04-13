@@ -13,6 +13,7 @@ import Alumnos from "./pages/admin/Alumnos";
 import DetalleAlumno from "./pages/admin/DetalleAlumno";
 import DocumentosAdmin from "./pages/admin/Documentos";
 import RespaldosAdmin from "./pages/admin/RespaldosAdmin";
+import AuditLogs from "./pages/admin/AuditLogs";
 
 // Páginas públicas: Login, Cambio de contraseña, Recuperar contraseña
 import ResetPassword from "./pages/ResetPassword";
@@ -40,6 +41,7 @@ function App() {
         <Route path="/admin/dashboard" element={<ProtectedAdminRoute><DashboardAdmin /></ProtectedAdminRoute>} />
         <Route path="/admin/alumnos" element={<ProtectedAdminRoute><Alumnos /></ProtectedAdminRoute>} />
         <Route path="/admin/alumnos/:id" element={<ProtectedAdminRoute><DetalleAlumno /></ProtectedAdminRoute>} />
+        <Route path="/admin/auditoria" element={<ProtectedAdminRoute><AuditLogs /></ProtectedAdminRoute>} />
         <Route path="/admin/documentos" element={<ProtectedAdminRoute><DocumentosAdmin /></ProtectedAdminRoute>} />
         <Route path="/admin/respaldos" element={<ProtectedAdminRoute><RespaldosAdmin /></ProtectedAdminRoute>} />
 
