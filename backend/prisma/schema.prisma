@@ -20,6 +20,8 @@ model Usuario {
   resetTokenExpiry    DateTime?
 
   alumno    Alumno?
+
+  @@index([role])          // filtrar admins vs alumnos
 }
 
 model Alumno {
@@ -31,6 +33,10 @@ model Alumno {
   estado                String   @default("ACTIVO")
   documentos            Documento[]
   foto                  String?
+
+  @@index([estado])        // filtrar por ACTIVO/BAJA/BAJA_TEMPORAL
+  @@index([carrera])       // filtrar por carrera
+  @@index([createdAt])     // ordenar por fecha
 
   // DATOS PERSONALES
 curp                    String?
@@ -64,6 +70,10 @@ model Documento {
   razonRechazo String?
 
   @@unique([alumnoId, tipo])
+
+  @@index([estado])        // filtrar por APROBADO/RECHAZADO/EN_REVISION
+  @@index([alumnoId])      // buscar docs de un alumno (ya existe el unique pero este ayuda en queries)
+  @@index([createdAt])     // ordenar por fecha
 }
 
 model AuditLog {

@@ -3,6 +3,7 @@ import { promisify } from "util";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import archiver from "archiver";
 
 const execAsync = promisify(exec);
 
@@ -38,25 +39,49 @@ function ensureBackupsDir() {
 export const crearBackup = async () => {
   ensureBackupsDir();
 
-  const db  = parseDbUrl(process.env.DATABASE_URL);
-  const now = new Date();
+  const db        = parseDbUrl(process.env.DATABASE_URL);
+  const now       = new Date();
   const timestamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${String(now.getHours()).padStart(2,"0")}${String(now.getMinutes()).padStart(2,"0")}${String(now.getSeconds()).padStart(2,"0")}`;
-  const filename  = `backup_${timestamp}.sql`;
-  const filepath  = path.join(BACKUPS_DIR, filename);
 
-  const cmd = `${PG_DUMP} -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.database} -F p -f "${filepath}"`;
-
-  const env = { ...process.env, PGPASSWORD: db.password };
+  // ── 1. Backup SQL ──────────────────────────────────────────────────────────
+  const sqlFilename = `backup_${timestamp}.sql`;
+  const sqlFilepath = path.join(BACKUPS_DIR, sqlFilename);
+  const cmd         = `${PG_DUMP} -h ${db.host} -p ${db.port} -U ${db.user} -d ${db.database} -F p -f "${sqlFilepath}"`;
+  const env         = { ...process.env, PGPASSWORD: db.password };
 
   await execAsync(cmd, { env });
 
-  const stats = fs.statSync(filepath);
+  // ── 2. Backup de /uploads (zip) ────────────────────────────────────────────
+  const uploadsDir  = path.join(__dirname, "../../uploads");
+  const zipFilename = `uploads_${timestamp}.zip`;
+  const zipFilepath = path.join(BACKUPS_DIR, zipFilename);
+
+  await new Promise((resolve, reject) => {
+    // Si no existe la carpeta uploads, saltar
+    if (!fs.existsSync(uploadsDir)) return resolve();
+
+    const output  = fs.createWriteStream(zipFilepath);
+    const archive = archiver("zip", { zlib: { level: 6 } });
+
+    output.on("close", resolve);
+    archive.on("error", reject);
+
+    archive.pipe(output);
+    archive.directory(uploadsDir, "uploads");
+    archive.finalize();
+  });
+
+  // ── 3. Retornar info ───────────────────────────────────────────────────────
+  const sqlStats = fs.statSync(sqlFilepath);
+  const zipStats = fs.existsSync(zipFilepath) ? fs.statSync(zipFilepath) : null;
 
   return {
-    filename,
-    filepath,
-    size: `${(stats.size / 1024).toFixed(1)} KB`,
-    createdAt: now.toISOString()
+    filename:    sqlFilename,
+    zipFilename: zipStats ? zipFilename : null,
+    filepath:    sqlFilepath,
+    size:        `${(sqlStats.size / 1024).toFixed(1)} KB`,
+    zipSize:     zipStats ? `${(zipStats.size / 1024).toFixed(1)} KB` : null,
+    createdAt:   now.toISOString(),
   };
 };
 
