@@ -215,12 +215,12 @@ enum Role { ADMIN ALUMNO DEVELOPER }
 
 ## 💾 Sistema de Respaldos
 
-- **Manual**: el admin crea un respaldo desde el panel en cualquier momento
+- **Manual**: el developer crea un respaldo desde el panel en cualquier momento
 - **Automático**: programable con frecuencia diaria, semanal o cada 6 horas
 - **Contenido**: archivo `.sql` (base de datos) + archivo `.zip` (carpeta /uploads)
 - **Gestión**: listar, descargar y eliminar respaldos desde el panel
 - **Persistencia**: la configuración del scheduler se guarda en `scheduler.config.json` y se restaura al reiniciar el servidor
-- **Notificación**: el admin recibe un email cuando se completa un respaldo automático
+- **Notificación**: el developer recibe un email cuando se completa un respaldo automático
 
 ---
 
