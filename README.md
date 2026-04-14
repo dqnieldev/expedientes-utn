@@ -208,7 +208,7 @@ enum Role { ADMIN ALUMNO DEVELOPER }
 | Documento aprobado | Alumno |
 | Documento rechazado (con motivo) | Alumno |
 | Cambio de estado (BAJA / BAJA_TEMPORAL / ACTIVO) | Alumno |
-| Respaldo automático completado | Admin |
+| Respaldo automático completado | Developer |
 | Recuperación de contraseña | Alumno |
 
 ---
