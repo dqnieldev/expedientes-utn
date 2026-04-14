@@ -101,7 +101,14 @@
         "approvedDocs": "Approved",
         "reviewDocs": "In Review",
         "rejectedDocs": "Rejected",
-        "pendingDocs": "Pending"
+        "pendingDocs": "Pending",
+        "searchPlaceholder": "Search by name, student ID or career...",
+"requiredFields": "All fields are required.",
+"createError": "Error creating student.",
+"trySearch": "Try another search term",
+"firstStudent": "Register the first student using the button above",
+"selectCareer": "Select career",
+"passwordInfo": "The initial password will be the student's ID. They will be required to change it on first login."
     },
     "status": {
         "APROBADO": "Approved",

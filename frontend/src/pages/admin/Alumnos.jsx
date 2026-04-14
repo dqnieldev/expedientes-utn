@@ -6,8 +6,11 @@ import {
   Search, Plus, Users, ChevronRight,
   GraduationCap, Hash
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Alumnos() {
+  const { t } = useTranslation();
+
   const [alumnos, setAlumnos]     = useState([]);
   const [filtered, setFiltered]   = useState([]);
   const [search, setSearch]       = useState("");
@@ -47,7 +50,6 @@ export default function Alumnos() {
 
   useEffect(() => { fetchAlumnos(); }, []);
 
-  // Búsqueda en tiempo real
   useEffect(() => {
     const q = search.toLowerCase();
     setFiltered(
@@ -67,7 +69,7 @@ export default function Alumnos() {
   const handleCreate = async () => {
     const { nombre, matricula, carrera, cuatrimestre_actual, email } = form;
     if (!nombre || !matricula || !carrera || !cuatrimestre_actual || !email) {
-      return setFormError("Todos los campos son obligatorios.");
+      return setFormError(t("students.requiredFields"));
     }
 
     setSaving(true);
@@ -81,7 +83,7 @@ export default function Alumnos() {
       setForm({ nombre: "", matricula: "", carrera: "", cuatrimestre_actual: "", email: "" });
       fetchAlumnos();
     } catch (err) {
-      setFormError(err.response?.data?.message || "Error al registrar alumno.");
+      setFormError(err.response?.data?.message || t("students.createError"));
     } finally {
       setSaving(false);
     }
@@ -91,14 +93,13 @@ export default function Alumnos() {
     nombre.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase();
 
   return (
-    <AdminLayout title="Alumnos">
+    <AdminLayout title={t("students.title")}>
 
-      {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Alumnos</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("students.title")}</h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {loading ? "Cargando..." : `${alumnos.length} alumnos registrados`}
+            {loading ? t("general.loading") : `${alumnos.length} ${t("students.registered")}`}
           </p>
         </div>
         <button
@@ -106,23 +107,21 @@ export default function Alumnos() {
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
         >
           <Plus size={16} />
-          Nuevo Alumno
+          {t("students.create")}
         </button>
       </div>
 
-      {/* BUSCADOR */}
       <div className="relative mb-5">
         <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
-          placeholder="Buscar por nombre, matrícula o carrera..."
+          placeholder={t("students.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:text-white transition"
         />
       </div>
 
-      {/* LISTA */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
 
         {loading ? (
@@ -144,10 +143,10 @@ export default function Alumnos() {
               <Users size={24} className="text-gray-400" />
             </div>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              {search ? "No se encontraron resultados" : "No hay alumnos registrados"}
+              {search ? t("general.noData") : t("dashboard.noStudents")}
             </p>
             <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-              {search ? "Intenta con otro término de búsqueda" : "Registra el primer alumno con el botón de arriba"}
+              {search ? t("students.trySearch") : t("students.firstStudent")}
             </p>
           </div>
         ) : (
@@ -158,7 +157,6 @@ export default function Alumnos() {
                 onClick={() => navigate(`/admin/alumnos/${alumno.id}`)}
                 className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors group"
               >
-                {/* AVATAR */}
                 <div className="w-11 h-11 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0 overflow-hidden">
                   {alumno.foto ? (
                     <img
@@ -171,7 +169,6 @@ export default function Alumnos() {
                   )}
                 </div>
 
-                {/* INFO */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
                     {alumno.nombre}
@@ -186,7 +183,6 @@ export default function Alumnos() {
                   </div>
                 </div>
 
-                {/* ESTADO */}
                 <span className={`text-[10px] px-2.5 py-1 rounded-full font-medium shrink-0
                   ${alumno.estado === "ACTIVO"
                     ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
@@ -202,19 +198,17 @@ export default function Alumnos() {
         )}
       </div>
 
-      {/* MODAL NUEVO ALUMNO */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md">
 
-            {/* MODAL HEADER */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                   <Plus size={15} className="text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                  Registrar Nuevo Alumno
+                  {t("students.create")}
                 </h3>
               </div>
               <button
@@ -225,7 +219,6 @@ export default function Alumnos() {
               </button>
             </div>
 
-            {/* MODAL BODY */}
             <div className="px-6 py-4 space-y-3">
 
               {formError && (
@@ -236,10 +229,10 @@ export default function Alumnos() {
               )}
 
               {[
-                { label: "Nombre completo",  name: "nombre",              placeholder: "Nombre Apellido Apellido", type: "text"   },
-                { label: "Matrícula",        name: "matricula",           placeholder: "UTN001",                  type: "text"   },
-                { label: "Correo electrónico",name: "email",             placeholder: "alumno@utnayarit.edu.mx", type: "email"  },
-                { label: "Cuatrimestre",     name: "cuatrimestre_actual", placeholder: "1",                       type: "number" },
+                { label: t("students.name"), name: "nombre", placeholder: "Nombre Apellido Apellido", type: "text" },
+                { label: t("students.matricula"), name: "matricula", placeholder: "UTN001", type: "text" },
+                { label: t("students.email"), name: "email", placeholder: "alumno@utnayarit.edu.mx", type: "email" },
+                { label: t("students.quarter"), name: "cuatrimestre_actual", placeholder: "1", type: "number" },
               ].map(({ label, name, placeholder, type }) => (
                 <div key={name}>
                   <label className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide block mb-1">
@@ -258,10 +251,9 @@ export default function Alumnos() {
                 </div>
               ))}
 
-              {/* CARRERA SELECT */}
               <div>
                 <label className="text-[10px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide block mb-1">
-                  Carrera <span className="text-red-400">*</span>
+                  {t("students.career")} <span className="text-red-400">*</span>
                 </label>
                 <select
                   name="carrera"
@@ -269,24 +261,23 @@ export default function Alumnos() {
                   onChange={handleFormChange}
                   className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition"
                 >
-                  <option value="">Seleccionar carrera</option>
+                  <option value="">{t("students.selectCareer")}</option>
                   {carreras.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
 
               <p className="text-[10px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-xl px-3 py-2">
-                La contraseña inicial será la matrícula del alumno. Se le pedirá cambiarla en su primer inicio de sesión.
+                {t("students.passwordInfo")}
               </p>
 
             </div>
 
-            {/* MODAL FOOTER */}
             <div className="flex gap-2 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={() => { setShowModal(false); setFormError(""); }}
                 className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                Cancelar
+                {t("general.cancel")}
               </button>
               <button
                 onClick={handleCreate}
@@ -298,7 +289,7 @@ export default function Alumnos() {
                 ) : (
                   <>
                     <Plus size={14} />
-                    Registrar
+                    {t("students.create")}
                   </>
                 )}
               </button>

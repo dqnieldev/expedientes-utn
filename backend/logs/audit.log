@@ -10,3 +10,5 @@
 [2026-04-14T04:03:16.498Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ADMIN) | usuarioId:2 | ip:::1
 [2026-04-14T04:19:26.228Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ALUMNO) | usuarioId:3 | ip:::1
 [2026-04-14T04:21:30.297Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ADMIN) | usuarioId:2 | ip:::1
+[2026-04-14T04:31:29.496Z] [CREAR_ALUMNO] [ALUMNO] Alumno creado: prueba (UTN123) | usuarioId:2 | ip:::1
+[2026-04-14T04:31:45.315Z] [ELIMINAR_ALUMNO] [ALUMNO] Alumno eliminado: prueba (UTN123) | usuarioId:2 | ip:::1

@@ -21,7 +21,7 @@
         "subtitle": "Resumen general del sistema de expedientes.",
         "totalStudents": "Total Alumnos",
         "activeStudents": "Alumnos Activos",
-        "manage":"Acceso rápido",
+        "manage": "Acceso Rápido",
         "manageStudents": "Gestionar Alumnos",
         "manageStudentsSub": "Ver, registrar y administrar alumnos del sistema",
         "validateDocs": "Validar Documentos",
@@ -32,7 +32,8 @@
         "noStudents": "No hay alumnos registrados",
         "welcome": "Bienvenido, {{name}}",
         "subtitleAlumno": "Gestiona tus documentos académicos y consulta tu estatus escolar.",
-        "digitalRecord": "Expediente Digital"
+        "digitalRecord": "Expediente Digital",
+        "searchPlaceholder": "Buscar por nombre, matrícula o carrera..."
     },
     "documents": {
         "title": "Validación de Documentos",
@@ -101,7 +102,14 @@
         "approvedDocs": "Aprobados",
         "reviewDocs": "En Revisión",
         "rejectedDocs": "Rechazados",
-        "pendingDocs": "Pendientes"
+        "pendingDocs": "Pendientes",
+        "searchPlaceholder": "Buscar por nombre, matrícula o carrera...",
+"requiredFields": "Todos los campos son obligatorios.",
+"createError": "Error al registrar alumno.",
+"trySearch": "Intenta con otro término de búsqueda",
+"firstStudent": "Registra el primer alumno con el botón de arriba",
+"selectCareer": "Seleccionar carrera",
+"passwordInfo": "La contraseña inicial será la matrícula del alumno. Se le pedirá cambiarla en su primer inicio de sesión."
     },
     "status": {
           "APROBADO": "Aprobado",
