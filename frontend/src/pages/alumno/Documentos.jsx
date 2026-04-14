@@ -5,7 +5,7 @@ import DocumentUploadCard from "../../components/DocumentUploadCard";
 import ExpedienteResumen from "../../components/ExpedienteResumen";
 import { SkeletonDocumentos } from "../../components/Skeleton";
 import { FileText, Fingerprint, GraduationCap, FileBadge, Download } from "lucide-react";
-
+import { useTranslation } from "react-i18next";
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
@@ -13,19 +13,21 @@ export default function Documentos() {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
+  const { t } = useTranslation();
 
+  // 🔥 ya NO hardcodeamos labels
   const documentosBase = [
-    { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento" },
-    { tipo: "CURP",            label: "CURP" },
-    { tipo: "CERTIFICADO",     label: "Certificado de Bachillerato" },
-    { tipo: "CONSTANCIA",      label: "Constancia de Estudios" }
+    { tipo: "ACTA_NACIMIENTO" },
+    { tipo: "CURP" },
+    { tipo: "CERTIFICADO" },
+    { tipo: "CONSTANCIA" }
   ];
 
   const iconMap = {
     ACTA_NACIMIENTO: <FileText size={20} />,
-    CURP:            <Fingerprint size={20} />,
-    CERTIFICADO:     <GraduationCap size={20} />,
-    CONSTANCIA:      <FileBadge size={20} />
+    CURP: <Fingerprint size={20} />,
+    CERTIFICADO: <GraduationCap size={20} />,
+    CONSTANCIA: <FileBadge size={20} />
   };
 
   const fetchData = async () => {
@@ -70,42 +72,43 @@ export default function Documentos() {
       console.error(error.response?.data);
     }
   };
-// Función para descargar el reporte PDF del expediente del alumno
+
   const handleDescargarReporte = async () => {
-  try {
-    const res = await axios.get("http://localhost:3000/api/reportes/mio", {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: "blob"
-    });
-    const url = window.URL.createObjectURL(new Blob([res.data]));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "mi-expediente.pdf";
-    a.click();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error(error);
-  }
-};
+    try {
+      const res = await axios.get("http://localhost:3000/api/reportes/mio", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob"
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mi-expediente.pdf";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <MainLayout title="Mis Documentos">
+    <MainLayout title={t("nav.documents")}>
 
-            <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Gestión de Documentos
+            {t("documents.titleAlumno")}
           </h2>
           <p className="text-gray-500 dark:text-gray-400">
-            Sube, consulta y administra tus documentos académicos.
+            {t("documents.subtitleAlumno")}
           </p>
         </div>
+
         <button
           onClick={handleDescargarReporte}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-[#013d31] active:scale-95 transition-all duration-150"
         >
           <Download size={15} />
-          Descargar PDF
+          {t("documents.downloadPDF")}
         </button>
       </div>
 
@@ -115,10 +118,14 @@ export default function Documentos() {
           <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
             {documentosBase.map((item) => {
               const doc = docs.find(d => d.tipo === item.tipo);
+
               return (
                 <DocumentUploadCard
                   key={item.tipo}
-                  item={item}
+                  item={{
+                    ...item,
+                    label: t(`docTypes.${item.tipo}`) // 🔥 PRO TIP
+                  }}
                   doc={doc}
                   icon={iconMap[item.tipo]}
                   onUpload={handleUpload}
@@ -129,7 +136,7 @@ export default function Documentos() {
 
           <div className="order-first md:order-last bg-white dark:bg-gray-800 rounded-2xl p-5 shadow flex flex-col gap-4 transition-colors duration-200">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-              Resumen del Expediente
+              {t("students.recordSummary")}
             </h3>
             <ExpedienteResumen docs={docs} showButton={false} />
           </div>

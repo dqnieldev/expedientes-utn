@@ -66,7 +66,13 @@
         "progress": "Progreso",
         "manage": "Gestionar documentos",
         "supportText": "¿Tienes dudas sobre el estado de tus documentos o necesitas aclarar un rechazo?",
-        "contactSupport": "Contactar a Servicios Escolares"
+        "contactSupport": "Contactar a Servicios Escolares",
+        "titleAlumno": "Gestión de Documentos",
+        "subtitleAlumno": "Sube, consulta y administra tus documentos académicos.",
+        "downloadPDF": "Descargar PDF",
+        "upload": "Subir documento",
+        "replace": "Reemplazar",
+        "maxSize": "Máx. {{size}} MB"
     },
     "docTypes": {
         "ACTA_NACIMIENTO": "Acta de Nacimiento",
@@ -96,9 +102,10 @@
         "pendingDocs": "Pendientes"
     },
     "status": {
-        "ACTIVO": "Activo",
-        "BAJA": "Baja",
-        "BAJA_TEMPORAL": "Baja Temporal"
+          "APROBADO": "Aprobado",
+    "RECHAZADO": "Rechazado",
+    "EN_REVISION": "En revisión",
+    "PENDIENTE": "Pendiente"
     },
     "dangerZone": {
         "title": "Zona de peligro",
@@ -180,5 +187,9 @@
         "noData": "Sin datos",
         "refresh": "Actualizar lista",
         "search": "Buscar"
-    }
+    },
+ "errors": {
+    "invalidFormat": "Formato no permitido. Solo se aceptan {{format}}.",
+    "maxSize": "El archivo pesa {{size}} MB. El límite es {{max}} MB."
+  }
 }

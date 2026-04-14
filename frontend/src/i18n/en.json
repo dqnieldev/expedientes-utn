@@ -66,7 +66,13 @@
         "progress": "Progress",
         "manage": "Manage documents",
         "supportText": "Do you have questions about your document status or need to clarify a rejection?",
-        "contactSupport": "Contact Student Services"
+        "contactSupport": "Contact Student Services",
+        "titleAlumno": "Document Management",
+        "subtitleAlumno": "Upload, view and manage your academic documents.",
+        "downloadPDF": "Download PDF",
+        "upload": "Upload document",
+  "replace": "Replace",
+  "maxSize": "Max. {{size}} MB"
     },
     "docTypes": {
         "ACTA_NACIMIENTO": "Birth Certificate",
@@ -96,9 +102,10 @@
         "pendingDocs": "Pending"
     },
     "status": {
-        "ACTIVO": "Active",
-        "BAJA": "Leave",
-        "BAJA_TEMPORAL": "Temp Leave"
+        "APROBADO": "Approved",
+    "RECHAZADO": "Rejected",
+    "EN_REVISION": "In review",
+    "PENDIENTE": "Pending"
     },
     "dangerZone": {
         "title": "Danger zone",
@@ -180,5 +187,9 @@
         "noData": "No data",
         "refresh": "Refresh list",
         "search": "Search"
-    }
+    },
+     "errors": {
+    "invalidFormat": "Invalid format. Only {{format}} files are allowed.",
+    "maxSize": "File is {{size}} MB. Limit is {{max}} MB."
+  }
 }
