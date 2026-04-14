@@ -21,6 +21,7 @@
         "subtitle": "General system summary.",
         "totalStudents": "Total Students",
         "activeStudents": "Active Students",
+        "manage":"Quick Access",
         "manageStudents": "Manage Students",
         "manageStudentsSub": "View, register and manage system students",
         "validateDocs": "Validate Documents",

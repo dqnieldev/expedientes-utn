@@ -3,8 +3,11 @@ import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
 import { Users, FileCheck, FileClock, FileX, ArrowRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardAdmin() {
+  const { t } = useTranslation();
+
   const [alumnos, setAlumnos] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
@@ -18,20 +21,19 @@ export default function DashboardAdmin() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Métricas calculadas desde los alumnos y sus documentos
   const totalAlumnos   = alumnos.length;
   const totalActivos   = alumnos.filter(a => a.estado === "ACTIVO").length;
 
   const stats = [
     {
-      label: "Total Alumnos",
+      label: t("dashboard.totalStudents"),
       value: totalAlumnos,
       icon: Users,
       color: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
       iconBg: "bg-blue-100 dark:bg-blue-900/40",
     },
     {
-      label: "Alumnos Activos",
+      label: t("dashboard.activeStudents"),
       value: totalActivos,
       icon: FileCheck,
       color: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
@@ -41,23 +43,23 @@ export default function DashboardAdmin() {
 
   const accesos = [
     {
-      title: "Gestionar Alumnos",
-      desc: "Ver, registrar y administrar alumnos del sistema",
+      title: t("dashboard.manageStudents"),
+      desc: t("dashboard.manageStudentsSub"),
       icon: Users,
       path: "/admin/alumnos",
       color: "border-blue-200 dark:border-blue-700/50 hover:border-blue-400",
       iconColor: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
     },
     {
-      title: "Validar Documentos",
-      desc: "Revisar y aprobar expedientes de alumnos",
+      title: t("dashboard.validateDocs"),
+      desc: t("dashboard.validateDocsSub"),
       icon: FileCheck,
       path: "/admin/documentos",
       color: "border-emerald-200 dark:border-emerald-700/50 hover:border-emerald-400",
       iconColor: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
     },
   ];
-//Función para descargar el reporte general de expedientes en PDF
+
   const handleReporteGeneral = async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/reportes/general", {
@@ -76,16 +78,15 @@ export default function DashboardAdmin() {
 };
 
   return (
-    <AdminLayout title="Dashboard">
+    <AdminLayout title={t("dashboard.title")}>
 
-      {/* BIENVENIDA */}
       <div className="flex items-center justify-between mb-6">
   <div>
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-      Panel de Administración
+      {t("dashboard.title")}
     </h2>
     <p className="text-gray-500 dark:text-gray-400 mt-1">
-      Resumen general del sistema de expedientes.
+      {t("dashboard.subtitle")}
     </p>
   </div>
   <button
@@ -93,11 +94,10 @@ export default function DashboardAdmin() {
     className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2744] text-white rounded-xl text-sm font-semibold hover:bg-[#243660] active:scale-95 transition-all duration-150"
   >
     <Download size={15} />
-    Reporte General PDF
+    {t("dashboard.generalPDF")}
   </button>
 </div>
 
-      {/* MÉTRICAS */}
       <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
         {loading ? (
           [1,2].map(i => (
@@ -123,10 +123,9 @@ export default function DashboardAdmin() {
         )}
       </div>
 
-      {/* ACCESOS RÁPIDOS */}
       <div className="mb-6">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
-          Accesos Rápidos
+          {t("dashboard.manage")}
         </h3>
         <div className="grid md:grid-cols-2 gap-4">
           {accesos.map(({ title, desc, icon: Icon, path, color, iconColor }) => (
@@ -148,17 +147,16 @@ export default function DashboardAdmin() {
         </div>
       </div>
 
-      {/* LISTA RÁPIDA DE ÚLTIMOS ALUMNOS */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-            Alumnos Recientes
+            {t("dashboard.recentStudents")}
           </h3>
           <button
             onClick={() => navigate("/admin/alumnos")}
             className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
           >
-            Ver todos <ArrowRight size={12} />
+            {t("dashboard.viewAll")} <ArrowRight size={12} />
           </button>
         </div>
 
@@ -178,7 +176,7 @@ export default function DashboardAdmin() {
             </div>
           ) : alumnos.length === 0 ? (
             <div className="p-8 text-center text-gray-400 text-sm">
-              No hay alumnos registrados
+              {t("dashboard.noStudents")}
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-700">

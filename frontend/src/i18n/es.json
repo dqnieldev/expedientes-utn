@@ -21,6 +21,7 @@
         "subtitle": "Resumen general del sistema de expedientes.",
         "totalStudents": "Total Alumnos",
         "activeStudents": "Alumnos Activos",
+        "manage":"Acceso rápido",
         "manageStudents": "Gestionar Alumnos",
         "manageStudentsSub": "Ver, registrar y administrar alumnos del sistema",
         "validateDocs": "Validar Documentos",
