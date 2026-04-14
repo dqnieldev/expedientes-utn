@@ -6,3 +6,5 @@
 [2026-04-13T07:21:33.728Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ADMIN) | usuarioId:2 | ip:::1
 [2026-04-13T07:22:54.272Z] [CREAR_BACKUP] [BACKUP] Backup creado: backup_20260413_002253.sql (15.1 KB) | usuarioId:2 | ip:::1
 [2026-04-14T02:54:25.793Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ALUMNO) | usuarioId:3 | ip:::1
+[2026-04-14T03:55:06.102Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ALUMNO) | usuarioId:3 | ip:::1
+[2026-04-14T04:03:16.498Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ADMIN) | usuarioId:2 | ip:::1

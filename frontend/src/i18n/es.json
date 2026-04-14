@@ -191,5 +191,40 @@
  "errors": {
     "invalidFormat": "Formato no permitido. Solo se aceptan {{format}}.",
     "maxSize": "El archivo pesa {{size}} MB. El límite es {{max}} MB."
-  }
+  },
+  "profile": {
+  "title": "Profile",
+  "myProfile": "My Profile",
+  "subtitle": "Manage your personal and access information.",
+  "academicData": "Academic Data",
+  "personalData": "Personal Data",
+  "address": "Address",
+  "fullName": "Full Name",
+  "studentId": "Student ID",
+  "career": "Career",
+  "quarter": "Quarter",
+  "status": "Status",
+  "changePassword": "Change Password",
+  "updatePassword": "Update Password",
+  "passwordUpdated": "Password updated successfully",
+  "birthPlace": "Place of Birth",
+  "birthDate": "Date of Birth",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "maritalStatus": "Marital Status",
+  "single": "Single",
+  "married": "Married",
+  "divorced": "Divorced",
+  "widowed": "Widowed",
+  "street": "Street",
+  "number": "Number",
+  "neighborhood": "Neighborhood",
+  "postalCode": "Postal Code",
+  "city": "City",
+  "state": "State",
+  "phone": "Phone",
+  "saveChanges": "Save Changes",
+  "saved": "Changes saved"
+}
 }
