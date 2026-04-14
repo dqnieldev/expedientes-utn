@@ -21,7 +21,7 @@
         "subtitle": "General system summary.",
         "totalStudents": "Total Students",
         "activeStudents": "Active Students",
-        "manage":"Quick Access",
+        "manage": "Quick Access",
         "manageStudents": "Manage Students",
         "manageStudentsSub": "View, register and manage system students",
         "validateDocs": "Validate Documents",
@@ -72,8 +72,8 @@
         "subtitleAlumno": "Upload, view and manage your academic documents.",
         "downloadPDF": "Download PDF",
         "upload": "Upload document",
-  "replace": "Replace",
-  "maxSize": "Max. {{size}} MB"
+        "replace": "Replace",
+        "maxSize": "Max. {{size}} MB"
     },
     "docTypes": {
         "ACTA_NACIMIENTO": "Birth Certificate",
@@ -84,11 +84,18 @@
     "students": {
         "title": "Students",
         "subtitle": "Manage system students.",
-        "create" : "Create student",
+        "create": "Create student",
         "matricula": "Student ID",
         "career": "Major",
         "quarter": "Quarter",
         "status": "Status",
+        "students": {
+            "statusValues": {
+                "ACTIVO": "Active",
+                "BAJA": "Dropped out",
+                "BAJA_TEMPORAL": "Temporary leave"
+            }
+        },
         "registered": "Registered",
         "phone": "Phone",
         "city": "City",
@@ -103,18 +110,18 @@
         "rejectedDocs": "Rejected",
         "pendingDocs": "Pending",
         "searchPlaceholder": "Search by name, student ID or career...",
-"requiredFields": "All fields are required.",
-"createError": "Error creating student.",
-"trySearch": "Try another search term",
-"firstStudent": "Register the first student using the button above",
-"selectCareer": "Select career",
-"passwordInfo": "The initial password will be the student's ID. They will be required to change it on first login."
+        "requiredFields": "All fields are required.",
+        "createError": "Error creating student.",
+        "trySearch": "Try another search term",
+        "firstStudent": "Register the first student using the button above",
+        "selectCareer": "Select career",
+        "passwordInfo": "The initial password will be the student's ID. They will be required to change it on first login."
     },
     "status": {
         "APROBADO": "Approved",
-    "RECHAZADO": "Rejected",
-    "EN_REVISION": "In review",
-    "PENDIENTE": "Pending"
+        "RECHAZADO": "Rejected",
+        "EN_REVISION": "In review",
+        "PENDIENTE": "Pending"
     },
     "dangerZone": {
         "title": "Danger zone",
@@ -197,44 +204,43 @@
         "refresh": "Refresh list",
         "search": "Search"
     },
-     "errors": {
-    "invalidFormat": "Invalid format. Only {{format}} files are allowed.",
-    "maxSize": "File is {{size}} MB. Limit is {{max}} MB."
-  },
-
-  "profile": {
-  "title": "Profile",
-  "myProfile": "My Profile",
-  "subtitle": "Manage your personal and access information.",
-  "academicData": "Academic Data",
-  "personalData": "Personal Data",
-  "address": "Address",
-  "fullName": "Full Name",
-  "studentId": "Student ID",
-  "career": "Career",
-  "quarter": "Quarter",
-  "status": "Status",
-  "changePassword": "Change Password",
-  "updatePassword": "Update Password",
-  "passwordUpdated": "Password updated successfully",
-  "birthPlace": "Place of Birth",
-  "birthDate": "Date of Birth",
-  "gender": "Gender",
-  "male": "Male",
-  "female": "Female",
-  "maritalStatus": "Marital Status",
-  "single": "Single",
-  "married": "Married",
-  "divorced": "Divorced",
-  "widowed": "Widowed",
-  "street": "Street",
-  "number": "Number",
-  "neighborhood": "Neighborhood",
-  "postalCode": "Postal Code",
-  "city": "City",
-  "state": "State",
-  "phone": "Phone",
-  "saveChanges": "Save Changes",
-  "saved": "Changes saved"
-}
+    "errors": {
+        "invalidFormat": "Invalid format. Only {{format}} files are allowed.",
+        "maxSize": "File is {{size}} MB. Limit is {{max}} MB."
+    },
+    "profile": {
+        "title": "Profile",
+        "myProfile": "My Profile",
+        "subtitle": "Manage your personal and access information.",
+        "academicData": "Academic Data",
+        "personalData": "Personal Data",
+        "address": "Address",
+        "fullName": "Full Name",
+        "studentId": "Student ID",
+        "career": "Career",
+        "quarter": "Quarter",
+        "status": "Status",
+        "changePassword": "Change Password",
+        "updatePassword": "Update Password",
+        "passwordUpdated": "Password updated successfully",
+        "birthPlace": "Place of Birth",
+        "birthDate": "Date of Birth",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "maritalStatus": "Marital Status",
+        "single": "Single",
+        "married": "Married",
+        "divorced": "Divorced",
+        "widowed": "Widowed",
+        "street": "Street",
+        "number": "Number",
+        "neighborhood": "Neighborhood",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "state": "State",
+        "phone": "Phone",
+        "saveChanges": "Save Changes",
+        "saved": "Changes saved"
+    }
 }

@@ -88,7 +88,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
           <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${estadoColor}`}>
             <span className="flex items-center gap-1">
               <CheckCircle size={11} />
-              {t(`status.${alumno.estado}`)}
+              {t(`students.statusValues.${alumno.estado}`)}
             </span>
           </span>
         </div>
