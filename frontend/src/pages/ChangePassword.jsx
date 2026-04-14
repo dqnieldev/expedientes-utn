@@ -29,7 +29,7 @@ export default function ChangePassword() {
     const token = localStorage.getItem("token");
     const matricula = localStorage.getItem("tempPass"); // ← su contraseña actual
 
-    await axios.put(
+    await axios.post(
       "http://localhost:3000/api/auth/change-password",
       {
         currentPassword: matricula,  // ← esto faltaba
@@ -41,8 +41,14 @@ export default function ChangePassword() {
     localStorage.removeItem("tempPass"); // Limpiamos la contraseña temporal
     localStorage.setItem("mustChangePassword", "false");
     setMessage("Contraseña actualizada correctamente");
-    setTimeout(() => { window.location.href = "/dashboard"; }, 1500);
-
+    
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+const destino = user.role === "DEVELOPER" 
+  ? "/developer/respaldos" 
+  : user.role === "ADMIN" 
+  ? "/admin/dashboard" 
+  : "/dashboard";
+setTimeout(() => { window.location.href = destino; }, 1500);
   } catch (error) {
     setMessage(error.response?.data?.message || "Error al actualizar contraseña");
   }

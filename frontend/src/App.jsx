@@ -20,6 +20,12 @@ import ResetPassword from "./pages/ResetPassword";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import NotFound from "./pages/NotFound";
 
+// Developer pages
+import ProtectedDeveloperRoute from "./components/ProtectedDeveloperRoute";
+import RespaldosDeveloper from "./pages/developer/RespaldosDeveloper";
+import AuditLogsDeveloper from "./pages/developer/AuditLogsDeveloper";
+import GestionAdmins from "./pages/developer/GestionAdmins";
+
 function App() {
   return (
     <BrowserRouter>
@@ -30,7 +36,7 @@ function App() {
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/recuperar" element={<RecuperarPassword />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
-        <Route path="/reset-password"     element={<ResetPassword />} />    
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* ALUMNO */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardAlumno /></ProtectedRoute>} />
@@ -44,6 +50,11 @@ function App() {
         <Route path="/admin/auditoria" element={<ProtectedAdminRoute><AuditLogs /></ProtectedAdminRoute>} />
         <Route path="/admin/documentos" element={<ProtectedAdminRoute><DocumentosAdmin /></ProtectedAdminRoute>} />
         <Route path="/admin/respaldos" element={<ProtectedAdminRoute><RespaldosAdmin /></ProtectedAdminRoute>} />
+
+        {/* DEVELOPER */}
+        <Route path="/developer/respaldos" element={<ProtectedDeveloperRoute><RespaldosDeveloper /></ProtectedDeveloperRoute>} />
+        <Route path="/developer/auditoria" element={<ProtectedDeveloperRoute><AuditLogsDeveloper /></ProtectedDeveloperRoute>} />
+        <Route path="/developer/admins" element={<ProtectedDeveloperRoute><GestionAdmins /></ProtectedDeveloperRoute>} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

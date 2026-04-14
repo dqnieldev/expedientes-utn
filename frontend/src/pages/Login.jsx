@@ -26,12 +26,14 @@ export default function Login() {
     localStorage.setItem("tempPass", form.password); // Guardamos la contraseña actual para el cambio de contraseña
 
     if (data.mustChangePassword) {
-      window.location.href = "/change-password";
-    } else if (data.user.role === "ADMIN") {
-      window.location.href = "/admin/dashboard";
-    } else {
-      window.location.href = "/dashboard";
-    }
+  window.location.href = "/change-password";
+} else if (data.user.role === "DEVELOPER") {
+  window.location.href = "/developer/respaldos";
+} else if (data.user.role === "ADMIN") {
+  window.location.href = "/admin/dashboard";
+} else {
+  window.location.href = "/dashboard";
+}
   } catch (err) {
   if (err.response?.status === 429) {
     setError("Demasiados intentos fallidos. Espera 15 minutos e intenta de nuevo.");

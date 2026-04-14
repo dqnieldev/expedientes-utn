@@ -17,8 +17,7 @@ const validate = (req, res) => {
 export const validateLogin = [
   body("email")
     .notEmpty().withMessage("El correo es requerido")
-    .isEmail().withMessage("Formato de correo inválido")
-    .normalizeEmail(),
+    .isEmail().withMessage("Formato de correo inválido"),
   body("password")
     .notEmpty().withMessage("La contraseña es requerida")
     .isLength({ min: 6 }).withMessage("Mínimo 6 caracteres"),

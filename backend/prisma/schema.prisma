@@ -101,4 +101,5 @@ enum EstadoDocumento {
 enum Role {
   ADMIN
   ALUMNO
+  DEVELOPER
 }

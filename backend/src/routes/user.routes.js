@@ -1,27 +1,16 @@
 import express from "express";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
+import { getProfile, crearAdmin, listarAdmins, eliminarAdmin } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-// Ruta protegida normal
-router.get("/profile", verifyToken, (req, res) => {
-  res.json({
-    message: "Ruta protegida ",
-    user: req.user
-  });
-});
+// Perfil propio (cualquier autenticado)
+router.get("/profile", verifyToken, getProfile);
 
-// Ruta SOLO ADMIN
-router.get(
-  "/admin",
-  verifyToken,
-  authorizeRoles("ADMIN"),
-  (req, res) => {
-    res.json({
-      message: "Bienvenido ADMIN "
-    });
-  }
-);
+// Gestión de admins — solo DEVELOPER
+router.get("/admins",       verifyToken, authorizeRoles("DEVELOPER"), listarAdmins);
+router.post("/admins",      verifyToken, authorizeRoles("DEVELOPER"), crearAdmin);
+router.delete("/admins/:id", verifyToken, authorizeRoles("DEVELOPER"), eliminarAdmin);
 
 export default router;

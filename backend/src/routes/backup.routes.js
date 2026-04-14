@@ -5,13 +5,13 @@ import { crear, listar, restaurar, eliminar, descargar, getScheduler, setSchedul
 
 const router = express.Router();
 
-// Solo ADMIN puede gestionar respaldos
-router.get("/",                    verifyToken, authorizeRoles("ADMIN"), listar);
-router.post("/crear",              verifyToken, authorizeRoles("ADMIN"), crear);
-router.post("/restaurar/:filename",verifyToken, authorizeRoles("ADMIN"), restaurar);
-router.delete("/:filename",        verifyToken, authorizeRoles("ADMIN"), eliminar);
-router.get("/descargar/:filename", verifyToken, authorizeRoles("ADMIN"), descargar);
-router.get("/scheduler",            verifyToken, authorizeRoles("ADMIN"), getScheduler);
-router.post("/scheduler",           verifyToken, authorizeRoles("ADMIN"), setScheduler);
+// Rutas para gestión de respaldos (solo para DEVELOPER)
+router.get("/",                     verifyToken, authorizeRoles("DEVELOPER"), listar);
+router.post("/crear",               verifyToken, authorizeRoles("DEVELOPER"), crear);
+router.post("/restaurar/:filename", verifyToken, authorizeRoles("DEVELOPER"), restaurar);
+router.delete("/:filename",         verifyToken, authorizeRoles("DEVELOPER"), eliminar);
+router.get("/descargar/:filename",  verifyToken, authorizeRoles("DEVELOPER"), descargar);
+router.get("/scheduler",            verifyToken, authorizeRoles("DEVELOPER"), getScheduler);
+router.post("/scheduler",           verifyToken, authorizeRoles("DEVELOPER"), setScheduler);
 
 export default router;

@@ -5,6 +5,7 @@ import { authorizeRoles } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-router.get("/", verifyToken, authorizeRoles("ADMIN"), listarLogs);
+// Solo DEVELOPER ve los logs
+router.get("/", verifyToken, authorizeRoles("DEVELOPER"), listarLogs);
 
 export default router;

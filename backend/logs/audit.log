@@ -12,3 +12,56 @@
 [2026-04-14T04:21:30.297Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ADMIN) | usuarioId:2 | ip:::1
 [2026-04-14T04:31:29.496Z] [CREAR_ALUMNO] [ALUMNO] Alumno creado: prueba (UTN123) | usuarioId:2 | ip:::1
 [2026-04-14T04:31:45.315Z] [ELIMINAR_ALUMNO] [ALUMNO] Alumno eliminado: prueba (UTN123) | usuarioId:2 | ip:::1
+[2026-04-14T05:21:01.642Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T05:21:02.898Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T05:21:15.909Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T05:21:25.730Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:21:26.745Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:37:17.291Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T05:39:38.316Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T05:42:56.317Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:43:05.515Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T05:43:34.124Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:45:49.003Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:45:57.586Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T05:50:02.466Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T05:50:07.728Z] [ELIMINAR_ADMIN] [USUARIO] Developer eliminó admin: tic-3103134@utnay.edu.mx | usuarioId:2 | ip:::1
+[2026-04-14T05:50:29.442Z] [CREAR_ADMIN] [USUARIO] Developer creó admin: darkcabrera@gmail.com | usuarioId:2 | ip:::1
+[2026-04-14T05:50:37.547Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:3 | ip:::1
+[2026-04-14T05:54:07.376Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T05:54:13.069Z] [ELIMINAR_ADMIN] [USUARIO] Developer eliminó admin: darkcabrera@gmail.com | usuarioId:2 | ip:::1
+[2026-04-14T05:54:24.381Z] [CREAR_ADMIN] [USUARIO] Developer creó admin: darkcabrera@gmail.com | usuarioId:2 | ip:::1
+[2026-04-14T05:54:29.823Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:4 | ip:::1
+[2026-04-14T05:55:08.610Z] [CREAR_ALUMNO] [ALUMNO] Alumno creado: Luis Daniel López Cabrera (TIC-310134) | usuarioId:4 | ip:::1
+[2026-04-14T06:10:08.306Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-04-14T06:10:33.173Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-04-14T06:13:02.280Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-04-14T06:13:15.334Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:13:20.403Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:13:24.059Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:4 | ip:::1
+[2026-04-14T06:15:29.047Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-04-14T06:15:59.848Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T06:16:13.519Z] [CREAR_BACKUP] [BACKUP] Backup creado: backup_20260413_231613.sql (17.2 KB) | usuarioId:2 | ip:::1
+[2026-04-14T06:19:52.091Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T06:22:56.340Z] [CREAR_BACKUP] [BACKUP] Backup creado: backup_20260413_232255.sql (17.4 KB) | usuarioId:2 | ip:::1
+[2026-04-14T06:24:09.866Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:24:19.324Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:24:21.350Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:4 | ip:::1
+[2026-04-14T06:24:31.066Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T06:24:35.134Z] [ELIMINAR_ADMIN] [USUARIO] Developer eliminó admin: darkcabrera@gmail.com | usuarioId:2 | ip:::1
+[2026-04-14T06:24:48.889Z] [CREAR_ADMIN] [USUARIO] Developer creó admin: darkcabrera@gmail.com | usuarioId:2 | ip:::1
+[2026-04-14T06:24:58.097Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-04-14T06:26:34.625Z] [CREAR_ALUMNO] [ALUMNO] Alumno creado: Samantha Beltrán Peña (TIC-310095) | usuarioId:6 | ip:::1
+[2026-04-14T06:26:48.975Z] [CAMBIAR_ESTADO_ALUMNO] [ALUMNO] Estado cambiado a BAJA_TEMPORAL — Alumno: Samantha Beltrán Peña | usuarioId:6 | ip:::1
+[2026-04-14T06:27:53.658Z] [LOGIN] [AUTH] Login exitoso — tic-310095@utnay.edu.mx (ALUMNO) | usuarioId:7 | ip:::1
+[2026-04-14T06:29:20.326Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-04-14T06:29:55.298Z] [RECHAZAR_DOCUMENTO] [DOCUMENTO] Documento RECHAZADO — Motivo: mmm no | usuarioId:6 | ip:::1
+[2026-04-14T06:32:04.051Z] [CAMBIAR_ESTADO_ALUMNO] [ALUMNO] Estado cambiado a ACTIVO — Alumno: Samantha Beltrán Peña | usuarioId:6 | ip:::1
+[2026-04-14T06:32:55.548Z] [ELIMINAR_ALUMNO] [ALUMNO] Alumno eliminado: Samantha Beltrán Peña (TIC-310095) | usuarioId:6 | ip:::1
+[2026-04-14T06:33:36.145Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T06:33:37.578Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — tic-310134@utnay.edu.mx | usuarioId:sistema | ip:::1
+[2026-04-14T06:33:45.363Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-04-14T06:36:54.729Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:37:00.337Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T06:38:01.635Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-14T06:38:05.135Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
