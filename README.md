@@ -153,7 +153,7 @@ model AuditLog {
 }
 
 enum EstadoDocumento { PENDIENTE EN_REVISION APROBADO RECHAZADO }
-enum Role { ADMIN ALUMNO }
+enum Role { ADMIN ALUMNO DEVELOPER }
 ```
 
 ---
@@ -173,6 +173,11 @@ enum Role { ADMIN ALUMNO }
 - Cambiar estado de alumno (ACTIVO / BAJA / BAJA_TEMPORAL)
 - Generar reportes PDF (general y por alumno)
 - Recibe notificaciones cuando un alumno sube un documento
+
+### 💻 DEVELOPER
+- Gestion completa de los respaldos (Crear,Programar,eliminar)
+- Vista de logs de Auditoria (logins,errores,validaciones,rechazos,etc.)
+- Gestión de usuarios Administradores (Crear,Eliminar)
 
 ---
 
