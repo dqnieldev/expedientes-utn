@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ExternalLink, HelpCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const TOTAL = 4;
 const C = 289;
@@ -7,6 +8,7 @@ const C = 289;
 export default function ExpedienteResumen({ docs = [], showButton = true }) {
   const navigate = useNavigate();
   const isDark = document.documentElement.classList.contains("dark");
+  const { t } = useTranslation();
 
   const aprobados  = docs.filter(d => d.estado === "APROBADO").length;
   const enRevision = docs.filter(d => d.estado === "EN_REVISION").length;
@@ -66,7 +68,9 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
             <span className="text-base font-semibold text-gray-800 dark:text-white leading-none">
               {subidos}/{TOTAL}
             </span>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">docs</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+              {t("documents.uploaded")}
+            </span>
           </div>
         </div>
 
@@ -74,8 +78,12 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
         <div className="flex-1 space-y-2">
           <div>
             <div className="flex justify-between items-center mb-1">
-              <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium">Progreso</span>
-              <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">{porcentaje}%</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium">
+                {t("documents.progress")}
+              </span>
+              <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+                {porcentaje}%
+              </span>
             </div>
             <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
               <div
@@ -87,19 +95,27 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
 
           <div className="grid grid-cols-2 gap-1.5 pt-1">
             <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Aprobados</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                {t("documents.approved")}
+              </p>
               <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{aprobados}</p>
             </div>
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">En revisión</p>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                {t("documents.inReview")}
+              </p>
               <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">{enRevision}</p>
             </div>
             <div className="bg-red-50 dark:bg-red-900/20 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-red-500 dark:text-red-400 font-medium">Rechazados</p>
+              <p className="text-[10px] text-red-500 dark:text-red-400 font-medium">
+                {t("documents.rejected")}
+              </p>
               <p className="text-sm font-semibold text-red-600 dark:text-red-300">{rechazados}</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-2 py-1.5">
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Pendientes</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                {t("documents.pending")}
+              </p>
               <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{pendientes}</p>
             </div>
           </div>
@@ -116,7 +132,7 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
           onClick={() => navigate("/documentos")}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 active:scale-95 transition-all duration-150"
         >
-          Gestionar documentos
+          {t("documents.manage")}
           <ExternalLink size={13} />
         </button>
       )}
@@ -125,14 +141,14 @@ export default function ExpedienteResumen({ docs = [], showButton = true }) {
       <div className="mt-auto pt-2">
         <div className="border border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col gap-2">
           <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
-            ¿Tienes dudas sobre el estado de tus documentos o necesitas aclarar un rechazo?
+            {t("documents.supportText")}
           </p>
           <button
             onClick={() => navigate("/soporte")}
             className="w-full flex items-center justify-center gap-2 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 text-[11px] font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 active:scale-95 transition-all duration-150"
           >
             <HelpCircle size={12} />
-            Contactar a Servicios Escolares
+            {t("documents.contactSupport")}
           </button>
         </div>
       </div>

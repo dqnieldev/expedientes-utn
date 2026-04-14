@@ -5,12 +5,14 @@ import ExpedienteResumen from "../../components/ExpedienteResumen";
 import AlumnoProfileCard from "../../components/AlumnoProfileCard";
 import { SkeletonDashboard } from "../../components/Skeleton";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardAlumno() {
   const [alumno, setAlumno] = useState(null);
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +39,7 @@ export default function DashboardAlumno() {
   }, []);
 
   return (
-    <MainLayout title="Dashboard">
+    <MainLayout title={t("nav.dashboard")}>
 
       {/* BIENVENIDA */}
       <div className="mb-6">
@@ -49,10 +51,10 @@ export default function DashboardAlumno() {
         ) : (
           <>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Bienvenido, {alumno.nombre}
+              {t("dashboard.welcome", { name: alumno.nombre })}
             </h2>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Gestiona tus documentos académicos y consulta tu estatus escolar.
+              {t("dashboard.subtitleAlumno")}
             </p>
           </>
         )}
@@ -65,7 +67,7 @@ export default function DashboardAlumno() {
             <AlumnoProfileCard alumno={alumno} />
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow flex flex-col transition-colors duration-200">
               <h3 className="text-base font-semibold mb-4 text-gray-900 dark:text-white">
-                Expediente Digital
+                {t("dashboard.digitalRecord")}
               </h3>
               <ExpedienteResumen docs={docs} />
             </div>

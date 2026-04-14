@@ -2,12 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { Pen, GraduationCap, Hash, BookOpen, CheckCircle, Camera } from "lucide-react";
 import { useRef, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 export default function AlumnoProfileCard({ alumno: initialAlumno }) {
   const navigate = useNavigate();
   const inputRef = useRef();
   const [foto, setFoto] = useState(initialAlumno.foto || null);
   const token = localStorage.getItem("token");
+  const { t } = useTranslation();
 
   const alumno = { ...initialAlumno, foto };
 
@@ -25,10 +27,8 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
   const handleFotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append("foto", file);
-
     try {
       const res = await axios.put(
         "http://localhost:3000/api/alumnos/foto",
@@ -50,13 +50,13 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
       <div className="px-5 pb-5">
         <div className="flex items-end justify-between -mt-8 mb-4">
 
-          {/* AVATAR CON BOTÓN CÁMARA */}
+          {/* AVATAR */}
           <div className="relative group">
             <div className="w-16 h-16 rounded-2xl border-4 border-white dark:border-gray-800 shadow-sm overflow-hidden transition-colors duration-200">
               {foto ? (
                 <img
                   src={`http://localhost:3000/uploads/${foto}`}
-                  alt="Foto de perfil"
+                  alt={t("header.changePhoto")}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -70,7 +70,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
             <button
               onClick={() => inputRef.current.click()}
               className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 active:scale-95 transition-all duration-150"
-              title="Cambiar foto de perfil"
+              title={t("header.changePhoto")}
             >
               <Camera size={11} className="text-gray-500 dark:text-gray-300" />
             </button>
@@ -84,10 +84,11 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
             />
           </div>
 
+          {/* BADGE ESTADO */}
           <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${estadoColor}`}>
             <span className="flex items-center gap-1">
               <CheckCircle size={11} />
-              {alumno.estado}
+              {t(`status.${alumno.estado}`)}
             </span>
           </span>
         </div>
@@ -104,23 +105,23 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
 
         {/* DATOS */}
         <div className="space-y-3">
-
           {[
-            { icon: Hash,          label: "Matrícula",    value: alumno.matricula          },
-            { icon: GraduationCap, label: "Carrera",      value: alumno.carrera            },
-            { icon: BookOpen,      label: "Cuatrimestre", value: alumno.cuatrimestre_actual },
+            { icon: Hash,          label: t("students.matricula"), value: alumno.matricula          },
+            { icon: GraduationCap, label: t("students.career"),    value: alumno.carrera            },
+            { icon: BookOpen,      label: t("students.quarter"),   value: alumno.cuatrimestre_actual },
           ].map(({ icon: Icon, label, value }) => (
             <div key={label} className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
                 <Icon size={13} className="text-gray-400 dark:text-gray-400" />
               </div>
               <div>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{label}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">
+                  {label}
+                </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{value}</p>
               </div>
             </div>
           ))}
-
         </div>
 
         <div className="border-t border-gray-100 dark:border-gray-700 mt-4 mb-4" />
@@ -130,7 +131,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 active:scale-95 transition-all duration-150"
         >
           <Pen size={13} />
-          Modificar Perfil
+          {t("nav.profile")} {/* o agrega una key "editProfile": "Modificar Perfil" */}
         </button>
 
       </div>
