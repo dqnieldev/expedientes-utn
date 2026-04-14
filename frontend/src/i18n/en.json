@@ -83,6 +83,7 @@
     "students": {
         "title": "Students",
         "subtitle": "Manage system students.",
+        "create" : "Create student",
         "matricula": "Student ID",
         "career": "Major",
         "quarter": "Quarter",

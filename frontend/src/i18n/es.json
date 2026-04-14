@@ -84,6 +84,7 @@
         "title": "Alumnos",
         "subtitle": "Gestiona los alumnos del sistema.",
         "matricula": "Matrícula",
+        "create" : "Crear alumno",
         "career": "Carrera",
         "quarter": "Cuatrimestre",
         "status": "Estado",
