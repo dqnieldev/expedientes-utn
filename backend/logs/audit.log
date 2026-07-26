@@ -68,3 +68,17 @@
 [2026-04-14T06:55:28.153Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
 [2026-04-14T07:20:49.420Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
 [2026-04-14T07:20:52.153Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-04-14T07:22:30.873Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-14T14:41:23.263Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-16T04:32:58.327Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-16T04:33:03.504Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-04-16T04:33:48.783Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-04-16T04:33:53.138Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-04-16T04:34:15.847Z] [RECHAZAR_DOCUMENTO] [DOCUMENTO] Documento RECHAZADO — Motivo: puto | usuarioId:6 | ip:::1
+[2026-04-16T04:34:56.959Z] [CAMBIAR_ESTADO_ALUMNO] [ALUMNO] Estado cambiado a BAJA_TEMPORAL — Alumno: Luis Daniel López Cabrera | usuarioId:6 | ip:::1
+[2026-04-16T04:35:15.239Z] [CAMBIAR_ESTADO_ALUMNO] [ALUMNO] Estado cambiado a ACTIVO — Alumno: Luis Daniel López Cabrera | usuarioId:6 | ip:::1
+[2026-04-16T04:35:26.815Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-07-22T02:34:10.969Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-22T02:34:14.920Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-22T02:34:20.234Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-22T02:34:21.946Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1

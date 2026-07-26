@@ -11,10 +11,14 @@
             "id": "62c45570764173bf",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "02-Cuatrimestre-Actual/Rubrica-Desarrollo-Web.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Rubrica-Desarrollo-Web"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "02-Cuatrimestre-Actual/Rubrica-Desarrollo-Web.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Rubrica-Desarrollo-Web"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "02-Cuatrimestre-Actual/Rubrica-Desarrollo-Web.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from Rubrica-Desarrollo-Web"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "02-Cuatrimestre-Actual/Rubrica-Desarrollo-Web.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Rubrica-Desarrollo-Web"
             }
           }
         ]
@@ -177,5 +184,7 @@
     }
   },
   "active": "62c45570764173bf",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "04-Modulos/Modulo-Analitica.md"
+  ]
 }

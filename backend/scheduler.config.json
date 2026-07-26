@@ -1,6 +1,3 @@
 {
-  "activo": true,
-  "frecuencia": "diario",
-  "hora": "23:21",
-  "diaSemana": "1"
+  "activo": false
 }
