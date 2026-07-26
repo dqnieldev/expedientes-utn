@@ -10,6 +10,7 @@ import { loginRateLimit } from "./middlewares/loginRateLimit.js";
 import morgan from "morgan";
 import helmet from "helmet";
 import auditRoutes from "./routes/audit.routes.js";
+import analiticaRoutes from "./routes/analitica.routes.js";
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/documentos", documentoRoutes);
 app.use("/api/reportes", reporteRoutes);
 app.use("/public", express.static("public")); // para servir el membrete
 app.use("/api/backups", backupRoutes); // Rutas para gestión de respaldos
+app.use("/api/analitica", analiticaRoutes); // Rutas para analítica y ML
 
 
 app.use("/uploads", express.static("uploads"));  // Servir archivos estáticos desde la carpeta "uploads"
