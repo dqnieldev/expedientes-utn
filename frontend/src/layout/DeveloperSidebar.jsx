@@ -12,7 +12,7 @@ export default function DeveloperSidebar() {
   return (
     <>
       {/* ── DESKTOP ── */}
-      <aside className="hidden md:flex w-64 flex-col bg-[#1e1b4b] h-full">
+      <aside className="hidden md:flex w-64 flex-col bg-[#1e1b4b] h-full print:hidden">
 
         <div className="px-6 pt-8 pb-6 border-b border-white/10">
           <img src="/imagenes/logo_admin.png" alt="Logo UTN" className="w-28 h-auto mb-3" />

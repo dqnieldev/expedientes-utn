@@ -20,7 +20,7 @@ export default function AdminHeader({ title }) {
   }, []);
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+    <header className="flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200 print:hidden">
 
       <div>
         <h1 className="text-xl font-semibold text-[#1a2744] dark:text-white">{title}</h1>
