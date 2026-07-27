@@ -15,3 +15,16 @@
 
 3. **Mantenimiento**:
    - Aplicar esta regla a todas las presentes y futuras fases del proyecto (Web, Android, Wear OS y Analítica).
+
+## 🌿 Regla de Control de Versiones en Git (Feature Branches)
+
+1. **Uso Obligatorio de Ramas de Trabajo**:
+   - Queda estrictamente prohibido realizar cambios o commits directamente en la rama `main`.
+   - Antes de iniciar cualquier nueva funcionalidad o fase, se debe crear una rama específica con el prefijo correspondiente (ej. `git checkout -b feature/app-android-login`, `git checkout -b feature/wear-os-integration`).
+   - Todos los avances, commits y verificaciones se realizarán en la rama de la funcionalidad antes de solicitar merge.
+
+## 📋 Regla de Planificación y Aprobación Previa
+
+1. **Presentación de Plan Antes de Modificar Código**:
+   - Antes de escribir o modificar cualquier archivo de código, el asistente debe presentar el **Plan de Implementación** detallado en el chat / artefacto `implementation_plan.md`.
+   - Se debe pausar y esperar la revisión y **aprobación explícita del usuario** antes de iniciar cualquier cambio en el código fuente.
