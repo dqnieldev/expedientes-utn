@@ -76,9 +76,9 @@ export const getAnaliticaDataset = async () => {
     tipo: doc.tipo,
     estado: doc.estado,
     razonRechazo: doc.razonRechazo || null,
-    carrera: doc.alumno.carrera,
-    cuatrimestre: doc.alumno.cuatrimestre_actual,
-    estadoAlumno: doc.alumno.estado,
+    carrera: doc.alumno?.carrera || "Sin Carrera",
+    cuatrimestre: doc.alumno?.cuatrimestre_actual || 1,
+    estadoAlumno: doc.alumno?.estado || "ACTIVO",
     fechaCreacion: doc.createdAt,
   }));
 

@@ -96,3 +96,12 @@
 [2026-07-27T21:58:24.272Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
 [2026-07-27T22:00:30.851Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
 [2026-07-27T22:00:40.529Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-07-27T23:09:37.523Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-07-27T23:10:31.875Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-27T23:10:33.631Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-27T23:10:39.558Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
+[2026-07-27T23:10:58.261Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-27T23:11:00.022Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-27T23:11:04.029Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-07-27T23:11:20.579Z] [RECHAZAR_DOCUMENTO] [DOCUMENTO] Documento RECHAZADO — Motivo: sd | usuarioId:6 | ip:::1
+[2026-07-27T23:11:34.035Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
