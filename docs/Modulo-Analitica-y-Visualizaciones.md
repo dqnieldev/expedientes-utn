@@ -1,72 +1,52 @@
-# Documentación Técnica: Módulo de Analítica e Inteligencia de Datos
+# Especificación Técnica: Módulo de Analítica e Inteligencia de Datos
 
 **Proyecto**: Paperless System — Expedientes UTN  
-**Asignatura**: Extracción del Conocimiento en Base de Datos  
-**Institución**: Universidad Tecnológica de Nayarit — IDGS-91  
-**Módulo Frontend**: Panel de Desarrollador (`/developer/analitica`)  
+**Entorno**: Producción / Panel de Desarrollador (`/developer/analitica`)  
 
 ---
 
 ## 1. Visión General del Módulo
 
-Este documento recopila la implementación completa del módulo de **Analítica e Inteligencia de Datos**, desarrollado para dar cumplimiento al 100% de la rúbrica de la asignatura **Extracción del Conocimiento en Base de Datos**.
+Este documento especifica la arquitectura y funcionamiento del módulo de **Analítica e Inteligencia de Datos** del **Paperless System**.
 
-El módulo consume en tiempo real los datos consolidados desde la API REST (`GET /api/analitica/dataset`) y presenta las visualizaciones, métricas de evaluación de modelos y exportación de reportes ejecutivos en el **Panel de Desarrollador**.
+El módulo consume en tiempo real los datos consolidados desde la API REST (`GET /api/analitica/dataset`) y presenta visualizaciones operativas, métricas de rendimiento de algoritmos de Machine Learning y exportación de reportes ejecutivos en PDF.
 
 ---
 
-## 2. Requerimientos de la Rúbrica Atendidos
+## 2. Capacidades de Inteligencia de Datos
 
-| % | Criterio de Evaluación | Estado | Evidencia de Implementación |
-|---|---|---|---|
-| **20%** | Se realizan dos módulos del proyecto al 100% | ✅ Cumplido | Módulo 1 (Supervisado) y Módulo 2 (No Supervisado K-Means). |
-| **20%** | Reportes del primer módulo para toma de decisiones | ✅ Cumplido | Reporte de distribución, tasas de aprobación/rechazo y precisión (94.2%). |
-| **20%** | Reportes del segundo módulo para toma de decisiones | ✅ Cumplido | Clasificación de alumnos en 3 clusters según su nivel de riesgo. |
-| **20%** | Gráficas del primer módulo | ✅ Cumplido | Gráficas de barras de estado por categoría y matriz de evaluación. |
-| **20%** | Gráficas del segundo módulo | ✅ Cumplido | Visualización comparativa de Clusters (Al día, En proceso, Riesgo). |
+| Componente | Algoritmo / Modelo | Descripción Operativa |
+|---|---|---|
+| **Clasificación Predictiva** | Aprendizaje Supervisado (`RandomForest` / `DecisionTree`) | Predicción probabilística de aprobación de expedientes (`APROBADO` vs `RECHAZADO`). |
+| **Segmentación de Población** | Aprendizaje No Supervisado (`K-Means`) | Agrupamiento de alumnos por nivel de regularidad y riesgo de inactividad. |
+| **Métricas de Evaluación** | Precision, Recall, F1-Score | Evaluación continua del desempeño del modelo (Precisión actual: 94.2%). |
+| **Exportación PDF** | Formateador Oficial de Impresión | Generación de informes ejecutivos con firma de dictamen institucional. |
 
 ---
 
 ## 3. Arquitectura del Módulo
 
-### 3.1 Origen de los Datos (Backend API)
+### 3.1 Backend API
 - **Endpoint**: `GET /api/analitica/dataset`
 - **Controlador**: `backend/src/controllers/analitica.controller.js`
 - **Servicio**: `backend/src/services/analitica.service.js`
-- **Formato de Respuesta**: Objeto JSON estructurado conteniendo `metadatos`, arreglo `alumnos` con historial agregados y arreglo `documentos` para clasificación.
+- **Respuesta**: Formato JSON consolidado con metadatos globales, métricas por alumno y registro de documentos.
 
-### 3.2 Frontend UI (Panel de Desarrollador)
-- **Componente Principal**: `frontend/src/pages/developer/AnaliticaDeveloper.jsx`
-- **Servicio Frontend**: `frontend/src/services/analiticaService.js`
-- **Ruta Protegida**: `/developer/analitica` (requiere rol `DEVELOPER` o `ADMIN`).
-
----
-
-## 4. Detalle de los Módulos de Machine Learning
-
-### 4.1 Módulo 1: Aprendizaje Supervisado (Clasificación de Dictámenes)
-- **Objetivo**: Predecir si un expediente recién subido por un alumno será dictaminado como `APROBADO` o `RECHAZADO`.
-- **Variables de Entrada**: Tipo de documento (`Acta`, `CURP`, `Certificado`, `Constancia`), carrera del alumno, cuatrimestre e historial de rechazos.
-- **Métricas del Modelo**:
-  - **Precisión**: 94.2%
-  - **Recall**: 91.8%
-  - **F1-Score**: 93.0%
-- **Decisión Institucional**: Los certificados y actas presentan la mayor tasa de observaciones. Se recomienda automatizar la validación previa en la carrera de TICS.
-
-### 4.2 Módulo 2: Aprendizaje No Supervisado (Clustering K-Means)
-- **Objetivo**: Agrupar a la población estudiantil en clusters homogéneos según su regularidad y comportamiento en el sistema.
-- **Grupos Identificados**:
-  1. **Cluster 0 (Al día)**: Alumnos con &gt; 75% de sus trámites completados sin rechazos.
-  2. **Cluster 1 (En Proceso)**: Alumnos con avance regular (1 a 2 documentos validados).
-  3. **Cluster 2 (Riesgo Crítico)**: Alumnos con rechazos reiterados o intentos de login fallidos.
-- **Decisión Institucional**: Enviar notificaciones de apoyo administrativo a los alumnos asignados al Cluster 2 antes del cierre de cuatrimestre.
+### 3.2 Frontend UI
+- **Componente**: `frontend/src/pages/developer/AnaliticaDeveloper.jsx`
+- **Servicio**: `frontend/src/services/analiticaService.js`
+- **Acceso**: Ruta `/developer/analitica` (requiere permisos de desarrollador/administrador).
 
 ---
 
-## 5. Exportación de Reportes PDF
+## 4. Clasificación y Segmentación
 
-La interfaz incluye el botón **"Exportar Reporte PDF"**, el cual activa el formateador de impresión CSS (`@media print`). Este genera un informe ejecutivo oficial que incluye:
-- Membrete de la Universidad Tecnológica de Nayarit.
-- Tablas resumen de KPIs globales.
-- Gráficas y desglose por Cluster.
-- Espacio para firma de dictamen del Jefe de Materia / Docente Evaluador.
+### 4.1 Clasificación Predictiva de Expedientes
+- **Objetivo**: Estimar si un expediente recién ingresado requiere pre-verificación.
+- **Variables**: Tipo de documento (`Acta`, `CURP`, `Certificado`, `Constancia`), carrera del alumno, cuatrimestre e historial.
+- **Recomendación**: Priorizar la asistencia previa en la carga inicial de certificados y actas.
+
+### 4.2 Segmentación K-Means
+- **Grupo A (Regularidad Alta)**: Alumnos con &gt; 75% de trámites completados sin observaciones.
+- **Grupo B (En Proceso)**: Alumnos con avance regular en trámite (1 a 2 documentos validados).
+- **Grupo C (Riesgo Crítico)**: Alumnos con observaciones reiteradas o inactividad prolongada.
