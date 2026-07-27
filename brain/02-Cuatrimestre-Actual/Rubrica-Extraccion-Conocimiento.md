@@ -23,10 +23,11 @@
 | 20% | Gráfica a partir de información relevante del primer módulo |
 | 20% | Gráfica a partir de información relevante del segundo módulo |
 
-## ⚠️ Pendiente crítico
-Falta confirmar con el profesor **qué tipo de proyecto/análisis le correspondió al equipo** — la rúbrica lo menciona explícitamente ("para el tipo de proyecto que le correspondió por equipo").
+## ✅ Tipo de Proyecto Confirmado
+**Dominio asignado**: *Digitalización y Gestión de Expedientes de Alumnos (Paperless System)*.
+Los datos de entrenamiento e ingesta provienen directamente de la base de datos PostgreSQL a través del endpoint `GET /api/analitica/dataset` implementado en la Fase 1.
 
-## Propuesta de trabajo (mientras se confirma)
+## Módulos de Analítica Definidos
 Ver [[Modulo-Analitica]] para el detalle técnico:
-- Módulo 1 (supervisado): clasificación de documentos `APROBADO` vs `RECHAZADO`
-- Módulo 2 (no supervisado): clustering de alumnos por carrera/cuacuatrimestre/actividad para detectar patrones de riesgo
+- **Módulo 1 (Supervisado)**: Clasificación de dictamen de documentos (`APROBADO` vs `RECHAZADO`).
+- **Módulo 2 (No Supervisado)**: Clustering (K-Means) de alumnos por carrera, cuatrimestre y actividad para detectar patrones de riesgo y seguimiento.

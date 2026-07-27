@@ -82,3 +82,14 @@
 [2026-07-22T02:34:14.920Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
 [2026-07-22T02:34:20.234Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
 [2026-07-22T02:34:21.946Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-26T23:02:16.062Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-07-26T23:03:18.420Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — darkcabrera@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-26T23:03:20.210Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-07-26T23:04:00.604Z] [RECHAZAR_DOCUMENTO] [DOCUMENTO] Documento RECHAZADO — Motivo: ajja | usuarioId:6 | ip:::1
+[2026-07-26T23:19:40.669Z] [LOGIN] [AUTH] Login exitoso — tic-310134@utnay.edu.mx (ALUMNO) | usuarioId:5 | ip:::1
+[2026-07-26T23:20:09.295Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-07-27T06:07:47.088Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
+[2026-07-27T06:07:48.885Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
+[2026-07-27T06:07:49.870Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
+[2026-07-27T06:07:52.287Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
+[2026-07-27T06:07:54.505Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1

@@ -2,7 +2,8 @@
 
 Lista viva — actualizar conforme se resuelve cada punto.
 
-- [ ] Confirmar con el profesor el tipo de proyecto/análisis asignado para [[Rubrica-Extraccion-Conocimiento]]
+- [x] Confirmar tipo de proyecto asignado para [[Rubrica-Extraccion-Conocimiento]] (Confirmado: Digitalización de Expedientes de Alumnos)
+- [x] Definir origen de datos de analítica (Confirmado: endpoint GET /api/analitica/dataset)
 - [ ] Decidir lenguaje de la app Android (Kotlin vs Java)
 - [ ] Decidir mecanismo de actualización en tiempo real (polling vs. endpoint nuevo)
 - [ ] Decidir sensor de Wear OS a usar
