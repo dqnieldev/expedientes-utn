@@ -25,6 +25,7 @@ import ProtectedDeveloperRoute from "./components/ProtectedDeveloperRoute";
 import RespaldosDeveloper from "./pages/developer/RespaldosDeveloper";
 import AuditLogsDeveloper from "./pages/developer/AuditLogsDeveloper";
 import GestionAdmins from "./pages/developer/GestionAdmins";
+import AnaliticaDeveloper from "./pages/developer/AnaliticaDeveloper";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
         {/* DEVELOPER */}
         <Route path="/developer/respaldos" element={<ProtectedDeveloperRoute><RespaldosDeveloper /></ProtectedDeveloperRoute>} />
         <Route path="/developer/auditoria" element={<ProtectedDeveloperRoute><AuditLogsDeveloper /></ProtectedDeveloperRoute>} />
+        <Route path="/developer/analitica" element={<ProtectedDeveloperRoute><AnaliticaDeveloper /></ProtectedDeveloperRoute>} />
         <Route path="/developer/admins" element={<ProtectedDeveloperRoute><GestionAdmins /></ProtectedDeveloperRoute>} />
 
         {/* 404 */}

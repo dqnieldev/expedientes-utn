@@ -20,7 +20,7 @@ export const getAnaliticaDataset = async () => {
         alumno: {
           select: {
             carrera: true,
-            cuacuatrimestre_actual: true,
+            cuatrimestre_actual: true,
             estado: true,
           },
         },
@@ -56,7 +56,7 @@ export const getAnaliticaDataset = async () => {
       alumnoId: alumno.id,
       matricula: alumno.matricula,
       carrera: alumno.carrera,
-      cuatrimestre: alumno.cuacuatrimestre_actual,
+      cuatrimestre: alumno.cuatrimestre_actual,
       estadoAlumno: alumno.estado,
       totalDocumentos: totalDocs,
       documentosAprobados: aprobados,
@@ -77,7 +77,7 @@ export const getAnaliticaDataset = async () => {
     estado: doc.estado,
     razonRechazo: doc.razonRechazo || null,
     carrera: doc.alumno.carrera,
-    cuatrimestre: doc.alumno.cuacuatrimestre_actual,
+    cuatrimestre: doc.alumno.cuatrimestre_actual,
     estadoAlumno: doc.alumno.estado,
     fechaCreacion: doc.createdAt,
   }));

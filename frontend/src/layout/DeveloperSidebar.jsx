@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { DatabaseBackup, ShieldCheck, UserPlus, LogOut, Code2 } from "lucide-react";
+import { DatabaseBackup, ShieldCheck, UserPlus, LogOut, Code2, BarChart3 } from "lucide-react";
 
 const menu = [
   { name: "Respaldos",  path: "/developer/respaldos", icon: DatabaseBackup, desc: "Gestionar respaldos DB"   },
   { name: "Auditoría",  path: "/developer/auditoria", icon: ShieldCheck,    desc: "Logs del sistema"         },
+  { name: "Analítica",  path: "/developer/analitica", icon: BarChart3,      desc: "Inteligencia de datos ML" },
   { name: "Administradores", path: "/developer/admins", icon: UserPlus,     desc: "Crear cuentas de admin"   },
 ];
 

@@ -93,3 +93,6 @@
 [2026-07-27T06:07:49.870Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
 [2026-07-27T06:07:52.287Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
 [2026-07-27T06:07:54.505Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — admin@utn.com | usuarioId:sistema | ip:::1
+[2026-07-27T21:58:24.272Z] [LOGIN] [AUTH] Login exitoso — darkcabrera@gmail.com (ADMIN) | usuarioId:6 | ip:::1
+[2026-07-27T22:00:30.851Z] [LOGIN_FALLIDO] [AUTH] Intento fallido — paperlessutndev@gmail.com | usuarioId:sistema | ip:::1
+[2026-07-27T22:00:40.529Z] [LOGIN] [AUTH] Login exitoso — paperlessutndev@gmail.com (DEVELOPER) | usuarioId:2 | ip:::1
