@@ -1,25 +1,51 @@
-# Guía de Despliegue en Servidor Producción (Link Público)
+# Documentación Técnica de Despliegue en Producción (Cloud Deployment)
 
-Esta guía detalla los pasos para desplegar el **Paperless System (Expedientes UTN)** en un servidor accesible públicamente para cumplir con el criterio 4 de la lista de cotejo de la asignatura **Desarrollo Web Integral**.
-
----
-
-## Opción Recomendada: Architecture Cloud Gratuita
-
-- **Base de Datos**: PostgreSQL en **Supabase** o **Render PostgreSQL**
-- **Backend API**: Node.js Web Service en **Render** o **Railway**
-- **Frontend Web**: SPA React en **Vercel** o **Netlify**
+**Proyecto**: Paperless System — Expedientes UTN  
+**Fecha de Actualización**: 2026-07-28  
+**Estado**: Listo para Producción (Vercel + Render + Supabase)  
 
 ---
 
-## Paso 1: Configuración de la Base de Datos PostgreSQL
+## 1. Visión General del Despliegue
 
-1. Crear un proyecto en [Supabase](https://supabase.com) o [Render](https://render.com).
-2. Obtener la cadena de conexión `DATABASE_URL` (SSL obligatorio en producción):
+Este documento detalla la arquitectura de despliegue en la nube del **Paperless System**, cumpliendo con los estándares enterprise de alta disponibilidad y conectividad pública requeridos por la institución y para el consumo de servicios web desde dispositivos móviles (Android / Wear OS).
+
+```
+ ┌────────────────────────┐      HTTP/REST      ┌────────────────────────┐
+ │   Frontend Web React   │ ──────────────────► │  Backend Node.js API   │
+ │   (Vercel SPA Hosting) │                     │   (Render Web Service) │
+ └────────────────────────┘                     └───────────┬────────────┘
+                                                            │ Prisma ORM
+                                                            ▼
+                                                ┌────────────────────────┐
+                                                │  PostgreSQL Database   │
+                                                │   (Supabase Cloud DB)  │
+                                                └────────────────────────┘
+```
+
+---
+
+## 2. Componentes de la Arquitectura Cloud
+
+| Componente | Servicio Cloud | Tipo | Enlace / Dominio |
+|---|---|---|---|
+| **Base de Datos** | Supabase / Render PostgreSQL | PostgreSQL 15 | `db.xxx.supabase.co` |
+| **Backend Web API** | Render / Railway | Node.js + Express | `https://expedientes-utn-backend.onrender.com` |
+| **Frontend Web App** | Vercel / Netlify | React SPA + Vite | `https://expedientes-utn.vercel.app` |
+
+---
+
+## 3. Guía Paso a Paso para Ejecutar el Despliegue
+
+### Paso 1: Configurar la Base de Datos Remota (Supabase / Render)
+
+1. Ingresar a [Supabase.com](https://supabase.com) y hacer clic en **New Project**.
+2. Asignar nombre `expedientes-utn-db` y una contraseña segura para el usuario `postgres`.
+3. Ir a **Project Settings > Database** y copiar la cadena de conexión **URI Connection String** (modo SSL habilitado):
    ```env
-   DATABASE_URL="postgresql://usuario:password@ep-host.region.aws.neon.tech/expedientes_db?sslmode=require"
+   DATABASE_URL="postgresql://postgres:[TU-PASSWORD]@db.xxxx.supabase.co:5432/postgres?sslmode=require"
    ```
-3. Ejecutar las migraciones y el seed inicial desde tu terminal local conectada a la BD remota:
+4. Desde tu terminal local en el proyecto, ejecutar las migraciones y la carga inicial de seed:
    ```bash
    cd backend
    npx prisma db push
@@ -28,36 +54,52 @@ Esta guía detalla los pasos para desplegar el **Paperless System (Expedientes U
 
 ---
 
-## Paso 2: Despliegue del Backend API (Render / Railway)
+### Paso 2: Desplegar el Backend API (Render)
 
-1. Conectar el repositorio GitHub `expedientes-utn` en Render / Railway.
-2. Configurar la carpeta raíz del servicio como `/backend`.
-3. Configurar el comando de compilación e inicio:
+1. Ingresar a [Render.com](https://render.com) y hacer clic en **New > Web Service**.
+2. Conectar el repositorio GitHub `expedientes-utn`.
+3. Configurar los campos clave:
+   - **Root Directory**: `backend`
    - **Build Command**: `npm install && npx prisma generate`
    - **Start Command**: `node src/server.js`
-4. Declarar las Variables de Entorno (Environment Variables):
-   - `PORT`: `10000` (o asignado por la plataforma)
-   - `DATABASE_URL`: La URL obtenida en el Paso 1.
-   - `JWT_SECRET`: Una clave segura de al menos 32 caracteres.
-   - `FRONTEND_URL`: `https://expedientes-utn.vercel.app` (URL de tu frontend desplegado).
-5. Desplegar y copiar la URL pública generada (Ejemplo: `https://expedientes-utn-api.onrender.com`).
+4. En la sección **Environment Variables**, agregar:
+   - `DATABASE_URL`: *(Tu URL de Supabase obtenida en el Paso 1)*
+   - `JWT_SECRET`: `PaperlessUTN_Production_Secret_Key_2026_Enterprise`
+   - `FRONTEND_URL`: `https://expedientes-utn.vercel.app`
+5. Hacer clic en **Create Web Service**. Al finalizar la compilación, copiar la URL pública generada (ej. `https://expedientes-utn-backend.onrender.com`).
 
 ---
 
-## Paso 3: Despliegue del Frontend React (Vercel / Netlify)
+### Paso 3: Desplegar el Frontend Web (Vercel)
 
-1. Importar el proyecto en [Vercel](https://vercel.com).
-2. Seleccionar la carpeta raíz `/frontend`.
-3. Framework Preset: **Vite**.
-4. Declarar la Variable de Entorno:
-   - `VITE_API_URL`: `https://expedientes-utn-api.onrender.com/api` (la URL del backend del Paso 2).
-5. Hacer clic en **Deploy**. Copiar la URL pública asignada.
+1. Ingresar a [Vercel.com](https://vercel.com) y hacer clic en **Add New > Project**.
+2. Importar el repositorio GitHub `expedientes-utn`.
+3. Configurar los campos clave:
+   - **Root Directory**: `frontend`
+   - **Framework Preset**: `Vite`
+4. En **Environment Variables**, agregar:
+   - `VITE_API_URL`: `https://expedientes-utn-backend.onrender.com/api`
+5. Hacer clic en **Deploy**. Al finalizar, el sistema otorgará la URL pública de producción (ej. `https://expedientes-utn.vercel.app`).
 
 ---
 
-## Paso 4: Lista de Verificación Final del Despliegue
+## 4. Archivos de Configuración de Producción Creados
 
-- [ ] La base de datos contiene los roles predeterminados `ADMIN`, `ALUMNO`, `DEVELOPER`.
-- [ ] La API responde `HTTP 200` en la ruta `/` de la URL pública.
-- [ ] El Frontend abre la pantalla de Login y permite la autenticación exitosa.
-- [ ] La carga de documentos PDF almacena correctamente los archivos y actualiza el estado.
+1. **`frontend/vercel.json`**:
+   - Garantiza que las rutas del cliente (React Router) se reescriban correctamente a `index.html` sin lanzar errores 404 al recargar el navegador.
+2. **`backend/src/app.js`**:
+   - Habilita el middleware de **CORS dinámico** permitiendo peticiones desde dominios Vercel y clientes móviles nativos.
+3. **`frontend/.env.production.example` & `backend/.env.production.example`**:
+   - Plantillas oficiales de variables de entorno para despliegue en la nube.
+
+---
+
+## 5. Verificación de Producción
+
+Una vez completado el despliegue:
+1. Abrir `https://expedientes-utn.vercel.app` en el navegador.
+2. Probar inicio de sesión con credenciales de prueba:
+   - **Administrador**: `darkcabrera@gmail.com` / `admin123`
+   - **Desarrollador**: `paperlessutndev@gmail.com` / `dev123`
+   - **Alumno**: `tic-310134@utnay.edu.mx` / `alumno123`
+3. Probar navegación al módulo de **Analítica e Inteligencia de Datos** (`/developer/analitica`) y verificar la exportación a PDF.

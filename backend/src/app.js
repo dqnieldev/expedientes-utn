@@ -18,7 +18,22 @@ const app = express();
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:3000",
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Permitir peticiones sin header Origin (App móvil / Postman)
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.endsWith(".netlify.app")) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Permisivo en producción para despliegue sin fricción
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan("dev")); // Agrega el middleware de morgan para registrar las solicitudes HTTP
 app.use("/api/audit", auditRoutes); // Rutas para auditoría (logs de acciones)
