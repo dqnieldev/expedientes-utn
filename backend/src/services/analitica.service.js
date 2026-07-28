@@ -1,49 +1,67 @@
 import prisma from "../config/prisma.js";
 
 export const getAnaliticaDataset = async () => {
-  const [alumnos, documentos, auditLogs] = await Promise.all([
-    prisma.alumno.findMany({
-      include: {
-        documentos: true,
-        usuario: {
-          select: {
-            id: true,
-            email: true,
-            role: true,
-            createdAt: true,
+  let alumnos = [];
+  let documentos = [];
+  let auditLogs = [];
+
+  try {
+    const results = await Promise.allSettled([
+      prisma.alumno.findMany({
+        include: {
+          documentos: true,
+          usuario: {
+            select: {
+              id: true,
+              email: true,
+              role: true,
+              createdAt: true,
+            },
           },
         },
-      },
-    }),
-    prisma.documento.findMany({
-      include: {
-        alumno: {
-          select: {
-            carrera: true,
-            cuatrimestre_actual: true,
-            estado: true,
+      }),
+      prisma.documento.findMany({
+        include: {
+          alumno: {
+            select: {
+              carrera: true,
+              cuatrimestre_actual: true,
+              estado: true,
+            },
           },
         },
-      },
-    }),
-    prisma.auditLog.groupBy({
-      by: ["usuarioId", "accion"],
-      _count: {
-        _all: true,
-      },
-    }),
-  ]);
+      }),
+      prisma.auditLog.groupBy({
+        by: ["usuarioId", "accion"],
+        _count: {
+          _all: true,
+        },
+      }),
+    ]);
+
+    if (results[0].status === "fulfilled") alumnos = results[0].value;
+    else console.warn("⚠️ Error obteniendo alumnos para analítica:", results[0].reason?.message);
+
+    if (results[1].status === "fulfilled") documentos = results[1].value;
+    else console.warn("⚠️ Error obteniendo documentos para analítica:", results[1].reason?.message);
+
+    if (results[2].status === "fulfilled") auditLogs = results[2].value;
+    else console.warn("⚠️ Error obteniendo auditLogs para analítica:", results[2].reason?.message);
+
+  } catch (error) {
+    console.error("Error consultando la base de datos para analítica:", error.message);
+  }
 
   // Mapa de intentos fallidos por usuario
   const loginFallidosMap = {};
-  auditLogs.forEach((log) => {
-    if (log.accion === "LOGIN_FALLIDO" && log.usuarioId) {
-      loginFallidosMap[log.usuarioId] = log._count._all;
+  (auditLogs || []).forEach((log) => {
+    if (log && log.accion === "LOGIN_FALLIDO" && log.usuarioId) {
+      loginFallidosMap[log.usuarioId] = log._count?._all || 0;
     }
   });
 
   // Transformar lista de alumnos para clustering / supervisado
-  const alumnosDataset = alumnos.map((alumno) => {
+  const alumnosDataset = (alumnos || []).map((alumno) => {
     const docs = alumno.documentos || [];
     const totalDocs = docs.length;
     const aprobados = docs.filter((d) => d.estado === "APROBADO").length;
@@ -70,7 +88,7 @@ export const getAnaliticaDataset = async () => {
   });
 
   // Transformar lista de documentos para clasificación
-  const documentosDataset = documentos.map((doc) => ({
+  const documentosDataset = (documentos || []).map((doc) => ({
     documentoId: doc.id,
     alumnoId: doc.alumnoId,
     tipo: doc.tipo,
@@ -82,13 +100,13 @@ export const getAnaliticaDataset = async () => {
     fechaCreacion: doc.createdAt,
   }));
 
-  const totalDocumentos = documentos.length;
-  const aprobadosTotal = documentos.filter((d) => d.estado === "APROBADO").length;
-  const rechazadosTotal = documentos.filter((d) => d.estado === "RECHAZADO").length;
+  const totalDocumentos = documentosDataset.length;
+  const aprobadosTotal = documentosDataset.filter((d) => d.estado === "APROBADO").length;
+  const rechazadosTotal = documentosDataset.filter((d) => d.estado === "RECHAZADO").length;
 
   return {
     metadatos: {
-      totalAlumnos: alumnos.length,
+      totalAlumnos: alumnosDataset.length,
       totalDocumentos,
       tasaAprobacionGlobal: totalDocumentos > 0 ? Number(((aprobadosTotal / totalDocumentos) * 100).toFixed(2)) : 0,
       tasaRechazoGlobal: totalDocumentos > 0 ? Number(((rechazadosTotal / totalDocumentos) * 100).toFixed(2)) : 0,
