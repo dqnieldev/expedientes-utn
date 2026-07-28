@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Upload, FileCheck, FileX, Clock, Eye, RefreshCw, AlertCircle, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SERVER_URL } from "../config/api";
 
 // ── Configuración de validación ───────────────────────────────────────────────
 const FORMATOS_PERMITIDOS = ["application/pdf", "application/x-pdf"];
@@ -110,7 +111,7 @@ export default function DocumentUploadCard({ item, doc, icon, onUpload }) {
           {doc ? (
             <div className="flex gap-2">
               <a
-                href={`http://localhost:3000/uploads/${doc.url}`}
+                href={`${SERVER_URL}/uploads/${doc.url}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all duration-150"

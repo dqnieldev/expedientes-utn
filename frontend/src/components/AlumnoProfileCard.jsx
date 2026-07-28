@@ -3,6 +3,7 @@ import { Pen, GraduationCap, Hash, BookOpen, CheckCircle, Camera } from "lucide-
 import { useRef, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL, SERVER_URL } from "../config/api";
 
 export default function AlumnoProfileCard({ alumno: initialAlumno }) {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
     formData.append("foto", file);
     try {
       const res = await axios.put(
-        "http://localhost:3000/api/alumnos/foto",
+        `${API_BASE_URL}/alumnos/foto`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -55,7 +56,7 @@ export default function AlumnoProfileCard({ alumno: initialAlumno }) {
             <div className="w-16 h-16 rounded-2xl border-4 border-white dark:border-gray-800 shadow-sm overflow-hidden transition-colors duration-200">
               {foto ? (
                 <img
-                  src={`http://localhost:3000/uploads/${foto}`}
+                  src={`${SERVER_URL}/uploads/${foto}`}
                   alt={t("header.changePhoto")}
                   className="w-full h-full object-cover"
                 />

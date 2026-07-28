@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DeveloperLayout from "../../layout/DeveloperLayout";
 import { ShieldCheck, RefreshCw, AlertCircle, Search, Filter } from "lucide-react";
+import { API_BASE_URL } from "../../config/api";
 
 const ACCION_CONFIG = {
   LOGIN:                { label: "Login",              color: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"        },
@@ -48,7 +49,7 @@ export default function AuditLogs() {
       const params = new URLSearchParams({ page, limit: 50 });
       if (accion) params.append("accion", accion);
 
-      const res = await axios.get(`http://localhost:3000/api/audit?${params}`, {
+      const res = await axios.get(`${API_BASE_URL}/audit?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLogs(res.data.logs);

@@ -6,6 +6,7 @@ import ExpedienteResumen from "../../components/ExpedienteResumen";
 import { SkeletonDocumentos } from "../../components/Skeleton";
 import { FileText, Fingerprint, GraduationCap, FileBadge, Download } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "../../config/api";
 
 export default function Documentos() {
   const [docs, setDocs] = useState([]);
@@ -33,13 +34,13 @@ export default function Documentos() {
   const fetchData = async () => {
     try {
       const resAlumno = await axios.get(
-        "http://localhost:3000/api/alumnos/me",
+        `${API_BASE_URL}/alumnos/me`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setAlumno(resAlumno.data);
 
       const resDocs = await axios.get(
-        `http://localhost:3000/api/documentos/${resAlumno.data.id}`,
+        `${API_BASE_URL}/documentos/${resAlumno.data.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDocs(resDocs.data);
@@ -63,7 +64,7 @@ export default function Documentos() {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/documentos",
+        `${API_BASE_URL}/documentos`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -75,10 +76,11 @@ export default function Documentos() {
 
   const handleDescargarReporte = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/reportes/mio", {
+      const res = await axios.get(`${API_BASE_URL}/reportes/mio`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob"
       });
+
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement("a");
       a.href = url;

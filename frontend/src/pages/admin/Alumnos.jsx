@@ -7,6 +7,7 @@ import {
   GraduationCap, Hash
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL, SERVER_URL } from "../../config/api";
 
 export default function Alumnos() {
   const { t } = useTranslation();
@@ -36,13 +37,14 @@ export default function Alumnos() {
 
   const fetchAlumnos = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/alumnos", {
+      const res = await axios.get(`${API_BASE_URL}/alumnos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlumnos(res.data);
       setFiltered(res.data);
     } catch (err) {
       console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -75,10 +77,11 @@ export default function Alumnos() {
     setSaving(true);
     try {
       await axios.post(
-        "http://localhost:3000/api/alumnos",
+        `${API_BASE_URL}/alumnos`,
         { ...form, cuatrimestre_actual: Number(cuatrimestre_actual) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setShowModal(false);
       setForm({ nombre: "", matricula: "", carrera: "", cuatrimestre_actual: "", email: "" });
       fetchAlumnos();
@@ -160,10 +163,11 @@ export default function Alumnos() {
                 <div className="w-11 h-11 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0 overflow-hidden">
                   {alumno.foto ? (
                     <img
-                      src={`http://localhost:3000/uploads/${alumno.foto}`}
+                      src={`${SERVER_URL}/uploads/${alumno.foto}`}
                       className="w-full h-full object-cover"
                       alt=""
                     />
+
                   ) : (
                     <span className="text-white text-sm font-semibold">{initials(alumno.nombre)}</span>
                   )}

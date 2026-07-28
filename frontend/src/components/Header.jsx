@@ -2,6 +2,7 @@ import { Sun, Moon, Camera, Languages } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL, SERVER_URL } from "../config/api";
 
 export default function Header({ title }) {
   const { t, i18n } = useTranslation();
@@ -19,11 +20,11 @@ export default function Header({ title }) {
   }, [dark]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/alumnos/me", {
+    axios.get(`${API_BASE_URL}/alumnos/me`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(res => {
       if (res.data.foto)
-        setFoto(`http://localhost:3000/uploads/${res.data.foto}`);
+        setFoto(`${SERVER_URL}/uploads/${res.data.foto}`);
     }).catch(() => {});
   }, []);
 
@@ -34,15 +35,16 @@ export default function Header({ title }) {
     formData.append("foto", file);
     try {
       const res = await axios.put(
-        "http://localhost:3000/api/alumnos/foto",
+        `${API_BASE_URL}/alumnos/foto`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setFoto(`http://localhost:3000/uploads/${res.data.foto}`);
+      setFoto(`${SERVER_URL}/uploads/${res.data.foto}`);
     } catch (err) {
       console.error(err);
     }
   };
+
 
   return (
     <header className="flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 export default function ChangePassword() {
   const [form, setForm] = useState({
@@ -30,7 +31,8 @@ export default function ChangePassword() {
     const matricula = localStorage.getItem("tempPass"); // ← su contraseña actual
 
     await axios.post(
-      "http://localhost:3000/api/auth/change-password",
+      `${API_BASE_URL}/auth/change-password`,
+
       {
         currentPassword: matricula,  // ← esto faltaba
         newPassword: form.password,

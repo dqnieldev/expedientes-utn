@@ -6,6 +6,7 @@ import AlumnoProfileCard from "../../components/AlumnoProfileCard";
 import { SkeletonDashboard } from "../../components/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "../../config/api";
 
 export default function DashboardAlumno() {
   const [alumno, setAlumno] = useState(null);
@@ -19,16 +20,17 @@ export default function DashboardAlumno() {
       const token = localStorage.getItem("token");
       try {
         const resAlumno = await axios.get(
-          "http://localhost:3000/api/alumnos/me",
+          `${API_BASE_URL}/alumnos/me`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAlumno(resAlumno.data);
 
         const resDocs = await axios.get(
-          `http://localhost:3000/api/documentos/${resAlumno.data.id}`,
+          `${API_BASE_URL}/documentos/${resAlumno.data.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDocs(resDocs.data);
+
       } catch (error) {
         console.error(error);
       } finally {

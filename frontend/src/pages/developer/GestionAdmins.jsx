@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DeveloperLayout from "../../layout/DeveloperLayout";
+import { SERVER_URL } from "../../config/api";
 import {
   UserPlus, RefreshCw, CheckCircle2, AlertCircle,
   Mail, Lock, Eye, EyeOff, Users, ShieldCheck, Trash2,
 } from "lucide-react";
 
-const API = "http://localhost:3000";
+const API = SERVER_URL;
+
 
 function Toast({ msg, type, onClose }) {
   useEffect(() => {

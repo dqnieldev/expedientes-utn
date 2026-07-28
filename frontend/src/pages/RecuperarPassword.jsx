@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export default function RecuperarPassword() {
   const [matricula, setMatricula]   = useState("");
@@ -16,7 +17,8 @@ export default function RecuperarPassword() {
     setMessage("");
 
     try {
-      await axios.post("http://localhost:3000/api/auth/forgot-password", { matricula });
+      await axios.post(`${API_BASE_URL}/auth/forgot-password`, { matricula });
+
       setStatus("success");
     } catch (err) {
       setStatus("error");
