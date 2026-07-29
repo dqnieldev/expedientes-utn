@@ -14,8 +14,10 @@ import analiticaRoutes from "./routes/analitica.routes.js";
 
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet({
+
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 const allowedOrigins = [
