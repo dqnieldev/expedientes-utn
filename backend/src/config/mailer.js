@@ -11,7 +11,8 @@ const gmailPass = (process.env.GMAIL_PASS || DEFAULT_GMAIL_PASS).replace(/\s+/g,
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // Usar SSL en puerto 465 (compatible con Render)
+  secure: true,
+  family: 4, // Forzar IPv4 — Render no soporta IPv6 saliente (ENETUNREACH)
   auth: {
     user: gmailUser,
     pass: gmailPass,
