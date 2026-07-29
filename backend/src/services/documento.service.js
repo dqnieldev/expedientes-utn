@@ -42,54 +42,56 @@ export const createDocumento = async (data) => {
     },
   });
 
+  const fromEmail = process.env.GMAIL_USER || "paperlessutndev@gmail.com";
+
   // Notificar al admin en segundo plano (no bloqueante)
   prisma.usuario.findFirst({
     where: { role: "ADMIN" },
   }).then((admin) => {
-    if (admin?.email) {
-      transporter.sendMail({
-        from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
-        to:      admin.email,
-        subject: `📄 ${esReemplazo ? "Documento reemplazado" : "Nuevo documento"} — ${doc.alumno.nombre}`,
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
-            <h2 style="color:#1a2744;margin-bottom:8px">
-              ${esReemplazo ? "Documento reemplazado" : "Nuevo documento subido"}
-            </h2>
-            <p style="color:#6b7280;font-size:14px">
-              El alumno <strong>${doc.alumno.nombre}</strong> ha 
-              ${esReemplazo ? "reemplazado" : "subido"} un documento que requiere revisión.
-            </p>
-            <table style="margin-top:16px;width:100%;font-size:13px;border-collapse:collapse">
-              <tr>
-                <td style="padding:8px 0;color:#9ca3af;width:120px">Alumno</td>
-                <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.nombre}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;color:#9ca3af">Matrícula</td>
-                <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.matricula}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;color:#9ca3af">Documento</td>
-                <td style="padding:8px 0;color:#111827;font-weight:600">${tipoLabel}</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 0;color:#9ca3af">Acción</td>
-                <td style="padding:8px 0;font-weight:600;color:#EF9F27">
-                  ${esReemplazo ? "Reemplazo — en revisión" : "Nuevo — en revisión"}
-                </td>
-              </tr>
-            </table>
-            <p style="color:#9ca3af;font-size:12px;margin-top:24px">
-              Ingresa al panel de administración para revisar y validar el documento.
-            </p>
-            <p style="color:#9ca3af;font-size:12px;margin-top:4px">
-              Sistema Paperless — Universidad Tecnológica de Nayarit
-            </p>
-          </div>
-        `,
-      }).catch((emailErr) => console.error("Error enviando notificación al admin:", emailErr.message));
-    }
+    const recipient = admin?.email || "darkcabrera@gmail.com";
+    transporter.sendMail({
+      from:    `"Paperless UTN" <${fromEmail}>`,
+      to:      recipient,
+      subject: `📄 ${esReemplazo ? "Documento reemplazado" : "Nuevo documento"} — ${doc.alumno.nombre}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
+          <h2 style="color:#1a2744;margin-bottom:8px">
+            ${esReemplazo ? "Documento reemplazado" : "Nuevo documento subido"}
+          </h2>
+          <p style="color:#6b7280;font-size:14px">
+            El alumno <strong>${doc.alumno.nombre}</strong> ha 
+            ${esReemplazo ? "reemplazado" : "subido"} un documento que requiere revisión.
+          </p>
+          <table style="margin-top:16px;width:100%;font-size:13px;border-collapse:collapse">
+            <tr>
+              <td style="padding:8px 0;color:#9ca3af;width:120px">Alumno</td>
+              <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.nombre}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;color:#9ca3af">Matrícula</td>
+              <td style="padding:8px 0;color:#111827;font-weight:600">${doc.alumno.matricula}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;color:#9ca3af">Documento</td>
+              <td style="padding:8px 0;color:#111827;font-weight:600">${tipoLabel}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;color:#9ca3af">Acción</td>
+              <td style="padding:8px 0;font-weight:600;color:#EF9F27">
+                ${esReemplazo ? "Reemplazo — en revisión" : "Nuevo — en revisión"}
+              </td>
+            </tr>
+          </table>
+          <p style="color:#9ca3af;font-size:12px;margin-top:24px">
+            Ingresa al panel de administración para revisar y validar el documento.
+          </p>
+          <p style="color:#9ca3af;font-size:12px;margin-top:4px">
+            Sistema Paperless — Universidad Tecnológica de Nayarit
+          </p>
+        </div>
+      `,
+    }).then(info => console.log(`📧 Notificación Admin enviada a ${recipient}:`, info.messageId))
+      .catch((emailErr) => console.error("Error enviando notificación al admin:", emailErr.message));
   }).catch(() => {});
 
   return doc;
@@ -117,11 +119,14 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
     CONSTANCIA:      "Constancia de Estudios",
   }[doc.tipo] ?? doc.tipo;
 
-  // Notificar por email en segundo plano (no bloqueante para responder de inmediato)
-  if (estado === "RECHAZADO" && doc.alumno?.usuario?.email) {
+  const fromEmail = process.env.GMAIL_USER || "paperlessutndev@gmail.com";
+  const recipientEmail = doc.alumno?.usuario?.email || "darkcabrera@gmail.com";
+
+  // Notificar por email en segundo plano (no bloqueante)
+  if (estado === "RECHAZADO") {
     transporter.sendMail({
-      from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
-      to:      doc.alumno.usuario.email,
+      from:    `"Paperless UTN" <${fromEmail}>`,
+      to:      recipientEmail,
       subject: "❌ Documento rechazado — Paperless UTN",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
@@ -143,11 +148,12 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
           <p style="color:#9ca3af;font-size:12px;margin-top:16px">Sistema Paperless — Universidad Tecnológica de Nayarit</p>
         </div>
       `,
-    }).catch((emailErr) => console.error("Error enviando email de rechazo:", emailErr.message));
-  } else if (estado === "APROBADO" && doc.alumno?.usuario?.email) {
+    }).then(info => console.log(`📧 Notificación Alumno Rechazado enviada a ${recipientEmail}:`, info.messageId))
+      .catch((emailErr) => console.error("Error enviando email de rechazo:", emailErr.message));
+  } else if (estado === "APROBADO") {
     transporter.sendMail({
-      from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
-      to:      doc.alumno.usuario.email,
+      from:    `"Paperless UTN" <${fromEmail}>`,
+      to:      recipientEmail,
       subject: "✅ Documento aprobado — Paperless UTN",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
@@ -162,7 +168,8 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
           <p style="color:#9ca3af;font-size:12px;margin-top:24px">Sistema Paperless — Universidad Tecnológica de Nayarit</p>
         </div>
       `,
-    }).catch((emailErr) => console.error("Error enviando email de aprobación:", emailErr.message));
+    }).then(info => console.log(`📧 Notificación Alumno Aprobado enviada a ${recipientEmail}:`, info.messageId))
+      .catch((emailErr) => console.error("Error enviando email de aprobación:", emailErr.message));
   }
 
   return doc;
