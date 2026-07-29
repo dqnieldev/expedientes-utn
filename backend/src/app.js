@@ -55,7 +55,16 @@ app.use("/api/backups", backupRoutes); // Rutas para gestión de respaldos
 app.use("/api/analitica", analiticaRoutes); // Rutas para analítica y ML
 
 
-app.use("/uploads", express.static("uploads"));  // Servir archivos estáticos desde la carpeta "uploads"
+import fs from "fs";
+import path from "path";
+
+const uploadsDir = path.resolve("uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use("/uploads", express.static(uploadsDir));
+
   
 
 export default app;
