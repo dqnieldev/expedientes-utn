@@ -1,6 +1,11 @@
+import dns from "dns";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
+
+// Forzar resolución DNS a IPv4 primero — Render no soporta IPv6 saliente
+// Sin esto, Node.js resuelve smtp.gmail.com a IPv6 y falla con ENETUNREACH
+dns.setDefaultResultOrder("ipv4first");
 
 const DEFAULT_GMAIL_USER = "paperlessutndev@gmail.com";
 const DEFAULT_GMAIL_PASS = "sskquqgqajdkrftj";
@@ -8,11 +13,12 @@ const DEFAULT_GMAIL_PASS = "sskquqgqajdkrftj";
 const gmailUser = (process.env.GMAIL_USER || DEFAULT_GMAIL_USER).trim();
 const gmailPass = (process.env.GMAIL_PASS || DEFAULT_GMAIL_PASS).replace(/\s+/g, "");
 
+console.log(`📧 [Mailer] Configurado con remitente: ${gmailUser}`);
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
-  family: 4, // Forzar IPv4 — Render no soporta IPv6 saliente (ENETUNREACH)
   auth: {
     user: gmailUser,
     pass: gmailPass,
