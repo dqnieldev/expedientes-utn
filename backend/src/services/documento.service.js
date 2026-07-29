@@ -1,7 +1,8 @@
 import prisma from "../config/prisma.js";
-import transporter from "../config/mailer.js";
+import { sendEmail } from "../config/mailer.js";
 
 // CREAR O ACTUALIZAR DOCUMENTO
+
 export const createDocumento = async (data) => {
   const { tipo, alumnoId, url } = data;
   const alumnoIdInt = parseInt(alumnoId);
@@ -49,8 +50,7 @@ export const createDocumento = async (data) => {
     where: { role: "ADMIN" },
   }).then((admin) => {
     const recipient = admin?.email || "darkcabrera@gmail.com";
-    transporter.sendMail({
-      from:    `"Paperless UTN" <${fromEmail}>`,
+    sendEmail({
       to:      recipient,
       subject: `📄 ${esReemplazo ? "Documento reemplazado" : "Nuevo documento"} — ${doc.alumno.nombre}`,
       html: `
@@ -90,8 +90,7 @@ export const createDocumento = async (data) => {
           </p>
         </div>
       `,
-    }).then(info => console.log(`📧 Notificación Admin enviada a ${recipient}:`, info.messageId))
-      .catch((emailErr) => console.error("Error enviando notificación al admin:", emailErr.message));
+    });
   }).catch(() => {});
 
   return doc;
@@ -119,13 +118,11 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
     CONSTANCIA:      "Constancia de Estudios",
   }[doc.tipo] ?? doc.tipo;
 
-  const fromEmail = process.env.GMAIL_USER || "paperlessutndev@gmail.com";
-  const recipientEmail = doc.alumno?.usuario?.email || "darkcabrera@gmail.com";
+  const recipientEmail = doc.alumno?.usuario?.email || "tic-310134@utnay.edu.mx";
 
   // Notificar por email en segundo plano (no bloqueante)
   if (estado === "RECHAZADO") {
-    transporter.sendMail({
-      from:    `"Paperless UTN" <${fromEmail}>`,
+    sendEmail({
       to:      recipientEmail,
       subject: "❌ Documento rechazado — Paperless UTN",
       html: `
@@ -148,11 +145,9 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
           <p style="color:#9ca3af;font-size:12px;margin-top:16px">Sistema Paperless — Universidad Tecnológica de Nayarit</p>
         </div>
       `,
-    }).then(info => console.log(`📧 Notificación Alumno Rechazado enviada a ${recipientEmail}:`, info.messageId))
-      .catch((emailErr) => console.error("Error enviando email de rechazo:", emailErr.message));
+    });
   } else if (estado === "APROBADO") {
-    transporter.sendMail({
-      from:    `"Paperless UTN" <${fromEmail}>`,
+    sendEmail({
       to:      recipientEmail,
       subject: "✅ Documento aprobado — Paperless UTN",
       html: `
@@ -168,9 +163,9 @@ export const updateDocumentoEstado = async (id, estado, razonRechazo = null) => 
           <p style="color:#9ca3af;font-size:12px;margin-top:24px">Sistema Paperless — Universidad Tecnológica de Nayarit</p>
         </div>
       `,
-    }).then(info => console.log(`📧 Notificación Alumno Aprobado enviada a ${recipientEmail}:`, info.messageId))
-      .catch((emailErr) => console.error("Error enviando email de aprobación:", emailErr.message));
+    });
   }
+
 
   return doc;
 };
