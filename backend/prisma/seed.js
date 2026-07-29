@@ -2,9 +2,9 @@ import prisma from "../src/config/prisma.js";
 import bcrypt from "bcrypt";
 
 async function main() {
-  console.log("🌱 Iniciando actualización de usuarios y correos reales...");
+  console.log("🌱 Restaurando cuentas oficiales con correo institucional real...");
 
-  // Limpiar/actualizar usuarios anteriores para asegurar que los correos lleguen a direcciones reales
+  // 1. Administrador (darkcabrera@gmail.com)
   const adminPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.usuario.upsert({
     where: { email: "darkcabrera@gmail.com" },
@@ -18,7 +18,7 @@ async function main() {
   });
   console.log("✅ Admin configurado:", admin.email);
 
-  // Desarrollador
+  // 2. Desarrollador (paperlessutndev@gmail.com)
   const devPassword = await bcrypt.hash("dev123", 10);
   const dev = await prisma.usuario.upsert({
     where: { email: "paperlessutndev@gmail.com" },
@@ -32,11 +32,11 @@ async function main() {
   });
   console.log("✅ Developer configurado:", dev.email);
 
-  // Alumno con email real para recibir notificaciones verdaderas
+  // 3. Alumno Institucional Real (tic-310134@utnay.edu.mx)
   const alumnoPassword = await bcrypt.hash("alumno123", 10);
   const usuarioAlumno = await prisma.usuario.upsert({
-    where: { email: "darkcabrera@gmail.com" }, // Usar email real para pruebas completas
-    update: { password: adminPassword, role: "ADMIN" },
+    where: { email: "tic-310134@utnay.edu.mx" },
+    update: { password: alumnoPassword, role: "ALUMNO" },
     create: {
       email: "tic-310134@utnay.edu.mx",
       password: alumnoPassword,
@@ -45,33 +45,21 @@ async function main() {
     },
   });
 
-  // Alumno de prueba con email institucional pero también uno secundario real
-  const usuarioAlumnoReal = await prisma.usuario.upsert({
-    where: { email: "paperlessutndev@gmail.com" },
-    update: { role: "DEVELOPER" },
-    create: {
-      email: "paperlessutndev@gmail.com",
-      password: devPassword,
-      role: "DEVELOPER",
-      mustChangePassword: false,
-    },
-  });
-
-  // Asegurar que el registro Alumno apunte al usuario
+  // Vincular alumno a su usuario institucional real
   const alumno = await prisma.alumno.upsert({
     where: { matricula: "TIC-310134" },
-    update: { usuarioId: admin.id }, // Vincular al admin para pruebas
+    update: { usuarioId: usuarioAlumno.id },
     create: {
       nombre: "Luis Daniel López Cabrera",
       matricula: "TIC-310134",
       carrera: "Ingeniería en Desarrollo y Gestión de Software",
       cuatrimestre_actual: 8,
       estado: "ACTIVO",
-      usuarioId: admin.id,
+      usuarioId: usuarioAlumno.id,
     },
   });
 
-  console.log("✅ Alumno vinculado a correo real:", admin.email, "— Matricula:", alumno.matricula);
+  console.log("✅ Alumno institucional configurado:", usuarioAlumno.email, "— Matricula:", alumno.matricula);
 }
 
 main()
