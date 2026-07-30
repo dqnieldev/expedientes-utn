@@ -1,11 +1,11 @@
- import prisma from "../config/prisma.js";
+import prisma from "../config/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import transporter from "../config/mailer.js";
-
+import { sendEmail } from "../config/mailer.js";
 
 // Función para registrar un nuevo usuario
+
 export const registerUser = async (email, password) => {
   email = email.toLowerCase().trim(); // Normalizar el email para evitar problemas de mayúsculas/minúsculas y espacios
   const existingUser = await prisma.usuario.findUnique({
@@ -100,12 +100,12 @@ export const solicitarReset = async (matricula) => {
     },
   });
 
-  const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const frontendUrl = (process.env.FRONTEND_URL || "https://expedientes-utn.vercel.app").replace(/\/$/, "");
+  const link = `${frontendUrl}/reset-password?token=${token}`;
 
-  await transporter.sendMail({
-    from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
-    to:      alumno.usuario.email,
-    subject: "Recuperación de contraseña — Paperless UTN",
+  await sendEmail({
+    to: alumno.usuario.email,
+    subject: "🔑 Recuperación de contraseña — Paperless UTN",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
         <h2 style="color:#1a2744;margin-bottom:8px">Recuperar contraseña</h2>
@@ -121,6 +121,7 @@ export const solicitarReset = async (matricula) => {
 
   return { message: "Correo enviado correctamente" };
 };
+
 
 // ── Resetear contraseña con token ─────────────────────────────────────────────
 export const resetPassword = async (token, newPassword) => {

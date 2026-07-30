@@ -5,21 +5,41 @@ import {
   getAllDocumentos
 } from "../services/documento.service.js";
 import { registrarLog } from "../services/audit.service.js";
+import prisma from "../config/prisma.js";
 
 // Crear un nuevo documento para un alumno
 export const create = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No se recibió ningún archivo PDF válido" });
+    }
+
     const { tipo, alumnoId } = req.body;
+    if (!tipo) {
+      return res.status(400).json({ message: "El tipo de documento es requerido" });
+    }
+
+    let targetAlumnoId = Number(alumnoId);
+    if (!targetAlumnoId && req.user?.id) {
+      const alumno = await prisma.alumno.findUnique({ where: { usuarioId: req.user.id } });
+      if (alumno) targetAlumnoId = alumno.id;
+    }
+
+    if (!targetAlumnoId) {
+      return res.status(400).json({ message: "No se encontró el perfil de alumno para asociar el documento" });
+    }
+
     const filePath = req.file.filename;
 
     const doc = await createDocumento({
       tipo,
       url: filePath,
-      alumnoId: Number(alumnoId)
+      alumnoId: targetAlumnoId
     });
 
     res.status(201).json(doc);
   } catch (error) {
+    console.error("Error en subida de documento:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -39,10 +59,11 @@ export const updateEstado = async (req, res) => {
       detalle:   `Documento ${estado}${razonRechazo ? ` — Motivo: ${razonRechazo}` : ""}`,
       usuarioId: req.user?.id,
       ip:        req.ip,
-    });
+    }).catch(() => {});
 
     res.json(doc);
   } catch (error) {
+    console.error("Error actualizando estado de documento:", error.message);
     res.status(400).json({ message: error.message });
   }
 };

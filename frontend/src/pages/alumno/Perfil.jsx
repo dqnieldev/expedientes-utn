@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
 import { SkeletonPerfil } from "../../components/Skeleton";
+import { API_BASE_URL } from "../../config/api";
 import {
   User, MapPin, GraduationCap, Lock,
   Eye, EyeOff, Save, CheckCircle, AlertCircle
 } from "lucide-react";
+
 
 // ── Validaciones ──────────────────────────────────────────────
 const validators = {
@@ -138,7 +140,7 @@ export default function Perfil() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/alumnos/me", {
+    axios.get(`${API_BASE_URL}/alumnos/me`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setForm(res.data))
@@ -182,7 +184,7 @@ export default function Perfil() {
         ciudad:           form.ciudad || null,
         estado_direccion: form.estado_direccion || null,
       };
-      await axios.put("http://localhost:3000/api/alumnos/perfil", cleanData, {
+      await axios.put(`${API_BASE_URL}/alumnos/perfil`, cleanData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSavedProfile(true);
@@ -210,10 +212,11 @@ export default function Perfil() {
     if (Object.values(newPassErrors).some(e => e)) return;
     try {
       await axios.put(
-        "http://localhost:3000/api/auth/change-password",
+        `${API_BASE_URL}/auth/change-password`,
         { currentPassword: passwords.actual, newPassword: passwords.nueva },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setPasswords({ actual: "", nueva: "", confirmar: "" });
       setPassErrors({});
       setSavedPassword(true);

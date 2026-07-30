@@ -5,7 +5,10 @@ export const obtenerDataset = async (req, res) => {
     const dataset = await getAnaliticaDataset();
     res.json(dataset);
   } catch (error) {
-    console.error("Error obteniendo dataset de analítica:", error.message);
-    res.status(500).json({ message: "Error al generar el dataset de analítica" });
+    console.error("Error obteniendo dataset de analítica:", error);
+    res.status(500).json({
+      message: "Error al generar el dataset de analítica",
+      detail: error.message,
+    });
   }
 };

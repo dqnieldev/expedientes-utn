@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE_URL, SERVER_URL } from "../../config/api";
 import {
   ArrowLeft, FileText, Fingerprint, GraduationCap, FileBadge,
   CheckCircle, XCircle, Clock, Eye, Hash, BookOpen, User,
   MapPin, Phone, Calendar, Download, ChevronDown,Trash2
 } from "lucide-react";
+
 
 const DOCUMENTOS_BASE = [
   { tipo: "ACTA_NACIMIENTO", label: "Acta de Nacimiento",          icon: FileText      },
@@ -59,8 +61,8 @@ export default function DetalleAlumno() {
   const fetchData = async () => {
     try {
       const [resAlumno, resDocs] = await Promise.all([
-        axios.get(`http://localhost:3000/api/alumnos/${id}`,    { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`http://localhost:3000/api/documentos/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE_URL}/alumnos/${id}`,    { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE_URL}/documentos/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setAlumno(resAlumno.data);
       setDocs(resDocs.data);
@@ -78,7 +80,7 @@ export default function DetalleAlumno() {
   setUpdating(docId);
   try {
     await axios.put(
-      `http://localhost:3000/api/documentos/${docId}`,
+      `${API_BASE_URL}/documentos/${docId}`,
       { estado, razonRechazo: razon },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -113,7 +115,7 @@ const handleConfirmarRechazo = async () => {
     setCambiandoEstado(true);
     try {
       await axios.patch(
-        `http://localhost:3000/api/alumnos/${id}/estado`,
+        `${API_BASE_URL}/alumnos/${id}/estado`,
         { estado: nuevoEstado },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -130,7 +132,7 @@ const handleConfirmarRechazo = async () => {
   const handleDescargarReporte = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/reportes/alumno/${id}`,
+        `${API_BASE_URL}/reportes/alumno/${id}`,
         { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
       );
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -165,9 +167,10 @@ const handleConfirmarRechazo = async () => {
   setEliminando(true);
   try {
     await axios.delete(
-      `http://localhost:3000/api/alumnos/${id}`,
+      `${API_BASE_URL}/alumnos/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
+
     navigate("/admin/alumnos");
   } catch (err) {
     showFeedback("error", err.response?.data?.message ?? "Error al eliminar el alumno.");
@@ -237,8 +240,9 @@ const handleConfirmarRechazo = async () => {
                 <div className="flex justify-center -mt-8 mb-4">
                   <div className="w-16 h-16 rounded-2xl border-4 border-white dark:border-gray-800 shadow-sm overflow-hidden bg-[#1a2744] flex items-center justify-center">
                     {alumno?.foto ? (
-                      <img src={`http://localhost:3000/uploads/${alumno.foto}`} className="w-full h-full object-cover" alt="" />
+                      <img src={`${SERVER_URL}/uploads/${alumno.foto}`} className="w-full h-full object-cover" alt="" />
                     ) : (
+
                       <span className="text-white text-lg font-semibold">{initials(alumno?.nombre)}</span>
                     )}
                   </div>
@@ -501,7 +505,8 @@ const handleConfirmarRechazo = async () => {
                       <div className="flex gap-2 mt-3 flex-wrap">
                         
                         <a
-                          href={`http://localhost:3000/uploads/${doc.url}`}
+                          href={`${SERVER_URL}/uploads/${doc.url}`}
+
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"

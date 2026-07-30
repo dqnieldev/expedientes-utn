@@ -14,11 +14,28 @@ import analiticaRoutes from "./routes/analitica.routes.js";
 
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet({
+
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:3000",
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Permitir peticiones sin header Origin (App móvil / Postman)
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.endsWith(".netlify.app")) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Permisivo en producción para despliegue sin fricción
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan("dev")); // Agrega el middleware de morgan para registrar las solicitudes HTTP
 app.use("/api/audit", auditRoutes); // Rutas para auditoría (logs de acciones)
@@ -38,7 +55,16 @@ app.use("/api/backups", backupRoutes); // Rutas para gestión de respaldos
 app.use("/api/analitica", analiticaRoutes); // Rutas para analítica y ML
 
 
-app.use("/uploads", express.static("uploads"));  // Servir archivos estáticos desde la carpeta "uploads"
+import fs from "fs";
+import path from "path";
+
+const uploadsDir = path.resolve("uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use("/uploads", express.static(uploadsDir));
+
   
 
 export default app;

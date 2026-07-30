@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL, SERVER_URL } from "../../config/api";
 import {
   Search, FileCheck, FileX, Clock, Eye,
   Filter, CheckCircle, XCircle, Download,
 } from "lucide-react";
+
 
 const estadoConfig = {
   APROBADO: {
@@ -57,7 +59,7 @@ export default function DocumentosAdmin() {
 
   const fetchDocs = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/documentos", {
+      const res = await axios.get(`${API_BASE_URL}/documentos`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDocs(res.data);
@@ -90,7 +92,7 @@ export default function DocumentosAdmin() {
     setUpdating(docId);
     try {
       await axios.put(
-        `http://localhost:3000/api/documentos/${docId}`,
+        `${API_BASE_URL}/documentos/${docId}`,
         { estado: "APROBADO" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -108,7 +110,7 @@ export default function DocumentosAdmin() {
     setEnviandoRechazo(true);
     try {
       await axios.put(
-        `http://localhost:3000/api/documentos/${modalRechazo.docId}`,
+        `${API_BASE_URL}/documentos/${modalRechazo.docId}`,
         { estado: "RECHAZADO", razonRechazo },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -142,10 +144,11 @@ export default function DocumentosAdmin() {
 
   const handleReporteGeneral = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/reportes/general", {
+      const res = await axios.get(`${API_BASE_URL}/reportes/general`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });
+
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const a   = document.createElement("a");
       a.href     = url;
@@ -267,7 +270,7 @@ export default function DocumentosAdmin() {
           title="Ver expediente completo"
         >
           {doc.alumno?.foto
-            ? <img src={`http://localhost:3000/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
+            ? <img src={`${SERVER_URL}/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
             : <span className="text-white text-xs font-semibold">{initials(doc.alumno?.nombre)}</span>
           }
         </div>
@@ -289,7 +292,7 @@ export default function DocumentosAdmin() {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href={`http://localhost:3000/uploads/${doc.url}`}
+            href={`${SERVER_URL}/uploads/${doc.url}`}
             target="_blank" rel="noreferrer"
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
@@ -327,7 +330,7 @@ export default function DocumentosAdmin() {
             onClick={() => navigate(`/admin/alumnos/${doc.alumno?.id}`)}
           >
             {doc.alumno?.foto
-              ? <img src={`http://localhost:3000/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
+              ? <img src={`${SERVER_URL}/uploads/${doc.alumno.foto}`} className="w-full h-full object-cover" alt="" />
               : <span className="text-white text-xs font-semibold">{initials(doc.alumno?.nombre)}</span>
             }
           </div>
@@ -348,7 +351,8 @@ export default function DocumentosAdmin() {
 
         <div className="flex gap-2 px-4 pb-4">
           <a
-            href={`http://localhost:3000/uploads/${doc.url}`}
+            href={`${SERVER_URL}/uploads/${doc.url}`}
+
             target="_blank" rel="noreferrer"
             className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >

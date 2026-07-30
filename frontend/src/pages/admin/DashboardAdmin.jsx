@@ -4,6 +4,7 @@ import AdminLayout from "../../layout/AdminLayout";
 import { Users, FileCheck, FileClock, FileX, ArrowRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL, SERVER_URL } from "../../config/api";
 
 export default function DashboardAdmin() {
   const { t } = useTranslation();
@@ -14,12 +15,13 @@ export default function DashboardAdmin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/alumnos", {
+    axios.get(`${API_BASE_URL}/alumnos`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setAlumnos(res.data))
       .finally(() => setLoading(false));
   }, []);
+
 
   const totalAlumnos   = alumnos.length;
   const totalActivos   = alumnos.filter(a => a.estado === "ACTIVO").length;
@@ -62,7 +64,7 @@ export default function DashboardAdmin() {
 
   const handleReporteGeneral = async () => {
   try {
-    const res = await axios.get("http://localhost:3000/api/reportes/general", {
+    const res = await axios.get(`${API_BASE_URL}/reportes/general`, {
       headers: { Authorization: `Bearer ${token}` },
       responseType: "blob"
     });
@@ -193,10 +195,11 @@ export default function DashboardAdmin() {
                     <div className="w-9 h-9 rounded-xl bg-[#1a2744] flex items-center justify-center shrink-0">
                       {alumno.foto ? (
                         <img
-                          src={`http://localhost:3000/uploads/${alumno.foto}`}
+                          src={`${SERVER_URL}/uploads/${alumno.foto}`}
                           className="w-full h-full object-cover rounded-xl"
                           alt=""
                         />
+
                       ) : (
                         <span className="text-white text-xs font-semibold">{initials}</span>
                       )}

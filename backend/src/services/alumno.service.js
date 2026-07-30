@@ -1,8 +1,9 @@
 import prisma from "../config/prisma.js";
 import bcrypt from "bcryptjs";
-import transporter from "../config/mailer.js";
+import { sendEmail } from "../config/mailer.js";
 
 // CREAR ALUMNO + USUARIO
+
 export const createAlumno = async (data) => {
   const {
     nombre,
@@ -165,9 +166,8 @@ export const cambiarEstadoAlumno = async (id, nuevoEstado) => {
 
   const info = estadoInfo[nuevoEstado] ?? { label: nuevoEstado, color: "#6B7280", emoji: "ℹ️" };
 
-  // Enviar correo al alumno
-  await transporter.sendMail({
-    from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
+  // Enviar correo al alumno en segundo plano (no bloqueante)
+  sendEmail({
     to:      alumno.usuario.email,
     subject: `${info.emoji} Actualización de tu estado — Paperless UTN`,
     html: `
@@ -189,6 +189,7 @@ export const cambiarEstadoAlumno = async (id, nuevoEstado) => {
       </div>
     `,
   });
+
 
   return updated;
 };
