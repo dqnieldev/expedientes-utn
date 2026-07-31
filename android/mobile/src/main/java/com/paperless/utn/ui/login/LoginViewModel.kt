@@ -28,10 +28,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     init {
+        checkSession()
+    }
+
+    fun checkSession() {
         if (tokenManager.isLoggedIn()) {
             val savedEmail = tokenManager.getEmail() ?: ""
             val role = tokenManager.getRole() ?: ""
             uiState = LoginUiState.Success(savedEmail, role)
+        } else {
+            uiState = LoginUiState.Idle
         }
     }
 
@@ -67,6 +73,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logout() {
         tokenManager.clearSession()
+        email = ""
+        password = ""
         uiState = LoginUiState.Idle
     }
 }

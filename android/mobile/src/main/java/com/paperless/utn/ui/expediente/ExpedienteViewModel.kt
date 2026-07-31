@@ -25,11 +25,12 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
     var uiState by mutableStateOf<ExpedienteUiState>(ExpedienteUiState.Loading)
         private set
 
-    init {
-        cargarPerfilYDocumentos()
-    }
-
     fun cargarPerfilYDocumentos() {
+        if (!tokenManager.isLoggedIn()) {
+            uiState = ExpedienteUiState.Error("Sesión no iniciada")
+            return
+        }
+
         viewModelScope.launch {
             uiState = ExpedienteUiState.Loading
             try {
@@ -44,7 +45,12 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                     }
                     uiState = ExpedienteUiState.Success(alumno, docs)
                 } else {
-                    uiState = ExpedienteUiState.Error("No se pudo obtener la información del expediente")
+                    val errorMsg = if (responsePerfil.code() == 403) {
+                        "Acceso restringido: Esta vista es para alumnos registrados."
+                    } else {
+                        "No se pudo obtener la información del expediente (${responsePerfil.code()})"
+                    }
+                    uiState = ExpedienteUiState.Error(errorMsg)
                 }
             } catch (e: Exception) {
                 uiState = ExpedienteUiState.Error("Error al conectar: ${e.localizedMessage}")
@@ -54,5 +60,6 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
 
     fun logout() {
         tokenManager.clearSession()
+        uiState = ExpedienteUiState.Loading
     }
 }

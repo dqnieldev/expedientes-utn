@@ -1,4 +1,4 @@
-#Thu Jul 30 16:38:16 MST 2026
+#Fri Jul 31 16:21:37 MST 2026
 base.0=C\:\\Users\\Danie\\expedientes-utn\\android\\mobile\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\Danie\\expedientes-utn\\android\\mobile\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.2=C\:\\Users\\Danie\\expedientes-utn\\android\\mobile\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex

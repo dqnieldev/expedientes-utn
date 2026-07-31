@@ -72,6 +72,8 @@ fun AppNavigation(
             ExpedienteScreen(
                 viewModel = expedienteViewModel,
                 onLogout = {
+                    expedienteViewModel.logout()
+                    loginViewModel.logout()
                     navController.navigate("login") {
                         popUpTo("expediente") { inclusive = true }
                     }
