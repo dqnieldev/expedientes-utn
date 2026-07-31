@@ -1,6 +1,7 @@
 package com.paperless.utn.ui.login
 
 import android.app.Application
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -41,32 +42,66 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun onEmailChange(newEmail: String) {
+        email = newEmail
+        if (uiState is LoginUiState.Error) {
+            uiState = LoginUiState.Idle
+        }
+    }
+
+    fun onPasswordChange(newPassword: String) {
+        password = newPassword
+        if (uiState is LoginUiState.Error) {
+            uiState = LoginUiState.Idle
+        }
+    }
+
+    private fun isValidEmail(target: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(target).matches()
+    }
+
     fun onLoginClick() {
-        if (email.isBlank() || password.isBlank()) {
-            uiState = LoginUiState.Error("Por favor ingresa tu correo y contraseña")
+        val cleanEmail = email.trim()
+        val cleanPassword = password.trim()
+
+        if (cleanEmail.isEmpty()) {
+            uiState = LoginUiState.Error("Por favor ingresa tu correo electrónico")
+            return
+        }
+
+        if (!isValidEmail(cleanEmail)) {
+            uiState = LoginUiState.Error("Ingresa un correo electrónico válido (ej. usuario@utnay.edu.mx)")
+            return
+        }
+
+        if (cleanPassword.isEmpty()) {
+            uiState = LoginUiState.Error("Por favor ingresa tu contraseña")
+            return
+        }
+
+        if (cleanPassword.length < 6) {
+            uiState = LoginUiState.Error("La contraseña debe tener al menos 6 caracteres")
             return
         }
 
         viewModelScope.launch {
             uiState = LoginUiState.Loading
             try {
-                val response = apiService.login(LoginRequest(email.trim(), password.trim()))
+                val response = apiService.login(LoginRequest(cleanEmail, cleanPassword))
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     tokenManager.saveToken(body.token, body.user.email, body.user.role)
                     uiState = LoginUiState.Success(body.user.email, body.user.role)
                 } else {
-                    val errorMsg = if (response.code() == 401) {
-                        "Correo o contraseña incorrectos"
-                    } else if (response.code() == 429) {
-                        "Demasiados intentos. Intenta más tarde."
-                    } else {
-                        "Error de autenticación (${response.code()})"
+                    val errorMsg = when (response.code()) {
+                        400, 401 -> "Credenciales incorrectas. Verifica tu correo y contraseña."
+                        429 -> "Demasiados intentos. Intenta más tarde."
+                        else -> "Credenciales incorrectas o usuario no registrado."
                     }
                     uiState = LoginUiState.Error(errorMsg)
                 }
             } catch (e: Exception) {
-                uiState = LoginUiState.Error("Error de conexión: ${e.localizedMessage ?: "Servidor no disponible"}")
+                uiState = LoginUiState.Error("No se pudo conectar con el servidor. Revisa tu conexión a Internet.")
             }
         }
     }

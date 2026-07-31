@@ -91,7 +91,7 @@ fun LoginScreen(
                 // Campo Correo Electrónico
                 OutlinedTextField(
                     value = viewModel.email,
-                    onValueChange = { viewModel.email = it },
+                    onValueChange = { viewModel.onEmailChange(it) },
                     label = { Text("Correo Electrónico") },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Correo") },
                     singleLine = true,
@@ -105,7 +105,7 @@ fun LoginScreen(
                 // Campo Contraseña
                 OutlinedTextField(
                     value = viewModel.password,
-                    onValueChange = { viewModel.password = it },
+                    onValueChange = { viewModel.onPasswordChange(it) },
                     label = { Text("Contraseña") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Contraseña") },
                     trailingIcon = {
