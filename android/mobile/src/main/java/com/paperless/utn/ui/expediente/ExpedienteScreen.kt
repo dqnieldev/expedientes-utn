@@ -7,18 +7,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.paperless.utn.data.model.AlumnoDto
@@ -39,7 +42,7 @@ fun ExpedienteScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mi Expediente Digital", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Paperless System", color = Color.White, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NavyPrimary),
                 actions = {
                     IconButton(onClick = { viewModel.cargarPerfilYDocumentos() }) {
@@ -86,7 +89,8 @@ fun ExpedienteScreen(
                             text = uiState.message,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
@@ -97,10 +101,16 @@ fun ExpedienteScreen(
                         }
                     }
                 }
-                is ExpedienteUiState.Success -> {
-                    ExpedienteContent(
+                is ExpedienteUiState.SuccessAlumno -> {
+                    ExpedienteAlumnoContent(
                         alumno = uiState.alumno,
                         documentos = uiState.documentos
+                    )
+                }
+                is ExpedienteUiState.SuccessAdmin -> {
+                    ExpedienteAdminContent(
+                        email = uiState.email,
+                        role = uiState.role
                     )
                 }
             }
@@ -109,7 +119,99 @@ fun ExpedienteScreen(
 }
 
 @Composable
-private fun ExpedienteContent(
+private fun ExpedienteAdminContent(
+    email: String,
+    role: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    modifier = Modifier.size(64.dp),
+                    shape = CircleShape,
+                    color = NavyPrimary
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.AdminPanelSettings,
+                            contentDescription = "Administrador",
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = email,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Surface(
+                    color = AccentTeal.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Text(
+                        text = if (role == "ADMIN") "ADMINISTRADOR DEL SISTEMA" else "DESARROLLADOR",
+                        color = AccentTeal,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Shield,
+                        contentDescription = "Seguridad",
+                        tint = NavyPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Panel Móvil de Supervisión Activo",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpedienteAlumnoContent(
     alumno: AlumnoDto,
     documentos: List<DocumentoDto>
 ) {
@@ -126,7 +228,6 @@ private fun ExpedienteContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Tarjeta Perfil Alumno
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -180,7 +281,6 @@ private fun ExpedienteContent(
             }
         }
 
-        // Encabezado Documentos
         item {
             Text(
                 text = "Documentación Técnica del Expediente",
@@ -191,7 +291,6 @@ private fun ExpedienteContent(
             )
         }
 
-        // Lista de Tipos de Documentos
         items(tiposMap.toList()) { (keyTipo, labelTipo) ->
             val doc = documentos.find { it.tipo == keyTipo }
             DocumentoCard(

@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 
 sealed interface ExpedienteUiState {
     object Loading : ExpedienteUiState
-    data class Success(val alumno: AlumnoDto, val documentos: List<DocumentoDto>) : ExpedienteUiState
+    data class SuccessAlumno(val alumno: AlumnoDto, val documentos: List<DocumentoDto>) : ExpedienteUiState
+    data class SuccessAdmin(val email: String, val role: String) : ExpedienteUiState
     data class Error(val message: String) : ExpedienteUiState
 }
 
@@ -31,6 +32,15 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
             return
         }
 
+        val role = tokenManager.getRole() ?: "ALUMNO"
+        val email = tokenManager.getEmail() ?: ""
+
+        // Si el usuario es ADMIN o DEVELOPER, mostrar vista de supervisión empresarial
+        if (role == "ADMIN" || role == "DEVELOPER") {
+            uiState = ExpedienteUiState.SuccessAdmin(email, role)
+            return
+        }
+
         viewModelScope.launch {
             uiState = ExpedienteUiState.Loading
             try {
@@ -43,17 +53,15 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                     } else {
                         alumno.documentos ?: emptyList()
                     }
-                    uiState = ExpedienteUiState.Success(alumno, docs)
+                    uiState = ExpedienteUiState.SuccessAlumno(alumno, docs)
+                } else if (responsePerfil.code() == 404) {
+                    // Fallback si la cuenta de usuario no tiene perfil de alumno aún
+                    uiState = ExpedienteUiState.SuccessAdmin(email, role)
                 } else {
-                    val errorMsg = if (responsePerfil.code() == 403) {
-                        "Acceso restringido: Esta vista es para alumnos registrados."
-                    } else {
-                        "No se pudo obtener la información del expediente (${responsePerfil.code()})"
-                    }
-                    uiState = ExpedienteUiState.Error(errorMsg)
+                    uiState = ExpedienteUiState.Error("No se pudo obtener la información del expediente.")
                 }
             } catch (e: Exception) {
-                uiState = ExpedienteUiState.Error("Error al conectar: ${e.localizedMessage}")
+                uiState = ExpedienteUiState.Error("No se pudo conectar con el servidor. Revisa tu conexión a Internet.")
             }
         }
     }
