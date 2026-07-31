@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -55,7 +55,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .padding(28.dp)
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterAlignment
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Header Logo / Icon
                 Surface(
@@ -88,13 +88,14 @@ fun LoginScreen(
                     modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
                 )
 
-                // Campo Matrícula
+                // Campo Correo Electrónico
                 OutlinedTextField(
-                    value = viewModel.matricula,
-                    onValueChange = { viewModel.matricula = it },
-                    label = { Text("Matrícula o Correo") },
-                    leadingIcon = { Icon(Icons.Default.Badge, contentDescription = "Matrícula") },
+                    value = viewModel.email,
+                    onValueChange = { viewModel.email = it },
+                    label = { Text("Correo Electrónico") },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Correo") },
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
                 )

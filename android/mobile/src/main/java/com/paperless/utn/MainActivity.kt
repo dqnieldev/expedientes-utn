@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private val expedienteViewModel: ExpedienteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState)
 
         val tokenManager = TokenManager(this)
         val startDestination = if (tokenManager.isLoggedIn()) "expediente" else "login"

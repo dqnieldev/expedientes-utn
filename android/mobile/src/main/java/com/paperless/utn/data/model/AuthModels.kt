@@ -3,7 +3,7 @@ package com.paperless.utn.data.model
 import com.google.gson.annotations.SerializedName
 
 data class LoginRequest(
-    @SerializedName("matricula") val matricula: String,
+    @SerializedName("email") val email: String,
     @SerializedName("password") val password: String
 )
 

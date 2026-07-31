@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.paperless.utn.mobile-mergeDebugResources-52:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Danie\\.gradle\\caches\\9.3.0\\transforms\\c334669fbf7b1a85c5bf780a8e1835e3\\workspace\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}
