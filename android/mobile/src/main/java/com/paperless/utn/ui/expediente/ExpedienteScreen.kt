@@ -1,5 +1,8 @@
 package com.paperless.utn.ui.expediente
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,15 +14,17 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -104,7 +109,11 @@ fun ExpedienteScreen(
                 is ExpedienteUiState.SuccessAlumno -> {
                     ExpedienteAlumnoContent(
                         alumno = uiState.alumno,
-                        documentos = uiState.documentos
+                        documentos = uiState.documentos,
+                        isUploading = uiState.isUploading,
+                        onUploadFile = { tipoKey, uri, context ->
+                            viewModel.subirDocumento(tipoKey, uri, context)
+                        }
                     )
                 }
                 is ExpedienteUiState.SuccessAdmin -> {
@@ -213,8 +222,22 @@ private fun ExpedienteAdminContent(
 @Composable
 private fun ExpedienteAlumnoContent(
     alumno: AlumnoDto,
-    documentos: List<DocumentoDto>
+    documentos: List<DocumentoDto>,
+    isUploading: Boolean,
+    onUploadFile: (String, Uri, android.content.Context) -> Unit
 ) {
+    val context = LocalContext.current
+    var selectedTipoKey by remember { mutableStateOf<String?>(null) }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        val tipo = selectedTipoKey
+        if (uri != null && tipo != null) {
+            onUploadFile(tipo, uri, context)
+        }
+    }
+
     val tiposMap = mapOf(
         "ACTA_NACIMIENTO" to "Acta de Nacimiento",
         "CURP" to "CURP",
@@ -294,8 +317,14 @@ private fun ExpedienteAlumnoContent(
         items(tiposMap.toList()) { (keyTipo, labelTipo) ->
             val doc = documentos.find { it.tipo == keyTipo }
             DocumentoCard(
+                tipoKey = keyTipo,
                 tipoLabel = labelTipo,
-                documento = doc
+                documento = doc,
+                isUploading = isUploading,
+                onSelectFile = { tipoKey ->
+                    selectedTipoKey = tipoKey
+                    filePickerLauncher.launch("*/*")
+                }
             )
         }
     }
@@ -303,8 +332,11 @@ private fun ExpedienteAlumnoContent(
 
 @Composable
 private fun DocumentoCard(
+    tipoKey: String,
     tipoLabel: String,
-    documento: DocumentoDto?
+    documento: DocumentoDto?,
+    isUploading: Boolean,
+    onSelectFile: (String) -> Unit
 ) {
     val estado = documento?.estado ?: "PENDIENTE"
 
@@ -377,6 +409,28 @@ private fun DocumentoCard(
                         modifier = Modifier.padding(8.dp)
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Botón para seleccionar y subir archivo
+            OutlinedButton(
+                onClick = { onSelectFile(tipoKey) },
+                enabled = !isUploading,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FileUpload,
+                    contentDescription = "Subir",
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (documento == null) "Subir Documento" else "Reemplazar Documento",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
