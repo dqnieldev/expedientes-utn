@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.paperless.utn.data.model.AlumnoDto
+import com.paperless.utn.data.model.DictamenRequest
 import com.paperless.utn.data.model.DocumentoDto
 import com.paperless.utn.data.remote.ApiClient
 import com.paperless.utn.data.remote.TokenManager
@@ -20,7 +21,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 sealed interface ExpedienteUiState {
     object Loading : ExpedienteUiState
     data class SuccessAlumno(val alumno: AlumnoDto, val documentos: List<DocumentoDto>, val isUploading: Boolean = false) : ExpedienteUiState
-    data class SuccessAdmin(val email: String, val role: String) : ExpedienteUiState
+    data class SuccessAdmin(
+        val email: String,
+        val role: String,
+        val alumnos: List<AlumnoDto>,
+        val documentos: List<DocumentoDto>,
+        val isActionLoading: Boolean = false
+    ) : ExpedienteUiState
     data class Error(val message: String) : ExpedienteUiState
 }
 
@@ -31,6 +38,9 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
     var uiState by mutableStateOf<ExpedienteUiState>(ExpedienteUiState.Loading)
         private set
 
+    var searchQuery by mutableStateOf("")
+    var filtroEstado by mutableStateOf("TODOS") // TODOS, EN_REVISION, APROBADO, RECHAZADO
+
     fun cargarPerfilYDocumentos() {
         if (!tokenManager.isLoggedIn()) {
             uiState = ExpedienteUiState.Error("Sesión no iniciada")
@@ -40,13 +50,13 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
         val role = tokenManager.getRole() ?: "ALUMNO"
         val email = tokenManager.getEmail() ?: ""
 
-        if (role == "ADMIN" || role == "DEVELOPER") {
-            uiState = ExpedienteUiState.SuccessAdmin(email, role)
-            return
-        }
-
         viewModelScope.launch {
             uiState = ExpedienteUiState.Loading
+            if (role == "ADMIN" || role == "DEVELOPER") {
+                cargarDatosAdmin(email, role)
+                return@launch
+            }
+
             try {
                 val responsePerfil = apiService.getMiPerfil()
                 if (responsePerfil.isSuccessful && responsePerfil.body() != null) {
@@ -59,12 +69,46 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                     }
                     uiState = ExpedienteUiState.SuccessAlumno(alumno, docs)
                 } else if (responsePerfil.code() == 404) {
-                    uiState = ExpedienteUiState.SuccessAdmin(email, role)
+                    cargarDatosAdmin(email, role)
                 } else {
                     uiState = ExpedienteUiState.Error("No se pudo obtener la información del expediente.")
                 }
             } catch (e: Exception) {
                 uiState = ExpedienteUiState.Error("No se pudo conectar con el servidor. Revisa tu conexión a Internet.")
+            }
+        }
+    }
+
+    private suspend fun cargarDatosAdmin(email: String, role: String) {
+        try {
+            val respAlumnos = apiService.getAllAlumnos()
+            val respDocs = apiService.getAllDocumentos()
+
+            val alumnos = if (respAlumnos.isSuccessful) respAlumnos.body() ?: emptyList() else emptyList()
+            val documentos = if (respDocs.isSuccessful) respDocs.body() ?: emptyList() else emptyList()
+
+            uiState = ExpedienteUiState.SuccessAdmin(email, role, alumnos, documentos)
+        } catch (e: Exception) {
+            uiState = ExpedienteUiState.SuccessAdmin(email, role, emptyList(), emptyList())
+        }
+    }
+
+    fun dictaminarDocumento(docId: Int, nuevoEstado: String, razonRechazo: String? = null) {
+        val currentState = uiState
+        if (currentState is ExpedienteUiState.SuccessAdmin) {
+            uiState = currentState.copy(isActionLoading = true)
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = apiService.dictaminarDocumento(docId, DictamenRequest(nuevoEstado, razonRechazo))
+                if (response.isSuccessful) {
+                    cargarPerfilYDocumentos()
+                } else {
+                    cargarPerfilYDocumentos()
+                }
+            } catch (e: Exception) {
+                cargarPerfilYDocumentos()
             }
         }
     }

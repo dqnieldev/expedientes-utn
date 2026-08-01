@@ -19,5 +19,19 @@ data class DocumentoDto(
     @SerializedName("url") val url: String,
     @SerializedName("estado") val estado: String, // PENDIENTE, EN_REVISION, APROBADO, RECHAZADO
     @SerializedName("razonRechazo") val razonRechazo: String?,
-    @SerializedName("createdAt") val createdAt: String?
+    @SerializedName("createdAt") val createdAt: String?,
+    @SerializedName("alumno") val alumno: AlumnoInfoBasicDto?
+)
+
+data class AlumnoInfoBasicDto(
+    @SerializedName("id") val id: Int,
+    @SerializedName("nombre") val nombre: String,
+    @SerializedName("matricula") val matricula: String,
+    @SerializedName("carrera") val carrera: String,
+    @SerializedName("foto") val foto: String?
+)
+
+data class DictamenRequest(
+    @SerializedName("estado") val estado: String, // APROBADO o RECHAZADO
+    @SerializedName("razonRechazo") val razonRechazo: String? = null
 )
