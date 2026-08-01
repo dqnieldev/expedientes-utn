@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +28,6 @@ import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Topic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -34,16 +35,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.paperless.utn.R
 import com.paperless.utn.data.model.AlumnoDto
 import com.paperless.utn.data.model.DocumentoDto
-import com.paperless.utn.ui.theme.AccentGold
-import com.paperless.utn.ui.theme.AccentTeal
-import com.paperless.utn.ui.theme.NavyPrimary
-import com.paperless.utn.ui.theme.StatusDanger
+import com.paperless.utn.ui.theme.BauhausRed
+import com.paperless.utn.ui.theme.UtBorderFlat
+import com.paperless.utn.ui.theme.UtGoldAccent
+import com.paperless.utn.ui.theme.UtGreenPrimary
+import com.paperless.utn.ui.theme.UtGreenSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,8 +60,28 @@ fun ExpedienteScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Paperless System", color = Color.White, fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = NavyPrimary),
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .border(1.dp, UtGoldAccent, CircleShape),
+                            shape = CircleShape,
+                            color = Color.White
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_ut),
+                                    contentDescription = "UT Logo",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Paperless System", color = Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = UtGreenPrimary),
                 actions = {
                     IconButton(onClick = { viewModel.cargarPerfilYDocumentos() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Actualizar", tint = Color.White)
@@ -82,7 +106,7 @@ fun ExpedienteScreen(
                 is ExpedienteUiState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
-                        color = NavyPrimary
+                        color = UtGreenPrimary
                     )
                 }
                 is ExpedienteUiState.Error -> {
@@ -95,7 +119,7 @@ fun ExpedienteScreen(
                         Icon(
                             imageVector = Icons.Default.Error,
                             contentDescription = "Error",
-                            tint = StatusDanger,
+                            tint = BauhausRed,
                             modifier = Modifier.size(48.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -109,7 +133,7 @@ fun ExpedienteScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = { viewModel.cargarPerfilYDocumentos() },
-                            colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                            colors = ButtonDefaults.buttonColors(containerColor = UtGreenPrimary)
                         ) {
                             Text("Reintentar")
                         }
@@ -200,7 +224,7 @@ private fun ExpedienteAdminDashboard(
                             razonInput = ""
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = StatusDanger)
+                    colors = ButtonDefaults.buttonColors(containerColor = BauhausRed)
                 ) {
                     Text("Observar Documento")
                 }
@@ -214,15 +238,16 @@ private fun ExpedienteAdminDashboard(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Tab Row con estilo Bauhaus Flat
         TabRow(
             selectedTabIndex = selectedTab,
-            containerColor = NavyPrimary,
+            containerColor = UtGreenPrimary,
             contentColor = Color.White
         ) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0 },
-                text = { Text("Revisión & Dictamen", fontWeight = FontWeight.Bold) },
+                text = { Text("Dictamen & Revisión", fontWeight = FontWeight.Bold) },
                 icon = { Icon(Icons.Default.Topic, contentDescription = "Dictamen") }
             )
             Tab(
@@ -311,9 +336,11 @@ private fun AdminDocumentosTab(
         if (alumnoFiltrado != null) {
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, UtGreenPrimary, RoundedCornerShape(12.dp)),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = NavyPrimary.copy(alpha = 0.1f))
+                    colors = CardDefaults.cardColors(containerColor = UtGreenPrimary.copy(alpha = 0.08f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -332,24 +359,27 @@ private fun AdminDocumentosTab(
                                 text = "${alumnoFiltrado.nombre} (${alumnoFiltrado.matricula})",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = NavyPrimary
+                                color = UtGreenPrimary
                             )
                         }
 
                         IconButton(onClick = onClearAlumnoFilter) {
-                            Icon(Icons.Default.Close, contentDescription = "Quitar filtro", tint = StatusDanger)
+                            Icon(Icons.Default.Close, contentDescription = "Quitar filtro", tint = BauhausRed)
                         }
                     }
                 }
             }
         }
 
+        // Tarjeta Header Admin con Badge Oficial logo_admin
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, UtBorderFlat, RoundedCornerShape(14.dp)),
+                shape = RoundedCornerShape(14.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -358,12 +388,18 @@ private fun AdminDocumentosTab(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        modifier = Modifier.size(44.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .border(1.5.dp, UtGoldAccent, CircleShape),
                         shape = CircleShape,
-                        color = NavyPrimary
+                        color = UtGreenPrimary
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.AdminPanelSettings, contentDescription = null, tint = Color.White)
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(6.dp)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo_admin),
+                                contentDescription = "Badge Admin",
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
@@ -372,14 +408,15 @@ private fun AdminDocumentosTab(
                         Text(
                             text = if (role == "ADMIN") "ADMINISTRADOR DEL SISTEMA" else "DESARROLLADOR",
                             fontSize = 11.sp,
-                            color = AccentTeal,
-                            fontWeight = FontWeight.Bold
+                            color = UtGreenSecondary,
+                            fontWeight = FontWeight.Black
                         )
                     }
                 }
             }
         }
 
+        // Tarjetas KPI con Estilo Bauhaus Flat
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -388,36 +425,41 @@ private fun AdminDocumentosTab(
                 KpiCard(
                     title = "En Revisión",
                     count = totalRevision.toString(),
-                    color = AccentGold,
+                    color = UtGoldAccent,
+                    borderColor = UtGoldAccent,
                     modifier = Modifier.weight(1f)
                 )
                 KpiCard(
                     title = "Aprobados",
                     count = totalAprobados.toString(),
-                    color = AccentTeal,
+                    color = UtGreenSecondary,
+                    borderColor = UtGreenSecondary,
                     modifier = Modifier.weight(1f)
                 )
                 KpiCard(
                     title = "Observados",
                     count = totalRechazados.toString(),
-                    color = StatusDanger,
+                    color = BauhausRed,
+                    borderColor = BauhausRed,
                     modifier = Modifier.weight(1f)
                 )
             }
         }
 
+        // Barra de Búsqueda
         item {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 label = { Text("Buscar por alumno, matrícula o documento") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = UtGreenPrimary) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(10.dp)
             )
         }
 
+        // Chips de Filtro por Estado
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val filtros = listOf(
@@ -430,21 +472,23 @@ private fun AdminDocumentosTab(
                     FilterChip(
                         selected = filtroEstado == key,
                         onClick = { onFiltroEstadoChange(key) },
-                        label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+                        label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     )
                 }
             }
         }
 
+        // Encabezado Resultados
         item {
             Text(
                 text = "Documentos (${docsFiltrados.size})",
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = NavyPrimary
+                fontWeight = FontWeight.Black,
+                color = UtGreenPrimary
             )
         }
 
+        // Lista de Documentos con Acciones de Dictamen
         items(docsFiltrados) { doc ->
             AdminDocumentoItemCard(
                 documento = doc,
@@ -460,19 +504,21 @@ private fun KpiCard(
     title: String,
     count: String,
     color: Color,
+    borderColor: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.border(2.dp, borderColor, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f))
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = count, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = color)
-            Text(text = title, fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+            Text(text = count, fontSize = 22.sp, fontWeight = FontWeight.Black, color = color)
+            Text(text = title, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
@@ -486,17 +532,19 @@ private fun AdminDocumentoItemCard(
     val context = LocalContext.current
     val estado = documento.estado
     val (badgeColor, badgeText) = when (estado) {
-        "APROBADO" -> Pair(AccentTeal, "APROBADO")
-        "EN_REVISION" -> Pair(AccentGold, "EN REVISIÓN")
-        "RECHAZADO" -> Pair(StatusDanger, "OBSERVADO")
+        "APROBADO" -> Pair(UtGreenSecondary, "APROBADO")
+        "EN_REVISION" -> Pair(UtGoldAccent, "EN REVISIÓN")
+        "RECHAZADO" -> Pair(BauhausRed, "OBSERVADO")
         else -> Pair(Color.Gray, "PENDIENTE")
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.5.dp, UtBorderFlat, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -512,13 +560,14 @@ private fun AdminDocumentoItemCard(
                 )
                 Surface(
                     color = badgeColor.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.border(1.dp, badgeColor, RoundedCornerShape(20.dp))
                 ) {
                     Text(
                         text = badgeText,
                         color = badgeColor,
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Black,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                 }
@@ -542,20 +591,23 @@ private fun AdminDocumentoItemCard(
             if (estado == "RECHAZADO" && !documento.razonRechazo.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
-                    color = StatusDanger.copy(alpha = 0.08f),
+                    color = BauhausRed.copy(alpha = 0.08f),
                     shape = RoundedCornerShape(6.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, BauhausRed, RoundedCornerShape(6.dp))
                 ) {
                     Text(
                         text = "Observación: ${documento.razonRechazo}",
-                        color = StatusDanger,
+                        color = BauhausRed,
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
             }
 
-            // Previsualizador de Documento (Construcción robusta con /uploads/)
+            // Previsualizador de Documento
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(
                 onClick = {
@@ -565,12 +617,14 @@ private fun AdminDocumentoItemCard(
                         context.startActivity(intent)
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, UtGreenPrimary, RoundedCornerShape(8.dp)),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp), tint = UtGreenPrimary)
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Ver Documento Digital", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text("Ver Documento Digital", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = UtGreenPrimary)
             }
 
             // Botones de Dictamen Móvil Directo
@@ -581,24 +635,24 @@ private fun AdminDocumentoItemCard(
             ) {
                 Button(
                     onClick = onAprobar,
-                    colors = ButtonDefaults.buttonColors(containerColor = AccentTeal),
+                    colors = ButtonDefaults.buttonColors(containerColor = UtGreenSecondary),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Aprobar", fontSize = 12.sp)
+                    Text("Aprobar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Button(
                     onClick = onRechazar,
-                    colors = ButtonDefaults.buttonColors(containerColor = StatusDanger),
+                    colors = ButtonDefaults.buttonColors(containerColor = BauhausRed),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Observar", fontSize = 12.sp)
+                    Text("Observar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -630,10 +684,10 @@ private fun AdminAlumnosTab(
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 label = { Text("Buscar alumno por nombre o matrícula") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = UtGreenPrimary) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(10.dp)
             )
         }
 
@@ -641,8 +695,8 @@ private fun AdminAlumnosTab(
             Text(
                 text = "Directorio de Alumnos (${alumnosFiltrados.size}) — Toca para inspeccionar expediente",
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = NavyPrimary
+                fontWeight = FontWeight.Black,
+                color = UtGreenPrimary
             )
         }
 
@@ -650,10 +704,11 @@ private fun AdminAlumnosTab(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .border(1.5.dp, UtBorderFlat, RoundedCornerShape(12.dp))
                     .clickable { onSelectAlumno(al) },
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -662,9 +717,11 @@ private fun AdminAlumnosTab(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .border(1.5.dp, UtGoldAccent, CircleShape),
                         shape = CircleShape,
-                        color = NavyPrimary
+                        color = UtGreenPrimary
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -681,18 +738,19 @@ private fun AdminAlumnosTab(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = al.nombre, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                         Text(text = "Matrícula: ${al.matricula}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
-                        Text(text = "${al.carrera} — Cuatrimestre ${al.cuatrimestreActual}", fontSize = 11.sp, color = AccentTeal)
+                        Text(text = "${al.carrera} — Cuatrimestre ${al.cuatrimestreActual}", fontSize = 11.sp, color = UtGreenSecondary, fontWeight = FontWeight.Bold)
                     }
 
                     Surface(
-                        color = if (al.estado == "ACTIVO") AccentTeal.copy(alpha = 0.15f) else StatusDanger.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(20.dp)
+                        color = if (al.estado == "ACTIVO") UtGreenSecondary.copy(alpha = 0.15f) else BauhausRed.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.border(1.dp, if (al.estado == "ACTIVO") UtGreenSecondary else BauhausRed, RoundedCornerShape(20.dp))
                     ) {
                         Text(
                             text = al.estado,
-                            color = if (al.estado == "ACTIVO") AccentTeal else StatusDanger,
+                            color = if (al.estado == "ACTIVO") UtGreenSecondary else BauhausRed,
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                         )
                     }
@@ -736,10 +794,12 @@ private fun ExpedienteAlumnoContent(
     ) {
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, UtBorderFlat, RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -748,9 +808,11 @@ private fun ExpedienteAlumnoContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        modifier = Modifier.size(56.dp),
+                        modifier = Modifier
+                            .size(56.dp)
+                            .border(2.dp, UtGoldAccent, CircleShape),
                         shape = CircleShape,
-                        color = NavyPrimary
+                        color = UtGreenPrimary
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -779,8 +841,8 @@ private fun ExpedienteAlumnoContent(
                         Text(
                             text = alumno.carrera,
                             fontSize = 12.sp,
-                            color = AccentTeal,
-                            fontWeight = FontWeight.SemiBold
+                            color = UtGreenSecondary,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -791,8 +853,8 @@ private fun ExpedienteAlumnoContent(
             Text(
                 text = "Documentación Técnica del Expediente",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = NavyPrimary,
+                fontWeight = FontWeight.Black,
+                color = UtGreenPrimary,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
@@ -825,17 +887,19 @@ private fun DocumentoCard(
     val estado = documento?.estado ?: "PENDIENTE"
 
     val (badgeColor, badgeText, badgeIcon) = when (estado) {
-        "APROBADO" -> Triple(AccentTeal, "APROBADO", Icons.Default.CheckCircle)
-        "EN_REVISION" -> Triple(AccentGold, "EN REVISIÓN", Icons.Default.HourglassTop)
-        "RECHAZADO" -> Triple(StatusDanger, "OBSERVADO", Icons.Default.Error)
+        "APROBADO" -> Triple(UtGreenSecondary, "APROBADO", Icons.Default.CheckCircle)
+        "EN_REVISION" -> Triple(UtGoldAccent, "EN REVISIÓN", Icons.Default.HourglassTop)
+        "RECHAZADO" -> Triple(BauhausRed, "OBSERVADO", Icons.Default.Error)
         else -> Triple(Color.Gray, "PENDIENTE", Icons.Default.Pending)
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.5.dp, UtBorderFlat, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -856,7 +920,8 @@ private fun DocumentoCard(
 
                 Surface(
                     color = badgeColor.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.border(1.dp, badgeColor, RoundedCornerShape(20.dp))
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -873,7 +938,7 @@ private fun DocumentoCard(
                             text = badgeText,
                             color = badgeColor,
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Black
                         )
                     }
                 }
@@ -882,14 +947,17 @@ private fun DocumentoCard(
             if (estado == "RECHAZADO" && !documento?.razonRechazo.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
-                    color = StatusDanger.copy(alpha = 0.08f),
+                    color = BauhausRed.copy(alpha = 0.08f),
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, BauhausRed, RoundedCornerShape(8.dp))
                 ) {
                     Text(
                         text = "Observación: ${documento?.razonRechazo}",
-                        color = StatusDanger,
+                        color = BauhausRed,
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -906,12 +974,14 @@ private fun DocumentoCard(
                             context.startActivity(intent)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, UtGreenPrimary, RoundedCornerShape(8.dp)),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp), tint = UtGreenPrimary)
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Ver Documento Cargado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Ver Documento Cargado", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = UtGreenPrimary)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -921,7 +991,7 @@ private fun DocumentoCard(
                 enabled = !isUploading,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                colors = ButtonDefaults.buttonColors(containerColor = UtGreenPrimary)
             ) {
                 Icon(
                     imageVector = Icons.Default.FileUpload,
@@ -932,7 +1002,7 @@ private fun DocumentoCard(
                 Text(
                     text = if (documento == null) "Subir Documento" else "Reemplazar Documento",
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
