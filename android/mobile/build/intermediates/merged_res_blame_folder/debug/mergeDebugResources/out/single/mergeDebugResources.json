@@ -24,6 +24,10 @@
         "source": "com.paperless.utn.mobile-main-56:/drawable/logo_ut.png"
     },
     {
+        "merged": "com.paperless.utn.mobile-debug-54:/drawable_app_logo.png.flat",
+        "source": "com.paperless.utn.mobile-main-56:/drawable/app_logo.png"
+    },
+    {
         "merged": "com.paperless.utn.mobile-debug-54:/drawable_ic_favicon.png.flat",
         "source": "com.paperless.utn.mobile-main-56:/drawable/ic_favicon.png"
     },

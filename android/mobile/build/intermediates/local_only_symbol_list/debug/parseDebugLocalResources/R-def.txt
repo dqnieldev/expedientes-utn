@@ -1,6 +1,7 @@
 R_DEF: Internal format may change without notice
 local
 color ic_launcher_background
+drawable app_logo
 drawable ic_favicon
 drawable ic_launcher_foreground
 drawable logo_admin
