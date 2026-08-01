@@ -3,6 +3,7 @@ package com.paperless.utn.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -56,20 +57,39 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            // Logo Superior Hero Minimalista
-            Surface(
-                modifier = Modifier.size(90.dp),
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White.copy(alpha = 0.15f)
+            // Contenedor Hero con ambos logotipos (Favicon + Logo UT)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(16.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_ut),
-                        contentDescription = "Logo Institucional",
-                        modifier = Modifier.fillMaxSize()
-                    )
+                Surface(
+                    modifier = Modifier.size(72.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    color = Color.White.copy(alpha = 0.15f)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_favicon),
+                            contentDescription = "Paperless Emblem",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier.size(72.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    color = Color.White.copy(alpha = 0.15f)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_ut),
+                            contentDescription = "Logo Institucional UT",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
 
@@ -77,7 +97,7 @@ fun LoginScreen(
 
             Text(
                 text = "Paperless System",
-                fontSize = 32.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 letterSpacing = (-0.5).sp
@@ -89,7 +109,7 @@ fun LoginScreen(
                 fontWeight = FontWeight.Normal,
                 color = Color.White.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 6.dp, bottom = 40.dp)
+                modifier = Modifier.padding(top = 6.dp, bottom = 36.dp)
             )
 
             // Campo 1: Correo Electrónico (Bloque Blanco Sólido)
