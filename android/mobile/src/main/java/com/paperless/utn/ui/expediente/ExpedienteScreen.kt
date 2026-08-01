@@ -162,7 +162,6 @@ private fun ExpedienteAdminDashboard(
     var docToReject by remember { mutableStateOf<DocumentoDto?>(null) }
     var razonInput by remember { mutableStateOf("") }
 
-    // Modal para observaciones al rechazar
     if (docToReject != null) {
         AlertDialog(
             onDismissRequest = { docToReject = null },
@@ -209,7 +208,6 @@ private fun ExpedienteAdminDashboard(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Tab Row
         TabRow(
             selectedTabIndex = selectedTab,
             containerColor = NavyPrimary,
@@ -230,7 +228,6 @@ private fun ExpedienteAdminDashboard(
         }
 
         if (selectedTab == 0) {
-            // Pestaña 1: Documentos & Dictamen
             AdminDocumentosTab(
                 email = email,
                 role = role,
@@ -246,7 +243,6 @@ private fun ExpedienteAdminDashboard(
                 }
             )
         } else {
-            // Pestaña 2: Directorio de Alumnos
             AdminAlumnosTab(
                 alumnos = alumnos,
                 searchQuery = searchQuery,
@@ -293,7 +289,6 @@ private fun AdminDocumentosTab(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Tarjeta Header Admin
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -330,7 +325,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Tarjetas KPI de Métricas
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -357,7 +351,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Barra de Búsqueda
         item {
             OutlinedTextField(
                 value = searchQuery,
@@ -370,7 +363,6 @@ private fun AdminDocumentosTab(
             )
         }
 
-        // Chips de Filtro por Estado
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val filtros = listOf(
@@ -389,7 +381,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Encabezado Resultados
         item {
             Text(
                 text = "Documentos Registrados (${docsFiltrados.size})",
@@ -399,7 +390,6 @@ private fun AdminDocumentosTab(
             )
         }
 
-        // Lista de Documentos con Acciones de Dictamen
         items(docsFiltrados) { doc ->
             AdminDocumentoItemCard(
                 documento = doc,
@@ -509,7 +499,6 @@ private fun AdminDocumentoItemCard(
                 }
             }
 
-            // Botones de Dictamen Móvil Directo
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -855,7 +844,7 @@ private fun getTipoLabel(tipo: String): String {
     return when (tipo) {
         "ACTA_NACIMIENTO" -> "Acta de Nacimiento"
         "CURP" -> "CURP"
-        "CERTIFICADO" to "Certificado de Bachillerato"
+        "CERTIFICADO" -> "Certificado de Bachillerato"
         "CONSTANCIA" -> "Constancia de Estudios"
         else -> tipo
     }
