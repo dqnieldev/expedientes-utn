@@ -1,5 +1,6 @@
 package com.paperless.utn.ui.expediente
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.HourglassTop
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -134,6 +136,8 @@ fun ExpedienteScreen(
                         onSearchChange = { viewModel.searchQuery = it },
                         filtroEstado = viewModel.filtroEstado,
                         onFiltroEstadoChange = { viewModel.filtroEstado = it },
+                        selectedAlumnoIdFilter = viewModel.selectedAlumnoIdFilter,
+                        onSelectAlumnoFilter = { alumnoId -> viewModel.seleccionarAlumnoFiltro(alumnoId) },
                         onDictaminar = { docId, estado, razon ->
                             viewModel.dictaminarDocumento(docId, estado, razon)
                         }
@@ -156,6 +160,8 @@ private fun ExpedienteAdminDashboard(
     onSearchChange: (String) -> Unit,
     filtroEstado: String,
     onFiltroEstadoChange: (String) -> Unit,
+    selectedAlumnoIdFilter: Int?,
+    onSelectAlumnoFilter: (Int?) -> Unit,
     onDictaminar: (Int, String, String?) -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -231,11 +237,14 @@ private fun ExpedienteAdminDashboard(
             AdminDocumentosTab(
                 email = email,
                 role = role,
+                alumnos = alumnos,
                 documentos = documentos,
                 searchQuery = searchQuery,
                 onSearchChange = onSearchChange,
                 filtroEstado = filtroEstado,
                 onFiltroEstadoChange = onFiltroEstadoChange,
+                selectedAlumnoIdFilter = selectedAlumnoIdFilter,
+                onClearAlumnoFilter = { onSelectAlumnoFilter(null) },
                 onAprobar = { docId -> onDictaminar(docId, "APROBADO", null) },
                 onRechazar = { doc ->
                     docToReject = doc
@@ -246,7 +255,11 @@ private fun ExpedienteAdminDashboard(
             AdminAlumnosTab(
                 alumnos = alumnos,
                 searchQuery = searchQuery,
-                onSearchChange = onSearchChange
+                onSearchChange = onSearchChange,
+                onSelectAlumno = { alumno ->
+                    onSelectAlumnoFilter(alumno.id)
+                    selectedTab = 0 // Cambiar a la pestaña de Dictamen
+                }
             )
         }
     }
@@ -256,19 +269,25 @@ private fun ExpedienteAdminDashboard(
 private fun AdminDocumentosTab(
     email: String,
     role: String,
+    alumnos: List<AlumnoDto>,
     documentos: List<DocumentoDto>,
     searchQuery: String,
     onSearchChange: (String) -> Unit,
     filtroEstado: String,
     onFiltroEstadoChange: (String) -> Unit,
+    selectedAlumnoIdFilter: Int?,
+    onClearAlumnoFilter: () -> Unit,
     onAprobar: (Int) -> Unit,
     onRechazar: (DocumentoDto) -> Unit
 ) {
+    val alumnoFiltrado = alumnos.find { it.id == selectedAlumnoIdFilter }
+
     val totalRevision = documentos.count { it.estado == "EN_REVISION" }
     val totalAprobados = documentos.count { it.estado == "APROBADO" }
     val totalRechazados = documentos.count { it.estado == "RECHAZADO" }
 
     val docsFiltrados = documentos.filter { doc ->
+        val matchAlumno = selectedAlumnoIdFilter == null || doc.alumno?.id == selectedAlumnoIdFilter
         val matchEstado = when (filtroEstado) {
             "EN_REVISION" -> doc.estado == "EN_REVISION"
             "APROBADO" -> doc.estado == "APROBADO"
@@ -280,7 +299,7 @@ private fun AdminDocumentosTab(
                 (doc.alumno?.matricula?.contains(searchQuery, ignoreCase = true) == true) ||
                 (getTipoLabel(doc.tipo).contains(searchQuery, ignoreCase = true))
 
-        matchEstado && matchSearch
+        matchAlumno && matchEstado && matchSearch
     }
 
     LazyColumn(
@@ -289,6 +308,44 @@ private fun AdminDocumentosTab(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Banner de Filtro Individual por Alumno Activo
+        if (alumnoFiltrado != null) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = NavyPrimary.copy(alpha = 0.1f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Filtrando expediente de:",
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                            Text(
+                                text = "${alumnoFiltrado.nombre} (${alumnoFiltrado.matricula})",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = NavyPrimary
+                            )
+                        }
+
+                        IconButton(onClick = onClearAlumnoFilter) {
+                            Icon(Icons.Default.Close, contentDescription = "Quitar filtro", tint = StatusDanger)
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tarjeta Header Admin
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -325,6 +382,7 @@ private fun AdminDocumentosTab(
             }
         }
 
+        // Tarjetas KPI de Métricas
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -351,6 +409,7 @@ private fun AdminDocumentosTab(
             }
         }
 
+        // Barra de Búsqueda
         item {
             OutlinedTextField(
                 value = searchQuery,
@@ -363,6 +422,7 @@ private fun AdminDocumentosTab(
             )
         }
 
+        // Chips de Filtro por Estado
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val filtros = listOf(
@@ -381,15 +441,17 @@ private fun AdminDocumentosTab(
             }
         }
 
+        // Encabezado Resultados
         item {
             Text(
-                text = "Documentos Registrados (${docsFiltrados.size})",
+                text = "Documentos (${docsFiltrados.size})",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = NavyPrimary
             )
         }
 
+        // Lista de Documentos con Acciones de Dictamen y Previsualización
         items(docsFiltrados) { doc ->
             AdminDocumentoItemCard(
                 documento = doc,
@@ -428,6 +490,7 @@ private fun AdminDocumentoItemCard(
     onAprobar: () -> Unit,
     onRechazar: () -> Unit
 ) {
+    val context = LocalContext.current
     val estado = documento.estado
     val (badgeColor, badgeText) = when (estado) {
         "APROBADO" -> Pair(AccentTeal, "APROBADO")
@@ -499,7 +562,29 @@ private fun AdminDocumentoItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            // Previsualizador de Documento
+            Spacer(modifier = Modifier.height(10.dp))
+            OutlinedButton(
+                onClick = {
+                    val rawUrl = documento.url
+                    val fullUrl = if (rawUrl.startsWith("http")) {
+                        rawUrl
+                    } else {
+                        "https://expedientes-utn-backend.onrender.com${if (rawUrl.startsWith("/")) "" else "/"}$rawUrl"
+                    }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Ver Documento Digital", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            // Botones de Dictamen Móvil Directo
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -534,7 +619,8 @@ private fun AdminDocumentoItemCard(
 private fun AdminAlumnosTab(
     alumnos: List<AlumnoDto>,
     searchQuery: String,
-    onSearchChange: (String) -> Unit
+    onSearchChange: (String) -> Unit,
+    onSelectAlumno: (AlumnoDto) -> Unit
 ) {
     val alumnosFiltrados = alumnos.filter { al ->
         searchQuery.isBlank() ||
@@ -563,8 +649,8 @@ private fun AdminAlumnosTab(
 
         item {
             Text(
-                text = "Directorio de Alumnos (${alumnosFiltrados.size})",
-                fontSize = 15.sp,
+                text = "Directorio de Alumnos (${alumnosFiltrados.size}) — Toca para inspeccionar expediente",
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = NavyPrimary
             )
@@ -572,7 +658,9 @@ private fun AdminAlumnosTab(
 
         items(alumnosFiltrados) { al ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSelectAlumno(al) },
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -743,6 +831,7 @@ private fun DocumentoCard(
     isUploading: Boolean,
     onSelectFile: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val estado = documento?.estado ?: "PENDIENTE"
 
     val (badgeColor, badgeText, badgeIcon) = when (estado) {
@@ -818,11 +907,34 @@ private fun DocumentoCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedButton(
+            if (documento != null) {
+                OutlinedButton(
+                    onClick = {
+                        val rawUrl = documento.url
+                        val fullUrl = if (rawUrl.startsWith("http")) {
+                            rawUrl
+                        } else {
+                            "https://expedientes-utn-backend.onrender.com${if (rawUrl.startsWith("/")) "" else "/"}$rawUrl"
+                        }
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(Icons.Default.OpenInNew, contentDescription = "Ver Documento", modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Ver Documento Cargado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Button(
                 onClick = { onSelectFile(tipoKey) },
                 enabled = !isUploading,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
             ) {
                 Icon(
                     imageVector = Icons.Default.FileUpload,

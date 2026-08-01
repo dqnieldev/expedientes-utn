@@ -40,6 +40,11 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
 
     var searchQuery by mutableStateOf("")
     var filtroEstado by mutableStateOf("TODOS") // TODOS, EN_REVISION, APROBADO, RECHAZADO
+    var selectedAlumnoIdFilter by mutableStateOf<Int?>(null)
+
+    fun seleccionarAlumnoFiltro(alumnoId: Int?) {
+        selectedAlumnoIdFilter = alumnoId
+    }
 
     fun cargarPerfilYDocumentos() {
         if (!tokenManager.isLoggedIn()) {
