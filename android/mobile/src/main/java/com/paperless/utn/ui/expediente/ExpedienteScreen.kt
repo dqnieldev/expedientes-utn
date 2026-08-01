@@ -258,7 +258,7 @@ private fun ExpedienteAdminDashboard(
                 onSearchChange = onSearchChange,
                 onSelectAlumno = { alumno ->
                     onSelectAlumnoFilter(alumno.id)
-                    selectedTab = 0 // Cambiar a la pestaña de Dictamen
+                    selectedTab = 0
                 }
             )
         }
@@ -308,7 +308,6 @@ private fun AdminDocumentosTab(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Banner de Filtro Individual por Alumno Activo
         if (alumnoFiltrado != null) {
             item {
                 Card(
@@ -345,7 +344,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Tarjeta Header Admin
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -382,7 +380,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Tarjetas KPI de Métricas
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -409,7 +406,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Barra de Búsqueda
         item {
             OutlinedTextField(
                 value = searchQuery,
@@ -422,7 +418,6 @@ private fun AdminDocumentosTab(
             )
         }
 
-        // Chips de Filtro por Estado
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val filtros = listOf(
@@ -441,7 +436,6 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Encabezado Resultados
         item {
             Text(
                 text = "Documentos (${docsFiltrados.size})",
@@ -451,7 +445,6 @@ private fun AdminDocumentosTab(
             )
         }
 
-        // Lista de Documentos con Acciones de Dictamen y Previsualización
         items(docsFiltrados) { doc ->
             AdminDocumentoItemCard(
                 documento = doc,
@@ -562,18 +555,15 @@ private fun AdminDocumentoItemCard(
                 }
             }
 
-            // Previsualizador de Documento
+            // Previsualizador de Documento (Construcción robusta con /uploads/)
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(
                 onClick = {
-                    val rawUrl = documento.url
-                    val fullUrl = if (rawUrl.startsWith("http")) {
-                        rawUrl
-                    } else {
-                        "https://expedientes-utn-backend.onrender.com${if (rawUrl.startsWith("/")) "" else "/"}$rawUrl"
+                    val fullUrl = buildFullFileUrl(documento.url)
+                    if (fullUrl.isNotBlank()) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
+                        context.startActivity(intent)
                     }
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
-                    context.startActivity(intent)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
@@ -910,14 +900,11 @@ private fun DocumentoCard(
             if (documento != null) {
                 OutlinedButton(
                     onClick = {
-                        val rawUrl = documento.url
-                        val fullUrl = if (rawUrl.startsWith("http")) {
-                            rawUrl
-                        } else {
-                            "https://expedientes-utn-backend.onrender.com${if (rawUrl.startsWith("/")) "" else "/"}$rawUrl"
+                        val fullUrl = buildFullFileUrl(documento.url)
+                        if (fullUrl.isNotBlank()) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
+                            context.startActivity(intent)
                         }
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
-                        context.startActivity(intent)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
@@ -949,6 +936,19 @@ private fun DocumentoCard(
                 )
             }
         }
+    }
+}
+
+private fun buildFullFileUrl(url: String?): String {
+    if (url.isNullOrBlank()) return ""
+    if (url.startsWith("http://") || url.startsWith("https://")) return url
+
+    val cleanUrl = url.trim()
+    return when {
+        cleanUrl.startsWith("/uploads/") -> "https://expedientes-utn-backend.onrender.com$cleanUrl"
+        cleanUrl.startsWith("uploads/") -> "https://expedientes-utn-backend.onrender.com/$cleanUrl"
+        cleanUrl.startsWith("/") -> "https://expedientes-utn-backend.onrender.com/uploads$cleanUrl"
+        else -> "https://expedientes-utn-backend.onrender.com/uploads/$cleanUrl"
     }
 }
 
