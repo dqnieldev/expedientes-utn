@@ -13,9 +13,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_favicon"
+        android:icon="@drawable/app_logo"
         android:label="Paperless System"
-        android:roundIcon="@drawable/ic_favicon"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.PaperlessUTN"
         android:usesCleartextTraffic="true">

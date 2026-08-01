@@ -3,7 +3,6 @@ package com.paperless.utn.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -43,7 +42,7 @@ fun LoginScreen(
         }
     }
 
-    // Pantalla Inmersiva Full-Bleed (Lienzo Verde Institucional Completo)
+    // Pantalla Inmersiva Full-Bleed
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -57,43 +56,24 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            // Contenedor Hero con ambos logotipos (Favicon + Logo UT)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Parte superior del formulario: Solo el icono de la app (app_logo.png)
+            Surface(
+                modifier = Modifier.size(86.dp),
+                shape = RoundedCornerShape(22.dp),
+                color = Color.White.copy(alpha = 0.15f)
             ) {
-                Surface(
-                    modifier = Modifier.size(72.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    color = Color.White.copy(alpha = 0.15f)
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_favicon),
-                            contentDescription = "Paperless Emblem",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-
-                Surface(
-                    modifier = Modifier.size(72.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    color = Color.White.copy(alpha = 0.15f)
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_ut),
-                            contentDescription = "Logo Institucional UT",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
+                    Image(
+                        painter = painterResource(id = R.drawable.app_logo),
+                        contentDescription = "App Logo",
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Text(
                 text = "Paperless System",
@@ -109,10 +89,10 @@ fun LoginScreen(
                 fontWeight = FontWeight.Normal,
                 color = Color.White.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 6.dp, bottom = 36.dp)
+                modifier = Modifier.padding(top = 6.dp, bottom = 32.dp)
             )
 
-            // Campo 1: Correo Electrónico (Bloque Blanco Sólido)
+            // Campo 1: Correo Electrónico
             OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.onEmailChange(it) },
@@ -137,7 +117,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Campo 2: Contraseña (Bloque Blanco Sólido)
+            // Campo 2: Contraseña
             OutlinedTextField(
                 value = viewModel.password,
                 onValueChange = { viewModel.onPasswordChange(it) },
@@ -192,7 +172,7 @@ fun LoginScreen(
                 }
             }
 
-            // Botón Principal de Acción (Verde Menta Neón de Alto Contraste)
+            // Botón Principal de Acción
             Button(
                 onClick = { viewModel.onLoginClick() },
                 enabled = uiState !is LoginUiState.Loading,
@@ -222,12 +202,32 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                text = "Universidad Tecnológica de Nayarit",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.7f)
-            )
+            // Footer: Debajo del formulario, el Logo Oficial de la Institución (logo_ut.png)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.White.copy(alpha = 0.2f)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_ut),
+                            contentDescription = "Logo Institucional UT",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Universidad Tecnológica de Nayarit",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+            }
         }
     }
 }
