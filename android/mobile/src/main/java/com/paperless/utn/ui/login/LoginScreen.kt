@@ -1,6 +1,8 @@
 package com.paperless.utn.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,7 +24,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.paperless.utn.ui.theme.NavyPrimary
+import com.paperless.utn.R
+import com.paperless.utn.ui.theme.UtBorderFlat
+import com.paperless.utn.ui.theme.UtGoldAccent
+import com.paperless.utn.ui.theme.UtGreenPrimary
 
 @Composable
 fun LoginScreen(
@@ -45,11 +51,12 @@ fun LoginScreen(
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp),
-            shape = RoundedCornerShape(20.dp),
+                .fillMaxWidth(0.92f)
+                .padding(16.dp)
+                .border(2.dp, UtBorderFlat, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -57,16 +64,19 @@ fun LoginScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Header Logo / Icon
+                // Header Logo Institucional Oficial (Bauhaus Container)
                 Surface(
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier
+                        .size(80.dp)
+                        .border(2.dp, UtGoldAccent, RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
-                    color = NavyPrimary
+                    color = UtGreenPrimary
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "📄",
-                            fontSize = 32.sp
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_ut),
+                            contentDescription = "Logo Institucional UT",
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
@@ -76,14 +86,15 @@ fun LoginScreen(
                 Text(
                     text = "Paperless System",
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NavyPrimary
+                    fontWeight = FontWeight.Black,
+                    color = UtGreenPrimary
                 )
 
                 Text(
                     text = "Plataforma Digital de Expedientes",
                     fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
                 )
@@ -93,11 +104,11 @@ fun LoginScreen(
                     value = viewModel.email,
                     onValueChange = { viewModel.onEmailChange(it) },
                     label = { Text("Correo Electrónico") },
-                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Correo") },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Correo", tint = UtGreenPrimary) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(10.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -107,12 +118,13 @@ fun LoginScreen(
                     value = viewModel.password,
                     onValueChange = { viewModel.onPasswordChange(it) },
                     label = { Text("Contraseña") },
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Contraseña") },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Contraseña", tint = UtGreenPrimary) },
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (passwordVisible) "Ocultar" else "Mostrar"
+                                contentDescription = if (passwordVisible) "Ocultar" else "Mostrar",
+                                tint = UtGreenPrimary
                             )
                         }
                     },
@@ -120,7 +132,7 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(10.dp)
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -150,9 +162,9 @@ fun LoginScreen(
                     enabled = uiState !is LoginUiState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = NavyPrimary)
+                        .height(52.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = UtGreenPrimary)
                 ) {
                     if (uiState is LoginUiState.Loading) {
                         CircularProgressIndicator(
