@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -63,7 +61,21 @@ fun ExpedienteScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            modifier = Modifier.size(36.dp),
+                            modifier = Modifier.size(32.dp),
+                            shape = CircleShape,
+                            color = Color.White.copy(alpha = 0.2f)
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(3.dp)) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_favicon),
+                                    contentDescription = "Emblema Paperless",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            modifier = Modifier.size(32.dp),
                             shape = CircleShape,
                             color = Color.White.copy(alpha = 0.2f)
                         ) {
@@ -236,7 +248,6 @@ private fun ExpedienteAdminDashboard(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Tab Row Inmersivo
         TabRow(
             selectedTabIndex = selectedTab,
             containerColor = UtGreenImmersive,
@@ -367,7 +378,7 @@ private fun AdminDocumentosTab(
             }
         }
 
-        // Header Admin Inmersivo
+        // Header Admin
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),

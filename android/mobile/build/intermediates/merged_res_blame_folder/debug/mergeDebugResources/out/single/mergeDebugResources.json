@@ -1,27 +1,27 @@
 [
     {
-        "merged": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-debug-54:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-main-56:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+        "merged": "com.paperless.utn.mobile-debug-54:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.paperless.utn.mobile-main-56:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-debug-54:\\xml_backup_rules.xml.flat",
-        "source": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-main-56:\\xml\\backup_rules.xml"
+        "merged": "com.paperless.utn.mobile-debug-54:/xml_data_extraction_rules.xml.flat",
+        "source": "com.paperless.utn.mobile-main-56:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.paperless.utn.mobile-debug-54:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.paperless.utn.mobile-main-56:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.paperless.utn.mobile-debug-54:/xml_backup_rules.xml.flat",
+        "source": "com.paperless.utn.mobile-main-56:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.paperless.utn.mobile-debug-54:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.paperless.utn.mobile-main-56:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
         "merged": "com.paperless.utn.mobile-debug-54:/drawable_logo_ut.png.flat",
         "source": "com.paperless.utn.mobile-main-56:/drawable/logo_ut.png"
-    },
-    {
-        "merged": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-debug-54:\\xml_data_extraction_rules.xml.flat",
-        "source": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-main-56:\\xml\\data_extraction_rules.xml"
-    },
-    {
-        "merged": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-debug-54:\\drawable_ic_launcher_foreground.xml.flat",
-        "source": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-main-56:\\drawable\\ic_launcher_foreground.xml"
-    },
-    {
-        "merged": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-debug-54:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "C:\\Users\\Danie\\.gradle\\daemon\\8.7\\com.paperless.utn.mobile-main-56:\\mipmap-anydpi-v26\\ic_launcher.xml"
     },
     {
         "merged": "com.paperless.utn.mobile-debug-54:/drawable_logo_admin.png.flat",
