@@ -2,6 +2,8 @@ R_DEF: Internal format may change without notice
 local
 color ic_launcher_background
 drawable ic_launcher_foreground
+drawable logo_admin
+drawable logo_ut
 mipmap ic_launcher
 mipmap ic_launcher_round
 style Theme.PaperlessUTN
