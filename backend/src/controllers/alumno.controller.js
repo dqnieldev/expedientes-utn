@@ -6,6 +6,8 @@ import {
 } from "../services/alumno.service.js";
 import { body, param, validationResult } from "express-validator";
 import { registrarLog } from "../services/audit.service.js";
+import { uploadBufferToSupabase } from "../config/supabase.js";
+import fs from "fs";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 const validate = (req, res) => {
@@ -153,7 +155,27 @@ export const updatePerfil = async (req, res) => {
 export const updateFoto = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No se recibió imagen" });
-    const alumno = await updateFotoAlumno(req.user.id, req.file.filename);
+    
+    const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".png";
+    const filename = req.file.filename || `foto_${Date.now()}${ext}`;
+
+    let fotoUrl = filename;
+
+    // Intentar subida directa a Supabase Storage (Nube Persistente)
+    if (req.file.buffer) {
+      const supabaseUrl = await uploadBufferToSupabase(req.file.buffer, filename, req.file.mimetype || "image/png");
+      if (supabaseUrl) fotoUrl = supabaseUrl;
+    } else if (req.file.path) {
+      try {
+        const fileBuffer = fs.readFileSync(req.file.path);
+        const supabaseUrl = await uploadBufferToSupabase(fileBuffer, filename, req.file.mimetype || "image/png");
+        if (supabaseUrl) fotoUrl = supabaseUrl;
+      } catch (err) {
+        console.warn("Could not read disk file for Supabase photo upload:", err.message);
+      }
+    }
+
+    const alumno = await updateFotoAlumno(req.user.id, fotoUrl);
     res.json(alumno);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -190,9 +212,7 @@ export const eliminar = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Obtener nombre antes de eliminar
     const alumno = await getAlumnoById(Number(id));
-
     const result = await eliminarAlumno(Number(id));
 
     await registrarLog({

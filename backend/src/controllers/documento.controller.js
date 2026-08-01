@@ -6,12 +6,14 @@ import {
 } from "../services/documento.service.js";
 import { registrarLog } from "../services/audit.service.js";
 import prisma from "../config/prisma.js";
+import { uploadBufferToSupabase } from "../config/supabase.js";
+import fs from "fs";
 
-// Crear un nuevo documento para un alumno
+// Crear o actualizar un documento para un alumno
 export const create = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No se recibió ningún archivo PDF válido" });
+      return res.status(400).json({ message: "No se recibió ningún archivo válido" });
     }
 
     const { tipo, alumnoId } = req.body;
@@ -29,11 +31,32 @@ export const create = async (req, res) => {
       return res.status(400).json({ message: "No se encontró el perfil de alumno para asociar el documento" });
     }
 
-    const filePath = req.file.filename;
+    const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".pdf";
+    const filename = req.file.filename || `${Date.now()}_${targetAlumnoId}${ext}`;
+
+    let fileUrl = filename;
+
+    // Intentar subida directa a Supabase Storage (Nube Persistente)
+    if (req.file.buffer) {
+      const supabaseUrl = await uploadBufferToSupabase(req.file.buffer, filename, req.file.mimetype || "application/pdf");
+      if (supabaseUrl) {
+        fileUrl = supabaseUrl;
+      }
+    } else if (req.file.path) {
+      try {
+        const fileBuffer = fs.readFileSync(req.file.path);
+        const supabaseUrl = await uploadBufferToSupabase(fileBuffer, filename, req.file.mimetype || "application/pdf");
+        if (supabaseUrl) {
+          fileUrl = supabaseUrl;
+        }
+      } catch (err) {
+        console.warn("Could not read disk file for Supabase upload:", err.message);
+      }
+    }
 
     const doc = await createDocumento({
       tipo,
-      url: filePath,
+      url: fileUrl,
       alumnoId: targetAlumnoId
     });
 
