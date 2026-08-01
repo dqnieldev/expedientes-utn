@@ -34,24 +34,11 @@ export const create = async (req, res) => {
     const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".pdf";
     const filename = req.file.filename || `${Date.now()}_${targetAlumnoId}${ext}`;
 
+    const buffer = req.file.buffer || (req.file.path ? fs.readFileSync(req.file.path) : null);
+    
     let fileUrl = filename;
-
-    // Intentar subida directa a Supabase Storage (Nube Persistente)
-    if (req.file.buffer) {
-      const supabaseUrl = await uploadBufferToSupabase(req.file.buffer, filename, req.file.mimetype || "application/pdf");
-      if (supabaseUrl) {
-        fileUrl = supabaseUrl;
-      }
-    } else if (req.file.path) {
-      try {
-        const fileBuffer = fs.readFileSync(req.file.path);
-        const supabaseUrl = await uploadBufferToSupabase(fileBuffer, filename, req.file.mimetype || "application/pdf");
-        if (supabaseUrl) {
-          fileUrl = supabaseUrl;
-        }
-      } catch (err) {
-        console.warn("Could not read disk file for Supabase upload:", err.message);
-      }
+    if (buffer) {
+      fileUrl = await uploadBufferToSupabase(buffer, filename, req.file.mimetype || "application/pdf");
     }
 
     const doc = await createDocumento({

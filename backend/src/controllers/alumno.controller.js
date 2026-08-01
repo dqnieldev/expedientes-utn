@@ -159,20 +159,11 @@ export const updateFoto = async (req, res) => {
     const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".png";
     const filename = req.file.filename || `foto_${Date.now()}${ext}`;
 
-    let fotoUrl = filename;
+    const buffer = req.file.buffer || (req.file.path ? fs.readFileSync(req.file.path) : null);
 
-    // Intentar subida directa a Supabase Storage (Nube Persistente)
-    if (req.file.buffer) {
-      const supabaseUrl = await uploadBufferToSupabase(req.file.buffer, filename, req.file.mimetype || "image/png");
-      if (supabaseUrl) fotoUrl = supabaseUrl;
-    } else if (req.file.path) {
-      try {
-        const fileBuffer = fs.readFileSync(req.file.path);
-        const supabaseUrl = await uploadBufferToSupabase(fileBuffer, filename, req.file.mimetype || "image/png");
-        if (supabaseUrl) fotoUrl = supabaseUrl;
-      } catch (err) {
-        console.warn("Could not read disk file for Supabase photo upload:", err.message);
-      }
+    let fotoUrl = filename;
+    if (buffer) {
+      fotoUrl = await uploadBufferToSupabase(buffer, filename, req.file.mimetype || "image/png");
     }
 
     const alumno = await updateFotoAlumno(req.user.id, fotoUrl);
