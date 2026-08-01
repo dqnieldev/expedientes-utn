@@ -61,28 +61,14 @@ fun ExpedienteScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            modifier = Modifier.size(32.dp),
-                            shape = CircleShape,
-                            color = Color.White.copy(alpha = 0.2f)
-                        ) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(3.dp)) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_favicon),
-                                    contentDescription = "Emblema Paperless",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Surface(
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(34.dp),
                             shape = CircleShape,
                             color = Color.White.copy(alpha = 0.2f)
                         ) {
                             Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.logo_ut),
-                                    contentDescription = "UT Logo",
+                                    painter = painterResource(id = R.drawable.app_logo),
+                                    contentDescription = "Logo de la App",
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
