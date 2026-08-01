@@ -53,12 +53,12 @@
 32        android:extractNativeLibs="false"
 33        android:fullBackupContent="@xml/backup_rules"
 33-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:15:9-54
-34        android:icon="@drawable/ic_favicon"
-34-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:16:9-44
+34        android:icon="@drawable/app_logo"
+34-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:16:9-42
 35        android:label="Paperless System"
 35-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:17:9-41
-36        android:roundIcon="@drawable/ic_favicon"
-36-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:18:9-49
+36        android:roundIcon="@drawable/app_logo"
+36-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:18:9-47
 37        android:supportsRtl="true"
 37-->C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:19:9-35
 38        android:testOnly="true"

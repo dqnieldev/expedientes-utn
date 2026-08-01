@@ -58,20 +58,12 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Parte superior del formulario: Solo el icono de la app (app_logo.png)
-            Surface(
-                modifier = Modifier.size(86.dp),
-                shape = RoundedCornerShape(22.dp),
-                color = Color.White.copy(alpha = 0.15f)
-            ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.app_logo),
-                        contentDescription = "App Logo",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
+            // Icono de la App (Transparente y más grande: 110.dp)
+            Image(
+                painter = painterResource(id = R.drawable.app_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(110.dp)
+            )
 
             Spacer(modifier = Modifier.height(18.dp))
 
@@ -202,25 +194,17 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Footer: Debajo del formulario, el Logo Oficial de la Institución (logo_ut.png)
+            // Footer: Logo Oficial UT (Transparente y más grande: 48.dp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Surface(
-                    modifier = Modifier.size(36.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color.White.copy(alpha = 0.2f)
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_ut),
-                            contentDescription = "Logo Institucional UT",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(10.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.logo_ut),
+                    contentDescription = "Logo Institucional UT",
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = "Universidad Tecnológica de Nayarit",
                     fontSize = 13.sp,

@@ -125,9 +125,9 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Danie\.gradle\cach
 	android:fullBackupContent
 		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:15:9-54
 	android:roundIcon
-		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:18:9-49
+		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:18:9-47
 	android:icon
-		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:16:9-44
+		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:16:9-42
 	android:allowBackup
 		ADDED from C:\Users\Danie\expedientes-utn\android\mobile\src\main\AndroidManifest.xml:13:9-35
 	android:theme

@@ -60,19 +60,11 @@ fun ExpedienteScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            modifier = Modifier.size(34.dp),
-                            shape = CircleShape,
-                            color = Color.White.copy(alpha = 0.2f)
-                        ) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.app_logo),
-                                    contentDescription = "Logo de la App",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo),
+                            contentDescription = "Logo de la App",
+                            modifier = Modifier.size(40.dp)
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text("Paperless System", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     }
