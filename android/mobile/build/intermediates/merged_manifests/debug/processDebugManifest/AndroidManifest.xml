@@ -35,6 +35,7 @@
         android:label="Paperless System"
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/Theme.PaperlessUTN"
         android:usesCleartextTraffic="true" >
         <activity

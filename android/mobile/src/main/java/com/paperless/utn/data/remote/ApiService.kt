@@ -43,4 +43,10 @@ interface ApiService {
         @Path("id") id: Int,
         @Body request: DictamenRequest
     ): Response<DocumentoDto>
+
+    @Multipart
+    @PUT("api/alumnos/foto")
+    suspend fun uploadFoto(
+        @Part foto: MultipartBody.Part
+    ): Response<AlumnoDto>
 }

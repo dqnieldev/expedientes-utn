@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -32,12 +33,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.paperless.utn.R
 import com.paperless.utn.data.model.AlumnoDto
 import com.paperless.utn.data.model.DocumentoDto
@@ -134,6 +137,9 @@ fun ExpedienteScreen(
                         isUploading = uiState.isUploading,
                         onUploadFile = { tipoKey, uri, context ->
                             viewModel.subirDocumento(tipoKey, uri, context)
+                        },
+                        onUploadFoto = { uri, context ->
+                            viewModel.subirFoto(uri, context)
                         }
                     )
                 }
@@ -693,18 +699,28 @@ private fun AdminAlumnosTab(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val fotoUrl = buildFullFileUrl(al.foto)
                     Surface(
                         modifier = Modifier.size(48.dp),
                         shape = CircleShape,
                         color = UtGreenImmersive
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = al.nombre.take(1).uppercase(),
-                                color = Color.White,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                        if (fotoUrl.isNotBlank()) {
+                            AsyncImage(
+                                model = fotoUrl,
+                                contentDescription = "Foto de ${al.nombre}",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
                             )
+                        } else {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = al.nombre.take(1).uppercase(),
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
 
@@ -739,7 +755,8 @@ private fun ExpedienteAlumnoContent(
     alumno: AlumnoDto,
     documentos: List<DocumentoDto>,
     isUploading: Boolean,
-    onUploadFile: (String, Uri, android.content.Context) -> Unit
+    onUploadFile: (String, Uri, android.content.Context) -> Unit,
+    onUploadFoto: (Uri, android.content.Context) -> Unit
 ) {
     val context = LocalContext.current
     var selectedTipoKey by remember { mutableStateOf<String?>(null) }
@@ -750,6 +767,14 @@ private fun ExpedienteAlumnoContent(
         val tipo = selectedTipoKey
         if (uri != null && tipo != null) {
             onUploadFile(tipo, uri, context)
+        }
+    }
+
+    val fotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            onUploadFoto(uri, context)
         }
     }
 
@@ -779,18 +804,48 @@ private fun ExpedienteAlumnoContent(
                         .padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        modifier = Modifier.size(56.dp),
-                        shape = CircleShape,
-                        color = UtGreenImmersive
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = alumno.nombre.take(1).uppercase(),
-                                color = Color.White,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                    val fotoUrl = buildFullFileUrl(alumno.foto)
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                        Surface(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clickable { fotoPickerLauncher.launch("image/*") },
+                            shape = CircleShape,
+                            color = UtGreenImmersive
+                        ) {
+                            if (fotoUrl.isNotBlank()) {
+                                AsyncImage(
+                                    model = fotoUrl,
+                                    contentDescription = "Foto de perfil de ${alumno.nombre}",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = alumno.nombre.take(1).uppercase(),
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                        Surface(
+                            modifier = Modifier
+                                .size(22.dp)
+                                .clickable { fotoPickerLauncher.launch("image/*") },
+                            shape = CircleShape,
+                            color = UtGreenDark
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = "Cambiar foto",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                            }
                         }
                     }
 

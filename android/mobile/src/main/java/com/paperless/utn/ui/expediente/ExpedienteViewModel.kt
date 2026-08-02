@@ -164,6 +164,34 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun subirFoto(uri: Uri, context: Context) {
+        val currentState = uiState as? ExpedienteUiState.SuccessAlumno ?: return
+        viewModelScope.launch {
+            uiState = currentState.copy(isUploading = true)
+            try {
+                val contentResolver = context.contentResolver
+                val inputStream = contentResolver.openInputStream(uri) ?: throw Exception("Imagen no accesible")
+                val byteArray = inputStream.readBytes()
+                inputStream.close()
+
+                val mimeType = contentResolver.getType(uri) ?: "image/png"
+                val ext = if (mimeType.contains("jpeg") || mimeType.contains("jpg")) ".jpg" else ".png"
+                val requestFile = byteArray.toRequestBody(mimeType.toMediaTypeOrNull())
+
+                val bodyFoto = MultipartBody.Part.createFormData("foto", "foto_perfil$ext", requestFile)
+
+                val response = apiService.uploadFoto(bodyFoto)
+                if (response.isSuccessful) {
+                    cargarPerfilYDocumentos()
+                } else {
+                    uiState = currentState.copy(isUploading = false)
+                }
+            } catch (e: Exception) {
+                uiState = currentState.copy(isUploading = false)
+            }
+        }
+    }
+
     fun logout() {
         tokenManager.clearSession()
     }
