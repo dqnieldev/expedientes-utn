@@ -1,6 +1,8 @@
 package com.paperless.utn.wear
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -9,19 +11,21 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Chip
@@ -29,6 +33,9 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.paperless.utn.wear.notification.WearNotificationHelper
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.sqrt
 
 class WearMainActivity : ComponentActivity(), SensorEventListener {
@@ -39,9 +46,25 @@ class WearMainActivity : ComponentActivity(), SensorEventListener {
 
     var shakeCount by mutableIntStateOf(0)
     var lastAccelValue by mutableFloatStateOf(0.0f)
+    var lastNotificationInfo by mutableStateOf("Ninguna emitida")
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(this, "Permiso de Notificación concedido", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Solicitud de permiso dinámico para notificaciones en Android 13+ (API 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -50,16 +73,30 @@ class WearMainActivity : ComponentActivity(), SensorEventListener {
             WearApp(
                 shakeCount = shakeCount,
                 lastAccel = lastAccelValue,
+                lastNotificationInfo = lastNotificationInfo,
                 onTestNotification = {
-                    vibrateDevice(this)
-                    WearNotificationHelper.enviarNotificacionExpediente(
-                        context = this,
-                        titulo = "📋 Expediente Actualizado",
-                        mensaje = "Se ha validado la documentación técnica en producción."
-                    )
+                    dispararNotificacionYVibracion("Probar Botón")
                 }
             )
         }
+    }
+
+    private fun dispararNotificacionYVibracion(origen: String) {
+        val horaActual = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        lastNotificationInfo = "Emitida a las $horaActual ($origen)"
+
+        // 1. Respuesta Háptica de Vibración
+        vibrateDevice(this)
+
+        // 2. Mensaje Toast de Confirmación Visual
+        Toast.makeText(this, "🔔 Notificación enviada ($origen)", Toast.LENGTH_SHORT).show()
+
+        // 3. Notificación de Sistema Wear OS
+        WearNotificationHelper.enviarNotificacionExpediente(
+            context = this,
+            titulo = "📋 Expediente Actualizado",
+            mensaje = "Se ha validado la documentación técnica en producción ($origen)."
+        )
     }
 
     override fun onResume() {
@@ -89,14 +126,7 @@ class WearMainActivity : ComponentActivity(), SensorEventListener {
                 if (now - lastShakeTime > 1200) {
                     lastShakeTime = now
                     shakeCount++
-                    vibrateDevice(this)
-
-                    // Emitir notificación al detectar gesto del sensor
-                    WearNotificationHelper.enviarNotificacionExpediente(
-                        context = this,
-                        titulo = "⌚ Gesto Detectado (Sensor)",
-                        mensaje = "Actualización por movimiento de muñeca ($shakeCount dectectados)"
-                    )
+                    dispararNotificacionYVibracion("Gesto Sensor")
                 }
             }
         }
@@ -108,11 +138,11 @@ class WearMainActivity : ComponentActivity(), SensorEventListener {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator.vibrate(android.os.VibrationEffect.createOneShot(150, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+                vibratorManager.defaultVibrator.vibrate(android.os.VibrationEffect.createOneShot(200, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
                 @Suppress("DEPRECATION")
                 val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                vibrator.vibrate(150)
+                vibrator.vibrate(200)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -124,6 +154,7 @@ class WearMainActivity : ComponentActivity(), SensorEventListener {
 fun WearApp(
     shakeCount: Int,
     lastAccel: Float,
+    lastNotificationInfo: String,
     onTestNotification: () -> Unit
 ) {
     MaterialTheme {
@@ -136,7 +167,7 @@ fun WearApp(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(14.dp),
+                    .padding(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -166,9 +197,9 @@ fun WearApp(
                     modifier = Modifier.fillMaxWidth(0.95f)
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-                // Indicador de Sensor de Acelerómetro
+                // Indicador del Sensor de Acelerómetro
                 Text(
                     text = "Sensor: ${String.format("%.1f", lastAccel)} m/s² | Gestos: $shakeCount",
                     fontSize = 9.sp,
@@ -176,14 +207,14 @@ fun WearApp(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // Botón para probar Notificación Wear OS
                 Button(
                     onClick = onTestNotification,
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .height(32.dp),
+                        .height(30.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xFFFFC107),
                         contentColor = Color(0xFF003820)
@@ -195,6 +226,16 @@ fun WearApp(
                         fontWeight = FontWeight.Bold
                     )
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Confirmación visual de la última notificación/vibración
+                Text(
+                    text = "Notificación: $lastNotificationInfo",
+                    fontSize = 8.sp,
+                    color = Color.White.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
