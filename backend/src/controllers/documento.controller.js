@@ -8,6 +8,12 @@ import { registrarLog } from "../services/audit.service.js";
 import prisma from "../config/prisma.js";
 import { uploadBufferToSupabase } from "../config/supabase.js";
 import fs from "fs";
+import path from "path";
+
+const uploadsDir = path.resolve("uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Crear o actualizar un documento para un alumno
 export const create = async (req, res) => {
@@ -33,12 +39,28 @@ export const create = async (req, res) => {
 
     const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".pdf";
     const filename = req.file.filename || `${Date.now()}_${targetAlumnoId}${ext}`;
-
     const buffer = req.file.buffer || (req.file.path ? fs.readFileSync(req.file.path) : null);
     
     let fileUrl = filename;
     if (buffer) {
-      fileUrl = await uploadBufferToSupabase(buffer, filename, req.file.mimetype || "application/pdf");
+      const mime = req.file.mimetype || (ext === ".png" ? "image/png" : ext === ".jpg" ? "image/jpeg" : "application/pdf");
+
+      // 1. Guardar copia local en /uploads
+      try {
+        const localFilePath = path.join(uploadsDir, filename);
+        fs.writeFileSync(localFilePath, buffer);
+      } catch (e) {
+        console.warn("⚠️ No se pudo guardar en disco local:", e.message);
+      }
+
+      // 2. Intentar subir a Supabase Storage
+      const supabaseResult = await uploadBufferToSupabase(buffer, filename, mime);
+      if (supabaseResult && (supabaseResult.startsWith("http://") || supabaseResult.startsWith("https://"))) {
+        fileUrl = supabaseResult;
+      } else {
+        // 3. Guardar como Data URI Base64 permanente en PostgreSQL
+        fileUrl = `data:${mime};base64,${buffer.toString("base64")}`;
+      }
     }
 
     const doc = await createDocumento({
