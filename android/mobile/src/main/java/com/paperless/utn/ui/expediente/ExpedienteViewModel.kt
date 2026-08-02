@@ -13,6 +13,7 @@ import com.paperless.utn.data.model.DictamenRequest
 import com.paperless.utn.data.model.DocumentoDto
 import com.paperless.utn.data.remote.ApiClient
 import com.paperless.utn.data.remote.TokenManager
+import com.paperless.utn.data.wear.WearDataSyncManager
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -39,8 +40,12 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
         private set
 
     var searchQuery by mutableStateOf("")
-    var filtroEstado by mutableStateOf("TODOS") // TODOS, EN_REVISION, APROBADO, RECHAZADO
+    var filtroEstado by mutableStateOf("TODOS")
     var selectedAlumnoIdFilter by mutableStateOf<Int?>(null)
+
+    init {
+        cargarPerfilYDocumentos()
+    }
 
     fun seleccionarAlumnoFiltro(alumnoId: Int?) {
         selectedAlumnoIdFilter = alumnoId
@@ -73,6 +78,16 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                         alumno.documentos ?: emptyList()
                     }
                     uiState = ExpedienteUiState.SuccessAlumno(alumno, docs)
+
+                    // Sincronizar estado del expediente con el reloj Wear OS via DataClient API
+                    WearDataSyncManager.sincronizarExpedienteConWearable(
+                        context = getApplication(),
+                        alumnoNombre = alumno.nombre,
+                        matricula = alumno.matricula,
+                        estadoGeneral = if (docs.isNotEmpty() && docs.all { it.estado == "APROBADO" }) "APROBADO" else "EN_REVISION",
+                        aprobados = docs.count { it.estado == "APROBADO" },
+                        total = docs.size
+                    )
                 } else if (responsePerfil.code() == 404) {
                     cargarDatosAdmin(email, role)
                 } else {
@@ -98,61 +113,58 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun dictaminarDocumento(docId: Int, nuevoEstado: String, razonRechazo: String? = null) {
+    fun dictaminarDocumento(docId: Int, estado: String, razonRechazo: String?) {
         val currentState = uiState
-        if (currentState is ExpedienteUiState.SuccessAdmin) {
-            uiState = currentState.copy(isActionLoading = true)
-        }
+        if (currentState !is ExpedienteUiState.SuccessAdmin) return
 
         viewModelScope.launch {
+            uiState = currentState.copy(isActionLoading = true)
             try {
-                val response = apiService.dictaminarDocumento(docId, DictamenRequest(nuevoEstado, razonRechazo))
-                if (response.isSuccessful) {
+                val req = DictamenRequest(estado = estado, razonRechazo = razonRechazo)
+                val resp = apiService.dictaminarDocumento(docId, req)
+                if (resp.isSuccessful) {
                     cargarPerfilYDocumentos()
                 } else {
-                    cargarPerfilYDocumentos()
+                    uiState = currentState.copy(isActionLoading = false)
                 }
             } catch (e: Exception) {
-                cargarPerfilYDocumentos()
+                uiState = currentState.copy(isActionLoading = false)
             }
         }
     }
 
     fun subirDocumento(tipo: String, uri: Uri, context: Context) {
         val currentState = uiState
-        if (currentState is ExpedienteUiState.SuccessAlumno) {
-            uiState = currentState.copy(isUploading = true)
-        }
+        if (currentState !is ExpedienteUiState.SuccessAlumno) return
 
         viewModelScope.launch {
+            uiState = currentState.copy(isUploading = true)
             try {
                 val contentResolver = context.contentResolver
-                val inputStream = contentResolver.openInputStream(uri) ?: return@launch
-                val fileBytes = inputStream.readBytes()
+                val inputStream = contentResolver.openInputStream(uri) ?: throw Exception("Archivo no accesible")
+                val byteArray = inputStream.readBytes()
                 inputStream.close()
 
-                val mimeType = contentResolver.getType(uri) ?: "application/pdf"
-                val extension = if (mimeType.contains("png")) ".png" else if (mimeType.contains("jpg") || mimeType.contains("jpeg")) ".jpg" else ".pdf"
-                val fileName = "doc_${System.currentTimeMillis()}$extension"
+                val requestFile = byteArray.toRequestBody(
+                    contentResolver.getType(uri)?.toMediaTypeOrNull() ?: "application/pdf".toMediaTypeOrNull()
+                )
 
-                val requestFile = fileBytes.toRequestBody(mimeType.toMediaTypeOrNull())
-                val filePart = MultipartBody.Part.createFormData("file", fileName, requestFile)
-                val tipoBody = tipo.toRequestBody("text/plain".toMediaTypeOrNull())
+                val bodyFile = MultipartBody.Part.createFormData("archivo", "documento_$tipo.pdf", requestFile)
+                val bodyTipo = tipo.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                val response = apiService.uploadDocumento(tipoBody, filePart)
+                val response = apiService.uploadDocumento(bodyTipo, bodyFile)
                 if (response.isSuccessful) {
                     cargarPerfilYDocumentos()
                 } else {
-                    uiState = ExpedienteUiState.Error("No se pudo subir el archivo. Formato o tamaño no válido.")
+                    uiState = currentState.copy(isUploading = false)
                 }
             } catch (e: Exception) {
-                uiState = ExpedienteUiState.Error("Error al subir archivo: ${e.localizedMessage}")
+                uiState = currentState.copy(isUploading = false)
             }
         }
     }
 
     fun logout() {
         tokenManager.clearSession()
-        uiState = ExpedienteUiState.Loading
     }
 }
