@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
 import { useParams, useNavigate } from "react-router-dom";
-import { API_BASE_URL, SERVER_URL } from "../../config/api";
+import { API_BASE_URL, SERVER_URL, getFileUrl } from "../../config/api";
 import {
   ArrowLeft, FileText, Fingerprint, GraduationCap, FileBadge,
   CheckCircle, XCircle, Clock, Eye, Hash, BookOpen, User,
@@ -505,7 +505,7 @@ const handleConfirmarRechazo = async () => {
                       <div className="flex gap-2 mt-3 flex-wrap">
                         
                         <a
-                          href={`${SERVER_URL}/uploads/${doc.url}`}
+                          href={getFileUrl(doc.url)}
 
                           target="_blank"
                           rel="noreferrer"

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../layout/AdminLayout";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL, SERVER_URL } from "../../config/api";
+import { API_BASE_URL, SERVER_URL, getFileUrl } from "../../config/api";
 import {
   Search, FileCheck, FileX, Clock, Eye,
   Filter, CheckCircle, XCircle, Download,
@@ -292,7 +292,7 @@ export default function DocumentosAdmin() {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href={`${SERVER_URL}/uploads/${doc.url}`}
+            href={getFileUrl(doc.url)}
             target="_blank" rel="noreferrer"
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
@@ -351,7 +351,7 @@ export default function DocumentosAdmin() {
 
         <div className="flex gap-2 px-4 pb-4">
           <a
-            href={`${SERVER_URL}/uploads/${doc.url}`}
+            href={getFileUrl(doc.url)}
 
             target="_blank" rel="noreferrer"
             className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition"

@@ -977,7 +977,7 @@ private fun DocumentoCard(
 
 private fun buildFullFileUrl(url: String?): String {
     if (url.isNullOrBlank()) return ""
-    if (url.startsWith("http://") || url.startsWith("https://")) return url
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url
 
     val cleanUrl = url.trim()
     return when {
