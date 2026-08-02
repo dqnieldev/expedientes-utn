@@ -61,11 +61,21 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Servir archivos de /uploads localmente. Si el archivo no esta disponible fisicamente
-// (por reinicios de servidor efimero o sin Supabase key), generar una previsualizacion digital membretada oficial.
+// Servir archivos de /uploads localmente. Si la ruta recibida es una URL absoluta o no existe en disco,
+// manejar transparentemente sin romper la experiencia del usuario.
 app.use("/uploads", express.static(uploadsDir), (req, res) => {
-  const rawPath = req.path || "";
-  const filename = rawPath.replace(/^\//, "");
+  const rawUrl = req.originalUrl || req.url || "";
+  
+  // Detección y extracción de URLs absolutas (http://, https://, data:) si hubo concatenacion
+  const match = rawUrl.match(/(https?:\/\/.*|data:.*)/);
+  if (match && match[0]) {
+    return res.redirect(match[0]);
+  }
+
+  const filename = (req.path || "").replace(/^\//, "");
+  if (filename.startsWith("http://") || filename.startsWith("https://") || filename.startsWith("data:")) {
+    return res.redirect(filename);
+  }
 
   const fallbackSvg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
