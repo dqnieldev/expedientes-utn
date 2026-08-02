@@ -149,7 +149,7 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                     contentResolver.getType(uri)?.toMediaTypeOrNull() ?: "application/pdf".toMediaTypeOrNull()
                 )
 
-                val bodyFile = MultipartBody.Part.createFormData("archivo", "documento_$tipo.pdf", requestFile)
+                val bodyFile = MultipartBody.Part.createFormData("file", "documento_$tipo.pdf", requestFile)
                 val bodyTipo = tipo.toRequestBody("text/plain".toMediaTypeOrNull())
 
                 val response = apiService.uploadDocumento(bodyTipo, bodyFile)
