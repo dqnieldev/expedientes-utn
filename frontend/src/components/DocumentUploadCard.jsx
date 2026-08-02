@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Upload, FileCheck, FileX, Clock, Eye, RefreshCw, AlertCircle, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { SERVER_URL } from "../config/api";
+import { SERVER_URL, getFileUrl } from "../config/api";
 
 // ── Configuración de validación ───────────────────────────────────────────────
 const FORMATOS_PERMITIDOS = ["application/pdf", "application/x-pdf"];
