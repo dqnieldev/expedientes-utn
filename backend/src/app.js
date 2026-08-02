@@ -11,15 +11,16 @@ import morgan from "morgan";
 import helmet from "helmet";
 import auditRoutes from "./routes/audit.routes.js";
 import analiticaRoutes from "./routes/analitica.routes.js";
-
+import fs from "fs";
+import path from "path";
 
 const app = express();
 app.set("trust proxy", 1);
 
 app.use(helmet({
-
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
@@ -28,43 +29,48 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Permitir peticiones sin header Origin (App móvil / Postman)
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.endsWith(".netlify.app")) {
       return callback(null, true);
     }
-    return callback(null, true); // Permisivo en producción para despliegue sin fricción
+    return callback(null, true);
   },
   credentials: true,
 }));
+
 app.use(express.json());
-app.use(morgan("dev")); // Agrega el middleware de morgan para registrar las solicitudes HTTP
-app.use("/api/audit", auditRoutes); // Rutas para auditoría (logs de acciones)
+app.use(morgan("dev"));
+app.use("/api/audit", auditRoutes);
 
 app.get("/", (req, res) => {
-  res.send("API Expedientes UTN funcionando ");
+  res.send("API Expedientes UTN funcionando");
 });
-// Rutas de la API de usuarios, autenticación, alumnos y documentos
+
 app.use("/api/user", userRoutes);
 app.use("/api/auth/login", loginRateLimit);
 app.use("/api/auth", authRoutes);
 app.use("/api/alumnos", alumnoRoutes);
 app.use("/api/documentos", documentoRoutes);
 app.use("/api/reportes", reporteRoutes);
-app.use("/public", express.static("public")); // para servir el membrete
-app.use("/api/backups", backupRoutes); // Rutas para gestión de respaldos
-app.use("/api/analitica", analiticaRoutes); // Rutas para analítica y ML
-
-
-import fs from "fs";
-import path from "path";
+app.use("/public", express.static("public"));
+app.use("/api/backups", backupRoutes);
+app.use("/api/analitica", analiticaRoutes);
 
 const uploadsDir = path.resolve("uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-app.use("/uploads", express.static(uploadsDir));
-
-  
+// Servir archivos de /uploads localmente. Si no existen en disco local (por reinicios de Render),
+// redirigir transparentemente a Supabase Storage
+app.use("/uploads", express.static(uploadsDir), (req, res) => {
+  const rawPath = req.path || "";
+  const filename = rawPath.replace(/^\//, "");
+  if (filename) {
+    const supabasePublicUrl = `https://gedlvdoioengnwnaxflk.supabase.co/storage/v1/object/public/expedientes-storage/uploads/${filename}`;
+    return res.redirect(supabasePublicUrl);
+  }
+  res.status(404).send("Documento no encontrado");
+});
 
 export default app;

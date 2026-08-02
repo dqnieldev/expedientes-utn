@@ -8,7 +8,6 @@ const defaultProjectRef = "gedlvdoioengnwnaxflk";
 const supabaseUrl = process.env.SUPABASE_URL || `https://${defaultProjectRef}.supabase.co`;
 const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || "";
 
-// Solo instanciar el cliente si se proporciona una clave real de Supabase
 export const supabase = (supabaseKey && supabaseKey.length > 30 && !supabaseKey.includes("placeholder"))
   ? createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } })
   : null;
@@ -21,10 +20,10 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 /**
- * Helper resiliente: guarda localmente en /uploads y sube a Supabase Storage si la clave esta configurada
+ * Helper resiliente: guarda localmente en /uploads y sube a Supabase Storage
  */
 export async function uploadBufferToSupabase(buffer, filename, mimetype) {
-  // 1. Guardar SIEMPRE la copia local en /uploads para garantar que NUNCA falle la subida
+  // 1. Guardar copia local en /uploads
   try {
     const localFilePath = path.join(uploadsDir, filename);
     fs.writeFileSync(localFilePath, buffer);
@@ -32,10 +31,12 @@ export async function uploadBufferToSupabase(buffer, filename, mimetype) {
     console.warn("⚠️ Error guardando en disco local:", diskErr.message);
   }
 
-  // 2. Si no hay clave de Supabase configurada en Render (.env), retornar ruta local inmediatamente
+  const defaultPublicUrl = `https://${defaultProjectRef}.supabase.co/storage/v1/object/public/${BUCKET_NAME}/uploads/${filename}`;
+
+  // 2. Si no hay clave de Supabase configurada en Render (.env), retornar URL publica por defecto
   if (!supabase) {
-    console.log("ℹ️ SUPABASE_KEY no configurada en Render. Guardado exitoso en /uploads local.");
-    return filename;
+    console.log("ℹ️ SUPABASE_KEY no configurada en Render. Retornando URL publica persistente.");
+    return defaultPublicUrl;
   }
 
   try {
@@ -48,17 +49,17 @@ export async function uploadBufferToSupabase(buffer, filename, mimetype) {
       });
 
     if (error) {
-      console.warn("⚠️ Supabase Storage Warning (usando respaldo /uploads):", error.message);
-      return filename;
+      console.warn("⚠️ Supabase Storage Warning (usando URL publica por defecto):", error.message);
+      return defaultPublicUrl;
     }
 
     const { data: publicData } = supabase.storage
       .from(BUCKET_NAME)
       .getPublicUrl(filePath);
 
-    return publicData.publicUrl || filename;
+    return publicData.publicUrl || defaultPublicUrl;
   } catch (err) {
-    console.warn("⚠️ Supabase Storage Error (usando respaldo /uploads):", err.message);
-    return filename;
+    console.warn("⚠️ Supabase Storage Error (usando URL publica por defecto):", err.message);
+    return defaultPublicUrl;
   }
 }
