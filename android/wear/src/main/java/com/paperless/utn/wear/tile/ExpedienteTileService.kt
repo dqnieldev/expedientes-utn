@@ -1,7 +1,7 @@
 package com.paperless.utn.wear.tile
 
-import androidx.wear.tiles.DimensionBuilders.dp
-import androidx.wear.tiles.LayoutElementBuilders
+import androidx.wear.protolayout.LayoutElementBuilders
+import androidx.wear.protolayout.TimelineBuilders
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.ResourceBuilders
 import androidx.wear.tiles.TileBuilders
@@ -27,9 +27,9 @@ class ExpedienteTileService : TileService() {
 
         val tile = TileBuilders.Tile.Builder()
             .setResourcesVersion("1")
-            .setTimeline(
-                TileBuilders.Timeline.Builder().addTimelineEntry(
-                    TileBuilders.TimelineEntry.Builder().setLayout(
+            .setTileTimeline(
+                TimelineBuilders.Timeline.Builder().addTimelineEntry(
+                    TimelineBuilders.TimelineEntry.Builder().setLayout(
                         LayoutElementBuilders.Layout.Builder().setRoot(layout).build()
                     ).build()
                 ).build()

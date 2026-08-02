@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +20,7 @@ import androidx.wear.compose.material.Text
 
 class WearMainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState)
         setContent {
             WearApp()
         }
@@ -34,7 +33,7 @@ fun WearApp() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF0F172A)),
+                .background(Color(0xFF004D2C)),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -48,7 +47,7 @@ fun WearApp() {
                     text = "📄 Paperless System",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1D9E75),
+                    color = Color.White,
                     textAlign = TextAlign.Center
                 )
 
@@ -72,7 +71,8 @@ fun WearApp() {
                         )
                     },
                     colors = ChipDefaults.chipColors(
-                        backgroundColor = Color(0xFF1D9E75)
+                        backgroundColor = Color(0xFF00E680),
+                        contentColor = Color(0xFF003820)
                     ),
                     modifier = Modifier.fillMaxWidth(0.9f)
                 )
