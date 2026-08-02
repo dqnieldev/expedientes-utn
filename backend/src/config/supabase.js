@@ -31,12 +31,10 @@ export async function uploadBufferToSupabase(buffer, filename, mimetype) {
     console.warn("⚠️ Error guardando en disco local:", diskErr.message);
   }
 
-  const defaultPublicUrl = `https://${defaultProjectRef}.supabase.co/storage/v1/object/public/${BUCKET_NAME}/uploads/${filename}`;
-
-  // 2. Si no hay clave de Supabase configurada en Render (.env), retornar URL publica por defecto
+  // 2. Si no hay cliente de Supabase configurado, retornar null para que el controlador almacene Data URI Base64 permanente en DB
   if (!supabase) {
-    console.log("ℹ️ SUPABASE_KEY no configurada en Render. Retornando URL publica persistente.");
-    return defaultPublicUrl;
+    console.log("ℹ️ SUPABASE_KEY no configurada en Render. Se utilizará almacenamiento persistente Data URI Base64 en PostgreSQL.");
+    return null;
   }
 
   try {
@@ -49,17 +47,17 @@ export async function uploadBufferToSupabase(buffer, filename, mimetype) {
       });
 
     if (error) {
-      console.warn("⚠️ Supabase Storage Warning (usando URL publica por defecto):", error.message);
-      return defaultPublicUrl;
+      console.warn("⚠️ Supabase Storage Warning (usando Base64 en DB):", error.message);
+      return null;
     }
 
     const { data: publicData } = supabase.storage
       .from(BUCKET_NAME)
       .getPublicUrl(filePath);
 
-    return publicData.publicUrl || defaultPublicUrl;
+    return publicData.publicUrl || null;
   } catch (err) {
-    console.warn("⚠️ Supabase Storage Error (usando URL publica por defecto):", err.message);
-    return defaultPublicUrl;
+    console.warn("⚠️ Supabase Storage Error (usando Base64 en DB):", err.message);
+    return null;
   }
 }

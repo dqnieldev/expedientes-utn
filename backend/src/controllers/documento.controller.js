@@ -33,12 +33,18 @@ export const create = async (req, res) => {
 
     const ext = req.file.originalname?.endsWith(".png") ? ".png" : req.file.originalname?.endsWith(".jpg") ? ".jpg" : ".pdf";
     const filename = req.file.filename || `${Date.now()}_${targetAlumnoId}${ext}`;
-
     const buffer = req.file.buffer || (req.file.path ? fs.readFileSync(req.file.path) : null);
     
     let fileUrl = filename;
     if (buffer) {
-      fileUrl = await uploadBufferToSupabase(buffer, filename, req.file.mimetype || "application/pdf");
+      const supabaseResult = await uploadBufferToSupabase(buffer, filename, req.file.mimetype || "application/pdf");
+      if (supabaseResult && (supabaseResult.startsWith("http://") || supabaseResult.startsWith("https://"))) {
+        fileUrl = supabaseResult;
+      } else {
+        // Si no hay Supabase Storage configurado, guardar el archivo como Data URI (Base64) 100% PERMANENTE en PostgreSQL
+        const mime = req.file.mimetype || (ext === ".png" ? "image/png" : ext === ".jpg" ? "image/jpeg" : "application/pdf");
+        fileUrl = `data:${mime};base64,${buffer.toString("base64")}`;
+      }
     }
 
     const doc = await createDocumento({
