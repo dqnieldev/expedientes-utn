@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.paperless.utn.mobile-mergeDebugResources-52:/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "com.paperless.utn.mobile-mergeDebugResources-57:/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Danie\\.gradle\\caches\\transforms-4\\f170379c50cd3645472c21e1fa3bedf5\\transformed\\jetified-ui-release\\res\\values-en-rAU\\values-en-rAU.xml",
