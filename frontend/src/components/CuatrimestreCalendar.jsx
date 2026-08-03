@@ -1,91 +1,106 @@
 import React, { useState, useEffect } from "react";
 import { Clock, Calendar as CalendarIcon, Info, Sparkles } from "lucide-react";
 
-// Categorías de eventos y colores oficiales
+// Categorías de eventos y colores oficiales exactamente según la simbología oficial UTN
 const EVENT_TYPES = {
   inicio: {
-    label: "Inicio de Cuatrimestre / Reinscripciones",
-    color: "bg-emerald-600 text-white",
-    dot: "bg-emerald-600",
+    label: "INICIO DE CUATRIMESTRE / REINSCRIPCIONES",
+    color: "bg-emerald-500 text-white font-bold rounded-full shadow-sm ring-2 ring-emerald-300",
+    dot: "bg-emerald-500 rounded-full",
     badge: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300"
   },
   fin: {
-    label: "Fin de Cuatrimestre",
-    color: "bg-red-600 text-white",
+    label: "FIN DE CUATRIMESTRE",
+    color: "bg-red-600 text-white font-bold shadow-sm",
     dot: "bg-red-600",
     badge: "bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-300"
   },
   asueto: {
-    label: "Asueto Institucional",
-    color: "bg-pink-500 text-white",
-    dot: "bg-pink-500",
+    label: "ASUETO",
+    color: "bg-pink-400 text-white font-semibold",
+    dot: "bg-pink-400",
     badge: "bg-pink-100 text-pink-800 dark:bg-pink-900/60 dark:text-pink-300"
   },
   examenes_ordinarios: {
-    label: "Exámenes Ordinarios",
-    color: "bg-blue-700 text-white",
-    dot: "bg-blue-700",
+    label: "EXÁMENES ORDINARIOS",
+    color: "bg-blue-600 text-white font-semibold",
+    dot: "bg-blue-600",
     badge: "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300"
   },
   examenes_remediales: {
-    label: "Exámenes Remediales",
-    color: "bg-sky-500 text-white",
-    dot: "bg-sky-500",
-    badge: "bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-300"
+    label: "EXÁMENES REMEDIALES",
+    color: "bg-slate-800 text-white font-semibold",
+    dot: "bg-slate-800",
+    badge: "bg-slate-200 text-slate-900 dark:bg-slate-900 dark:text-slate-200"
   },
   examenes_extraordinarios: {
-    label: "Exámenes Extraordinarios",
-    color: "bg-amber-400 text-gray-900 font-bold",
-    dot: "bg-amber-400",
-    badge: "bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300"
+    label: "EXÁMENES EXTRAORDINARIOS",
+    color: "bg-yellow-300 text-gray-900 font-extrabold",
+    dot: "bg-yellow-300",
+    badge: "bg-yellow-100 text-yellow-900 dark:bg-yellow-900/60 dark:text-yellow-300"
   },
   entrega_calificaciones: {
-    label: "Entrega de Calificaciones / Reportes",
-    color: "bg-lime-600 text-white",
+    label: "ENTREGA DE CALIFICACIONES A SER. ESC.",
+    color: "bg-lime-600 text-white font-semibold",
     dot: "bg-lime-600",
     badge: "bg-lime-100 text-lime-800 dark:bg-lime-900/60 dark:text-lime-300"
   },
   asesorias: {
-    label: "Asesorías",
-    color: "bg-orange-500 text-white",
-    dot: "bg-orange-500",
-    badge: "bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-300"
+    label: "ASESORÍAS",
+    color: "bg-amber-500 text-white font-semibold",
+    dot: "bg-amber-500",
+    badge: "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300"
   },
   vacaciones: {
-    label: "Receso / Vacaciones",
-    color: "bg-teal-600 text-white",
-    dot: "bg-teal-600",
+    label: "VACACIONES",
+    color: "bg-teal-700 text-white font-semibold",
+    dot: "bg-teal-700",
     badge: "bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300"
   },
   becas: {
-    label: "Registro Becas Institucionales",
-    color: "bg-amber-900 text-amber-100",
+    label: "REGISTRO BECAS UT",
+    color: "bg-amber-900 text-white font-semibold",
     dot: "bg-amber-900",
     badge: "bg-amber-200 text-amber-950 dark:bg-amber-950 dark:text-amber-200"
   },
-  reingreso: {
-    label: "Trámite de Reingreso",
-    color: "bg-emerald-700 text-white ring-2 ring-emerald-300",
-    dot: "bg-emerald-700",
+  examen_admision: {
+    label: "EXAMEN DE ADMISIÓN",
+    color: "bg-emerald-600 text-white font-bold border border-emerald-200",
+    dot: "bg-emerald-600",
     badge: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
-    icon: "❖"
+    icon: "📝"
   },
   dia_tsu: {
-    label: "Día del Estudiante TSU",
-    color: "bg-orange-500 text-white ring-2 ring-yellow-300",
-    dot: "bg-yellow-400",
-    badge: "bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-200",
-    icon: "★"
+    label: "DÍA DEL ESTUDIANTE TSU",
+    color: "bg-amber-400 text-gray-900 font-black rounded-full border-2 border-amber-500 shadow-xs",
+    dot: "bg-amber-400 rounded-full",
+    badge: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200",
+    icon: "TSU"
+  },
+  curso_propedeutico: {
+    label: "CURSO PROPEDÉUTICO",
+    color: "bg-purple-800 text-white font-semibold",
+    dot: "bg-purple-800",
+    badge: "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200"
+  },
+  reingreso: {
+    label: "TRÁMITE DE REINGRESO",
+    color: "bg-emerald-800 text-white font-bold ring-2 ring-emerald-400",
+    dot: "bg-emerald-800",
+    badge: "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
+    icon: "⬡"
   }
 };
 
-// Días destacados por mes (Año 2026)
+// Días destacados por mes según la imagen oficial (Año 2026)
 const CALENDAR_EVENTS = {
   // MAYO 2026
   4: {
-    1: { type: "asueto", label: "Día del Trabajo (Asueto)" },
-    5: { type: "inicio", label: "Inicio de Cuatrimestre / Asueto (5 de Mayo)" },
-    15: { type: "asueto", label: "Día del Maestro (Asueto)" }
+    1: { type: "asueto", label: "Asueto" },
+    4: { type: "asueto", label: "Asueto" },
+    5: { type: "inicio", label: "Inicio de Cuatrimestre / Reinscripciones" },
+    11: { type: "asueto", label: "Asueto" },
+    15: { type: "asueto", label: "Asueto" }
   },
   // JUNIO 2026
   5: {
@@ -93,70 +108,60 @@ const CALENDAR_EVENTS = {
     2: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
     3: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
     4: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    5: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
     8: { type: "asesorias", label: "Asesorías" },
     9: { type: "asesorias", label: "Asesorías" },
     10: { type: "asesorias", label: "Asesorías" },
-    11: { type: "asesorias", label: "Asesorías" },
-    12: { type: "dia_tsu", label: "Día del Estudiante TSU / Asesorías" },
-    15: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    16: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    17: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    18: { type: "reingreso", label: "Trámite de Reingreso" },
-    19: { type: "reingreso", label: "Trámite de Reingreso" },
-    23: { type: "examenes_remediales", label: "Exámenes Remediales" },
-    24: { type: "examenes_remediales", label: "Exámenes Remediales" },
-    26: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
-    27: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
-    29: { type: "entrega_calificaciones", label: "Entrega de Calificaciones" },
-    30: { type: "entrega_calificaciones", label: "Entrega de Calificaciones" }
+    12: { type: "dia_tsu", label: "Día del Estudiante TSU" },
+    15: { type: "examenes_remediales", label: "Exámenes Remediales" },
+    16: { type: "examenes_remediales", label: "Exámenes Remediales" },
+    18: { type: "examen_admision", label: "Examen de Admisión / Reingreso" },
+    22: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
+    29: { type: "entrega_calificaciones", label: "Entrega de Calificaciones a Ser. Esc." },
+    30: { type: "entrega_calificaciones", label: "Entrega de Calificaciones a Ser. Esc." }
   },
   // JULIO 2026
   6: {
     1: { type: "becas", label: "Registro Becas UT" },
     2: { type: "becas", label: "Registro Becas UT" },
     3: { type: "becas", label: "Registro Becas UT" },
-    13: { type: "vacaciones", label: "Receso de Vacaciones" },
-    14: { type: "vacaciones", label: "Receso de Vacaciones" },
-    15: { type: "vacaciones", label: "Receso de Vacaciones" },
-    16: { type: "vacaciones", label: "Receso de Vacaciones" },
-    17: { type: "vacaciones", label: "Receso de Vacaciones" },
-    18: { type: "vacaciones", label: "Receso de Vacaciones" },
-    19: { type: "vacaciones", label: "Receso de Vacaciones" },
-    20: { type: "vacaciones", label: "Receso de Vacaciones" },
-    21: { type: "vacaciones", label: "Receso de Vacaciones" },
-    22: { type: "vacaciones", label: "Receso de Vacaciones" },
-    23: { type: "vacaciones", label: "Receso de Vacaciones" },
-    24: { type: "vacaciones", label: "Receso de Vacaciones" },
-    25: { type: "vacaciones", label: "Receso de Vacaciones" },
-    26: { type: "vacaciones", label: "Receso de Vacaciones" },
-    27: { type: "vacaciones", label: "Receso de Vacaciones" },
-    28: { type: "vacaciones", label: "Receso de Vacaciones" },
-    29: { type: "vacaciones", label: "Receso de Vacaciones" },
-    30: { type: "vacaciones", label: "Receso de Vacaciones" },
-    31: { type: "vacaciones", label: "Receso de Vacaciones" }
+    6: { type: "becas", label: "Registro Becas UT" },
+    7: { type: "becas", label: "Registro Becas UT" },
+    8: { type: "becas", label: "Registro Becas UT" },
+    9: { type: "becas", label: "Registro Becas UT" },
+    10: { type: "becas", label: "Registro Becas UT" },
+    13: { type: "vacaciones", label: "Vacaciones" },
+    14: { type: "vacaciones", label: "Vacaciones" },
+    15: { type: "vacaciones", label: "Vacaciones" },
+    16: { type: "vacaciones", label: "Vacaciones" },
+    17: { type: "vacaciones", label: "Vacaciones" },
+    20: { type: "vacaciones", label: "Vacaciones" },
+    21: { type: "vacaciones", label: "Vacaciones" },
+    22: { type: "vacaciones", label: "Vacaciones" },
+    23: { type: "vacaciones", label: "Vacaciones" },
+    24: { type: "vacaciones", label: "Vacaciones" },
+    27: { type: "vacaciones", label: "Vacaciones" },
+    28: { type: "vacaciones", label: "Vacaciones" },
+    29: { type: "vacaciones", label: "Vacaciones" },
+    30: { type: "vacaciones", label: "Vacaciones" },
+    31: { type: "vacaciones", label: "Vacaciones" }
   },
   // AGOSTO 2026
   7: {
     3: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
     4: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
     5: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    6: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    7: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    10: { type: "asesorias", label: "Asesorías" },
+    10: { type: "reingreso", label: "Trámite de Reingreso" },
     11: { type: "asesorias", label: "Asesorías" },
-    12: { type: "reingreso", label: "Trámite de Reingreso / Asesorías" },
-    13: { type: "reingreso", label: "Trámite de Reingreso" },
-    17: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    18: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    19: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    20: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    21: { type: "examenes_ordinarios", label: "Exámenes Ordinarios" },
-    24: { type: "examenes_remediales", label: "Exámenes Remediales" },
-    25: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
-    26: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
-    27: { type: "fin", label: "Fin de Cuatrimestre / Entrega Calificaciones" },
-    28: { type: "fin", label: "Fin de Cuatrimestre / Entrega Calificaciones" }
+    12: { type: "asesorias", label: "Asesorías" },
+    13: { type: "examen_admision", label: "Examen de Admisión" },
+    17: { type: "examenes_remediales", label: "Exámenes Remediales" },
+    18: { type: "examenes_remediales", label: "Exámenes Remediales" },
+    20: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
+    21: { type: "examenes_extraordinarios", label: "Exámenes Extraordinarios" },
+    24: { type: "curso_propedeutico", label: "Curso Propedéutico" },
+    25: { type: "curso_propedeutico", label: "Curso Propedéutico" },
+    26: { type: "entrega_calificaciones", label: "Entrega de Calificaciones a Ser. Esc." },
+    27: { type: "fin", label: "Fin de Cuatrimestre" }
   }
 };
 
@@ -171,10 +176,9 @@ const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
 export default function CuatrimestreCalendar() {
   const [now, setNow] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
-  const [viewMode, setViewMode] = useState("all"); // "all" | "single"
+  const [viewMode, setViewMode] = useState("all");
   const [currentMonthIndex, setCurrentMonthIndex] = useState(new Date().getMonth());
 
-  // Actualizador del reloj dinámico cada segundo
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -200,7 +204,6 @@ export default function CuatrimestreCalendar() {
     });
   };
 
-  // Helper para construir los días del mes en formato grid L-D
   const getMonthGrid = (year, monthIndex) => {
     const firstDay = new Date(year, monthIndex, 1);
     const lastDay = new Date(year, monthIndex + 1, 0);
@@ -244,7 +247,7 @@ export default function CuatrimestreCalendar() {
         <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-gray-700/60 pb-2">
           <div className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-            <h4 className="font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">
+            <h4 className="font-extrabold text-gray-900 dark:text-white uppercase tracking-wider text-sm">
               {MONTH_NAMES[monthIndex]} {year}
             </h4>
           </div>
@@ -280,7 +283,7 @@ export default function CuatrimestreCalendar() {
 
             let dayStyle = "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200";
             if (eventConfig) {
-              dayStyle = `${eventConfig.color} shadow-sm`;
+              dayStyle = `${eventConfig.color}`;
             }
 
             return (
@@ -291,14 +294,16 @@ export default function CuatrimestreCalendar() {
                     ? setSelectedDay({ day, month: MONTH_NAMES[monthIndex], year, ...event })
                     : setSelectedDay({ day, month: MONTH_NAMES[monthIndex], year, label: "Día Laboral / Regular" })
                 }
-                className={`relative h-8 w-full rounded-lg font-medium transition-all duration-150 flex items-center justify-center ${dayStyle} ${
+                className={`relative h-8 w-full transition-all duration-150 flex items-center justify-center ${
+                  eventConfig?.shape === "circle" ? "rounded-full" : "rounded-lg"
+                } ${dayStyle} ${
                   today ? "ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-gray-900 font-bold scale-105" : ""
                 }`}
                 title={event ? `${day} de ${MONTH_NAMES[monthIndex]}: ${event.label}` : `${day} de ${MONTH_NAMES[monthIndex]}`}
               >
                 <span>{day}</span>
                 {eventConfig?.icon && (
-                  <span className="absolute -top-1 -right-1 text-[9px] font-black leading-none">
+                  <span className="absolute -top-1 -right-1 text-[8px] font-black leading-none bg-black/40 text-white px-0.5 rounded">
                     {eventConfig.icon}
                   </span>
                 )}
@@ -429,7 +434,7 @@ export default function CuatrimestreCalendar() {
       <div className="bg-gray-50 dark:bg-gray-900/40 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
         <h4 className="text-xs font-extrabold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-3 flex items-center space-x-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span>Simbología y Leyenda de Eventos</span>
+          <span>Simbología Oficial de Eventos</span>
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
           {Object.entries(EVENT_TYPES).map(([key, config]) => (
@@ -437,8 +442,8 @@ export default function CuatrimestreCalendar() {
               key={key}
               className="flex items-center space-x-2.5 bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-100 dark:border-gray-700/50 shadow-2xs"
             >
-              <span className={`w-3.5 h-3.5 rounded-full shrink-0 ${config.dot}`} />
-              <span className="font-medium text-gray-700 dark:text-gray-300 truncate">
+              <span className={`w-3.5 h-3.5 shrink-0 ${config.dot}`} />
+              <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">
                 {config.label}
               </span>
             </div>
