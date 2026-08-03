@@ -30,7 +30,8 @@
     "nodemailer": "^8.0.5",
     "pdfkit": "^0.18.0",
     "prisma": "^5.22.0",
-    "react-i18next": "^17.0.2"
+    "react-i18next": "^17.0.2",
+    "resend": "^6.18.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

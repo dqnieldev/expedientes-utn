@@ -43,8 +43,6 @@ export const createDocumento = async (data) => {
     },
   });
 
-  const fromEmail = process.env.GMAIL_USER || "paperlessutndev@gmail.com";
-
   // Notificar al admin en segundo plano (no bloqueante)
   prisma.usuario.findFirst({
     where: { role: "ADMIN" },

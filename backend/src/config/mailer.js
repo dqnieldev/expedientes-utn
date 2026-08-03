@@ -1,44 +1,17 @@
-import dns from "dns/promises";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 
-const DEFAULT_GMAIL_USER = "paperlessutndev@gmail.com";
-const DEFAULT_GMAIL_PASS = "sskquqgqajdkrftj";
+const resendApiKey = process.env.RESEND_API_KEY;
+const defaultFrom  = process.env.RESEND_FROM || "Paperless UTN <onboarding@resend.dev>";
 
-const gmailUser = (process.env.GMAIL_USER || DEFAULT_GMAIL_USER).trim();
-const gmailPass = (process.env.GMAIL_PASS || DEFAULT_GMAIL_PASS).replace(/\s+/g, "");
-
-// Resolver smtp.gmail.com a una dirección IPv4 explícita al arranque.
-// Render no soporta IPv6 saliente y Node.js resuelve a IPv6 por defecto,
-// causando ENETUNREACH. Al resolver manualmente con dns.resolve4 (registros A),
-// se garantiza una IP v4 y se omite la resolución DNS en cada sendMail.
-let gmailHost = "smtp.gmail.com";
-try {
-  const ipv4Addresses = await dns.resolve4("smtp.gmail.com");
-  if (ipv4Addresses.length > 0) {
-    gmailHost = ipv4Addresses[0];
-    console.log(`📧 [Mailer] smtp.gmail.com resuelto a IPv4: ${gmailHost}`);
-  }
-} catch (err) {
-  console.warn(`⚠️ [Mailer] No se pudo resolver IPv4, usando hostname: ${err.message}`);
+if (!resendApiKey) {
+  console.error("❌ [Mailer] RESEND_API_KEY no está configurada en las variables de entorno");
 }
 
-console.log(`📧 [Mailer] Configurado con remitente: ${gmailUser} → host: ${gmailHost}:465`);
+const resend = new Resend(resendApiKey);
 
-const transporter = nodemailer.createTransport({
-  host: gmailHost,
-  port: 465,
-  secure: true,
-  auth: {
-    user: gmailUser,
-    pass: gmailPass,
-  },
-  tls: {
-    servername: "smtp.gmail.com", // Necesario para validación TLS al usar IP directa
-    rejectUnauthorized: false
-  }
-});
+console.log(`📧 [Mailer] Configurado con Resend — remitente: ${defaultFrom}`);
 
 // Función centralizada para enviar correos con remitente garantizado
 export const sendEmail = async ({ to, subject, html }) => {
@@ -47,21 +20,30 @@ export const sendEmail = async ({ to, subject, html }) => {
     return null;
   }
 
-  const mailOptions = {
-    from: `"Paperless UTN" <${gmailUser}>`,
-    to,
-    subject,
-    html,
-  };
+  if (!resendApiKey) {
+    console.error("❌ [Mailer] No se puede enviar: RESEND_API_KEY no configurada");
+    return null;
+  }
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ [Mailer] Correo enviado a: ${to} | ID: ${info.messageId}`);
-    return info;
+    const { data, error } = await resend.emails.send({
+      from: defaultFrom,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+    });
+
+    if (error) {
+      console.error(`❌ [Mailer] Error enviando correo a ${to}:`, error.message || JSON.stringify(error));
+      return null;
+    }
+
+    console.log(`✅ [Mailer] Correo enviado a: ${to} | ID: ${data?.id}`);
+    return data;
   } catch (error) {
     console.error(`❌ [Mailer] Error enviando correo a ${to}:`, error.message);
     return null;
   }
 };
 
-export default transporter;
+export default resend;

@@ -1,7 +1,7 @@
 // src/backups/scheduler.service.js
 import cron from "node-cron";
 import { crearBackup } from "./backup.service.js";
-import transporter from "../config/mailer.js";
+import { sendEmail } from "../config/mailer.js";
 import prisma from "../config/prisma.js";
 import fs from "fs";
 import path from "path";
@@ -56,8 +56,7 @@ const notificarAdmin = async (filename, size) => {
     const admin = await prisma.usuario.findFirst({ where: { role: "ADMIN" } });
     if (!admin?.email) return;
 
-    await transporter.sendMail({
-      from:    `"Paperless UTN" <${process.env.GMAIL_USER}>`,
+    await sendEmail({
       to:      admin.email,
       subject: "✅ Respaldo automático completado — Paperless UTN",
       html: `
