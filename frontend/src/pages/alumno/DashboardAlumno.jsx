@@ -3,6 +3,7 @@ import axios from "axios";
 import MainLayout from "../../layout/MainLayout";
 import ExpedienteResumen from "../../components/ExpedienteResumen";
 import AlumnoProfileCard from "../../components/AlumnoProfileCard";
+import CuatrimestreCalendar from "../../components/CuatrimestreCalendar";
 import { SkeletonDashboard } from "../../components/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -76,7 +77,7 @@ export default function DashboardAlumno() {
           </div>
 
           <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow transition-colors duration-200">
-            {/* aquí va el calendario */}
+            <CuatrimestreCalendar />
           </div>
 
         </div>
