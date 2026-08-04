@@ -44,6 +44,8 @@ import coil.compose.AsyncImage
 import com.paperless.utn.R
 import com.paperless.utn.data.model.AlumnoDto
 import com.paperless.utn.data.model.DocumentoDto
+import com.paperless.utn.ui.components.ExpedienteDonutCard
+import com.paperless.utn.ui.components.calcularEstadisticasExpediente
 import com.paperless.utn.ui.theme.BauhausRed
 import com.paperless.utn.ui.theme.UtGoldVibrant
 import com.paperless.utn.ui.theme.UtGreenDark
@@ -185,6 +187,39 @@ private fun ExpedienteAdminDashboard(
     var selectedTab by remember { mutableStateOf(0) }
     var docToReject by remember { mutableStateOf<DocumentoDto?>(null) }
     var razonInput by remember { mutableStateOf("") }
+    var selectedAlumnoForModal by remember { mutableStateOf<AlumnoDto?>(null) }
+
+    if (selectedAlumnoForModal != null) {
+        val al = selectedAlumnoForModal!!
+        val docsAlumno = documentos.filter { it.alumno?.id == al.id || al.documentos?.any { d -> d.id == it.id } == true }
+        val statsAlumno = calcularEstadisticasExpediente(docsAlumno.ifEmpty { al.documentos })
+
+        AlertDialog(
+            onDismissRequest = { selectedAlumnoForModal = null },
+            title = {
+                Column {
+                    Text(text = al.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(text = "Matrícula: ${al.matricula} — ${al.carrera}", fontSize = 12.sp, color = UtGreenDark)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    ExpedienteDonutCard(stats = statsAlumno)
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { selectedAlumnoForModal = null },
+                    colors = ButtonDefaults.buttonColors(containerColor = UtGreenImmersive)
+                ) {
+                    Text("Cerrar Detalle")
+                }
+            }
+        )
+    }
 
     if (docToReject != null) {
         AlertDialog(
@@ -275,8 +310,7 @@ private fun ExpedienteAdminDashboard(
                 searchQuery = searchQuery,
                 onSearchChange = onSearchChange,
                 onSelectAlumno = { alumno ->
-                    onSelectAlumnoFilter(alumno.id)
-                    selectedTab = 0
+                    selectedAlumnoForModal = alumno
                 }
             )
         }
@@ -326,6 +360,12 @@ private fun AdminDocumentosTab(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // DONA DE EXPEDIENTES GENERAL
+        item {
+            val stats = calcularEstadisticasExpediente(documentos)
+            ExpedienteDonutCard(stats = stats)
+        }
+
         if (alumnoFiltrado != null) {
             item {
                 Card(
@@ -791,6 +831,12 @@ private fun ExpedienteAlumnoContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // GRAFICA DE DONA DE EXPEDIENTE DIGITAL
+        item {
+            val stats = calcularEstadisticasExpediente(documentos)
+            ExpedienteDonutCard(stats = stats)
+        }
+
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),

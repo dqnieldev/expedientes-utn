@@ -79,14 +79,21 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
                     }
                     uiState = ExpedienteUiState.SuccessAlumno(alumno, docs)
 
+                    val apr = docs.count { it.estado == "APROBADO" }
+                    val rev = docs.count { it.estado == "EN_REVISION" }
+                    val rec = docs.count { it.estado == "RECHAZADO" }
+                    val pen = maxOf(0, maxOf(docs.size, 4) - (apr + rev + rec))
+
                     // Sincronizar estado del expediente con el reloj Wear OS via DataClient API
-                    WearDataSyncManager.sincronizarExpedienteConWearable(
+                    WearDataSyncManager.sincronizarExpedienteAlumno(
                         context = getApplication(),
                         alumnoNombre = alumno.nombre,
                         matricula = alumno.matricula,
-                        estadoGeneral = if (docs.isNotEmpty() && docs.all { it.estado == "APROBADO" }) "APROBADO" else "EN_REVISION",
-                        aprobados = docs.count { it.estado == "APROBADO" },
-                        total = docs.size
+                        aprobados = apr,
+                        enRevision = rev,
+                        rechazados = rec,
+                        pendientes = pen,
+                        total = maxOf(docs.size, 4)
                     )
                 } else if (responsePerfil.code() == 404) {
                     cargarDatosAdmin(email, role)
@@ -108,6 +115,13 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
             val documentos = if (respDocs.isSuccessful) respDocs.body() ?: emptyList() else emptyList()
 
             uiState = ExpedienteUiState.SuccessAdmin(email, role, alumnos, documentos)
+
+            // Sincronizar directorio de alumnos con el reloj Wear OS
+            WearDataSyncManager.sincronizarDatosAdmin(
+                context = getApplication(),
+                alumnos = alumnos,
+                documentos = documentos
+            )
         } catch (e: Exception) {
             uiState = ExpedienteUiState.SuccessAdmin(email, role, emptyList(), emptyList())
         }

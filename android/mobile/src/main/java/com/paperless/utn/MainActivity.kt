@@ -24,6 +24,15 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val expedienteViewModel: ExpedienteViewModel by viewModels()
 
+    private val refreshReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+            if (intent?.action == "com.paperless.utn.ACTION_REFRESH_EXPEDIENTE") {
+                android.widget.Toast.makeText(this@MainActivity, "🔄 Sincronizando con Smartwatch", android.widget.Toast.LENGTH_SHORT).show()
+                expedienteViewModel.cargarPerfilYDocumentos()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +52,25 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = android.content.IntentFilter("com.paperless.utn.ACTION_REFRESH_EXPEDIENTE")
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(refreshReceiver, filter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(refreshReceiver, filter)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            unregisterReceiver(refreshReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
