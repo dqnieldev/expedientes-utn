@@ -43,7 +43,10 @@ export default function AnaliticaDeveloper() {
   }, []);
 
   const handlePrint = () => {
-    window.print();
+    setActiveTab("reporte");
+    setTimeout(() => {
+      window.print();
+    }, 150);
   };
 
   // Clasificación de clusters (K-Means) por comportamiento de expedientes
@@ -393,10 +396,9 @@ export default function AnaliticaDeveloper() {
             )}
 
             {/* ── 📄 REPORTE EJECUTIVO PDF MULTI-PÁGINA ESTRUCTURADO ── */}
-            {(activeTab === "reporte" || window.matchMedia("print").matches) && (
-              <div className="space-y-8">
-                
-                {/* PÁGINA 1 DEL REPORTE */}
+            <div className={activeTab === "reporte" ? "space-y-8" : "hidden print:block space-y-8"}>
+              
+              {/* PÁGINA 1 DEL REPORTE */}
                 <div className="bg-white text-black p-8 md:p-12 rounded-2xl shadow-xl border border-slate-300 space-y-6 max-w-5xl mx-auto print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:block print:w-full">
                   
                   {/* ENCABEZADO OFICIAL */}
@@ -561,10 +563,8 @@ export default function AnaliticaDeveloper() {
                     </div>
                   </div>
 
-                </div>
-
               </div>
-            )}
+            </div>
 
             {/* ── MODAL INTERACTIVO DE AMPLIACIÓN DE GRÁFICAS (LIGHTBOX) ── */}
             {modalImage && (
