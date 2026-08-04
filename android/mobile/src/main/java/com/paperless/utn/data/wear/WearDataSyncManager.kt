@@ -41,6 +41,7 @@ object WearDataSyncManager {
             val dataMap = putDataMapReq.dataMap
 
             dataMap.putString("role", "ALUMNO")
+            dataMap.putBoolean("is_logged_in", true)
             dataMap.putString("alumno_nombre", alumnoNombre)
             dataMap.putString("matricula", matricula)
             dataMap.putInt("aprobados", aprobados)
@@ -107,7 +108,27 @@ object WearDataSyncManager {
             val dataMap = putDataMapReq.dataMap
 
             dataMap.putString("role", "ADMIN")
+            dataMap.putBoolean("is_logged_in", true)
             dataMap.putString("alumnos_json", alumnosJson)
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+
+            val putDataReq = putDataMapReq.asPutDataRequest().setUrgent()
+            Wearable.getDataClient(context).putDataItem(putDataReq)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Notifica el cierre de sesión activo al reloj Wear OS para que vuelva a la pantalla de espera.
+     */
+    fun sincronizarCierreSesion(context: Context) {
+        try {
+            val putDataMapReq = PutDataMapRequest.create("/expediente_status")
+            val dataMap = putDataMapReq.dataMap
+
+            dataMap.putString("role", "UNAUTHENTICATED")
+            dataMap.putBoolean("is_logged_in", false)
             dataMap.putLong("timestamp", System.currentTimeMillis())
 
             val putDataReq = putDataMapReq.asPutDataRequest().setUrgent()

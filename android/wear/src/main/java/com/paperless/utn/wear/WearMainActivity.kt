@@ -111,13 +111,8 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                 total = selectedAlumnoForAdmin?.total ?: totalCount,
                 alumnosLista = listaAlumnosReales,
                 selectedAlumno = selectedAlumnoForAdmin,
-                shakeCount = shakeCount,
-                lastAccel = lastAccelValue,
                 onSelectAlumno = { alumno -> selectedAlumnoForAdmin = alumno },
-                onBackToList = { selectedAlumnoForAdmin = null },
-                onTestNotification = {
-                    dispararNotificacionYVibracion("Prueba")
-                }
+                onBackToList = { selectedAlumnoForAdmin = null }
             )
         }
     }
@@ -152,11 +147,11 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                     lastShakeTime = now
                     shakeCount++
 
-                    // 1. Enviar mensaje de sincronización para que el celular vibre y recargue datos de la BD
+                    // 1. Enviar mensaje de sincronización para que el celular vibre y recargue datos
                     enviarMensajeSyncAlTelefono()
 
                     // 2. Notificación local y respuesta háptica en el reloj
-                    dispararNotificacionYVibracion("Gesto Sensor")
+                    dispararNotificacionYVibracion("Gesto de Movimiento")
                 }
             }
         }
@@ -168,7 +163,18 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
         for (event in dataEvents) {
             if (event.dataItem.uri.path == "/expediente_status") {
                 val dataMap = DataMapItem.fromDataItem(event.dataItem).dataMap
-                val roleReceived = dataMap.getString("role", "ALUMNO")
+                val isLoggedIn = dataMap.getBoolean("is_logged_in", false)
+                val roleReceived = dataMap.getString("role", "UNAUTHENTICATED")
+
+                if (!isLoggedIn || roleReceived == "UNAUTHENTICATED") {
+                    // MANEJO AUTOMÁTICO DE CIERRE DE SESIÓN DESDE EL MÓVIL
+                    currentRole = null
+                    isDataSynced = false
+                    selectedAlumnoForAdmin = null
+                    listaAlumnosReales.clear()
+                    return
+                }
+
                 currentRole = roleReceived
                 isDataSynced = true
 
@@ -192,7 +198,7 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                     // Notificación háptica en reloj al recibir actualización real de dictamen
                     WearNotificationHelper.enviarNotificacionExpediente(
                         context = this,
-                        titulo = "📋 Expediente Sincronizado",
+                        titulo = "Expediente Sincronizado",
                         mensaje = "$alumnoNombre: $aprobadosCount/$totalCount documentos aprobados."
                     )
                 }
@@ -210,12 +216,12 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
 
     private fun dispararNotificacionYVibracion(origen: String) {
         vibrateDevice(this)
-        Toast.makeText(this, "🔔 Sincronizando: $origen", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Sincronizando: $origen", Toast.LENGTH_SHORT).show()
 
         WearNotificationHelper.enviarNotificacionExpediente(
             context = this,
-            titulo = "📋 Expediente Digital Wear",
-            mensaje = "Actualización háptica recibida ($origen)."
+            titulo = "Expediente Digital",
+            mensaje = "Actualización recibida vía $origen."
         )
     }
 
@@ -248,31 +254,28 @@ fun WearAppMain(
     total: Int,
     alumnosLista: List<AlumnoWearItem>,
     selectedAlumno: AlumnoWearItem?,
-    shakeCount: Int,
-    lastAccel: Float,
     onSelectAlumno: (AlumnoWearItem) -> Unit,
-    onBackToList: () -> Unit,
-    onTestNotification: () -> Unit
+    onBackToList: () -> Unit
 ) {
     MaterialTheme {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF003820)),
+                .background(Color(0xFF0F172A)), // Carbón Oscuro Pastel Elegante
             contentAlignment = Alignment.Center
         ) {
-            if (!isDataSynced && role == null) {
-                // PANTALLA DE ESPERA HASTA RECIBIR DATOS DE LA SESIÓN MÓVIL
+            if (!isDataSynced || role == null || role == "UNAUTHENTICATED") {
+                // PANTALLA DE ESPERA AL CERRAR SESIÓN O AL ESPERAR CONEXIÓN
                 Column(
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "📄 Paperless System",
-                        fontSize = 12.sp,
+                        text = "Expediente Digital",
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF34D399) // Verde Menta Soft
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     CircularProgressIndicator(
@@ -280,9 +283,17 @@ fun WearAppMain(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
+                        text = "Esperando inicio de sesión...",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
                         text = "Inicia sesión en la App Móvil",
-                        fontSize = 10.sp,
-                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 9.sp,
+                        color = Color(0xFF94A3B8),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -298,15 +309,15 @@ fun WearAppMain(
                         item {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "👑 Admin — Alumnos",
+                                    text = "Administración",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFFFC107)
+                                    color = Color(0xFFFBBF24) // Amarillo Pastel Warm
                                 )
                                 Text(
-                                    text = "Alumnos en Sistema (${alumnosLista.size})",
+                                    text = "Alumnos (${alumnosLista.size})",
                                     fontSize = 9.sp,
-                                    color = Color.White.copy(alpha = 0.7f)
+                                    color = Color(0xFF94A3B8)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
@@ -318,11 +329,11 @@ fun WearAppMain(
                                 label = {
                                     Column {
                                         Text(text = alumno.nombre, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                        Text(text = "${alumno.aprobados}/${alumno.total} aprobados", fontSize = 9.sp, color = Color(0xFF00E680))
+                                        Text(text = "${alumno.aprobados}/${alumno.total} aprobados", fontSize = 9.sp, color = Color(0xFF34D399))
                                     }
                                 },
                                 colors = ChipDefaults.chipColors(
-                                    backgroundColor = Color(0xFF004D2C),
+                                    backgroundColor = Color(0xFF1E293B),
                                     contentColor = Color.White
                                 ),
                                 modifier = Modifier
@@ -334,29 +345,27 @@ fun WearAppMain(
                 } else {
                     // DETALLE DE ALUMNO SELECCIONADO POR EL ADMINISTRADOR EN EL RELOJ
                     ExpedienteDonutWearView(
-                        title = "👑 ${alumnoNombre.take(15)}",
+                        title = alumnoNombre.take(16),
                         aprobados = aprobados,
                         enRevision = enRevision,
                         rechazados = rechazados,
                         pendientes = pendientes,
                         total = total,
                         showBackButton = true,
-                        onBackToList = onBackToList,
-                        onTestNotification = onTestNotification
+                        onBackToList = onBackToList
                     )
                 }
             } else {
-                // VISTA ALUMNO REAL: MUESTRA NÚNICAMENTE LA DONA DEL ALUMNO EN SESIÓN (SIN BOTÓN MODO ADMIN)
+                // VISTA ALUMNO REAL: MUESTRA NÚNICAMENTE LA DONA DEL ALUMNO EN SESIÓN
                 ExpedienteDonutWearView(
-                    title = "📄 Expediente Digital",
+                    title = "Expediente Digital",
                     aprobados = aprobados,
                     enRevision = enRevision,
                     rechazados = rechazados,
                     pendientes = pendientes,
                     total = total,
                     showBackButton = false,
-                    onBackToList = { },
-                    onTestNotification = onTestNotification
+                    onBackToList = { }
                 )
             }
         }
@@ -372,8 +381,7 @@ private fun ExpedienteDonutWearView(
     pendientes: Int,
     total: Int,
     showBackButton: Boolean,
-    onBackToList: () -> Unit,
-    onTestNotification: () -> Unit
+    onBackToList: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -417,7 +425,7 @@ private fun ExpedienteDonutWearView(
                     startAngle += sweepEnRevision
                 }
                 if (sweepRechazados > 0) {
-                    drawArc(Color(0xFFEF4444), startAngle, sweepRechazados, false, style = Stroke(strokeWidth))
+                    drawArc(Color(0xFFF43F5E), startAngle, sweepRechazados, false, style = Stroke(strokeWidth))
                     startAngle += sweepRechazados
                 }
                 if (sweepPendientes > 0) {
@@ -435,21 +443,21 @@ private fun ExpedienteDonutWearView(
                 Text(
                     text = "docs",
                     fontSize = 8.sp,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = Color(0xFF94A3B8)
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // CONTADORES RESUMIDOS POR COLORES
+        // CONTADORES RESUMIDOS CON PALETA PASTEL SOFISTICADA
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             BadgePill(count = aprobados, color = Color(0xFF10B981), label = "Apr")
             BadgePill(count = enRevision, color = Color(0xFFF59E0B), label = "Rev")
-            BadgePill(count = rechazados, color = Color(0xFFEF4444), label = "Obs")
+            BadgePill(count = rechazados, color = Color(0xFFF43F5E), label = "Obs")
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -460,9 +468,9 @@ private fun ExpedienteDonutWearView(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(24.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF475569))
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF334155))
             ) {
-                Text("← Volver a Lista", fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                Text("Volver a Lista", fontSize = 8.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -476,6 +484,6 @@ private fun BadgePill(count: Int, color: Color, label: String) {
             .padding(horizontal = 4.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "$label:$count", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(text = "$label: $count", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }

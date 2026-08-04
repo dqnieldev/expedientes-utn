@@ -207,6 +207,7 @@ class ExpedienteViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun logout() {
+        WearDataSyncManager.sincronizarCierreSesion(getApplication())
         tokenManager.clearSession()
     }
 }
