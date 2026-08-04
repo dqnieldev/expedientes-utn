@@ -178,6 +178,9 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                 currentRole = roleReceived
                 isDataSynced = true
 
+                // 1. Notificación en pantalla Toast en el Smartwatch
+                Toast.makeText(this, "Expediente sincronizado", Toast.LENGTH_SHORT).show()
+
                 if (roleReceived == "ADMIN" || roleReceived == "DEVELOPER") {
                     val json = dataMap.getString("alumnos_json")
                     if (!json.isNullOrBlank()) {
@@ -186,6 +189,13 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                         listaAlumnosReales.clear()
                         listaAlumnosReales.addAll(list)
                     }
+
+                    // 2. Notificación de Sistema Wear OS para modo Administrador
+                    WearNotificationHelper.enviarNotificacionExpediente(
+                        context = this,
+                        titulo = "Directorio Actualizado",
+                        mensaje = "${listaAlumnosReales.size} alumnos sincronizados en tiempo real."
+                    )
                 } else {
                     alumnoNombre = dataMap.getString("alumno_nombre", alumnoNombre)
                     matricula = dataMap.getString("matricula", matricula)
@@ -195,7 +205,7 @@ class WearMainActivity : ComponentActivity(), SensorEventListener, DataClient.On
                     pendientesCount = dataMap.getInt("pendientes", pendientesCount)
                     totalCount = dataMap.getInt("total", totalCount)
 
-                    // Notificación háptica en reloj al recibir actualización real de dictamen
+                    // 2. Notificación de Sistema Wear OS para modo Alumno
                     WearNotificationHelper.enviarNotificacionExpediente(
                         context = this,
                         titulo = "Expediente Sincronizado",

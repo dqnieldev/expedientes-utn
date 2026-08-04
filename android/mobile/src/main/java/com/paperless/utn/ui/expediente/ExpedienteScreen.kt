@@ -58,6 +58,7 @@ fun ExpedienteScreen(
     viewModel: ExpedienteViewModel,
     onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
     val uiState = viewModel.uiState
 
     Scaffold(
@@ -76,7 +77,10 @@ fun ExpedienteScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = UtGreenImmersive),
                 actions = {
-                    IconButton(onClick = { viewModel.cargarPerfilYDocumentos() }) {
+                    IconButton(onClick = {
+                        android.widget.Toast.makeText(context, "Actualizando expediente...", android.widget.Toast.LENGTH_SHORT).show()
+                        viewModel.cargarPerfilYDocumentos()
+                    }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Actualizar", tint = Color.White)
                     }
                     IconButton(onClick = {

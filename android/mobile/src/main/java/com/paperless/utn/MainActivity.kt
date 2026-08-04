@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
     private val refreshReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
             if (intent?.action == "com.paperless.utn.ACTION_REFRESH_EXPEDIENTE") {
-                android.widget.Toast.makeText(this@MainActivity, "Sincronizando expediente con Smartwatch", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this@MainActivity, "Sincronizando expediente en tiempo real", android.widget.Toast.LENGTH_SHORT).show()
                 expedienteViewModel.cargarPerfilYDocumentos()
             }
         }
